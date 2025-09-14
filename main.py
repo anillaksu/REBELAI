@@ -67,6 +67,68 @@ def is_command_allowed(cmd_parts):
     # Check if command is in allowlist
     return base_command in ALLOWED_COMMANDS
 
+def detect_and_convert_command(user_input):
+    """Intelligent command detection and conversion using AI"""
+    if not openai_client:
+        return user_input, "No AI available"
+    
+    try:
+        # Create comprehensive prompt for command intelligence
+        prompt = f"""
+Kullanıcı girdi: "{user_input}"
+
+Bu girdiyi analiz et ve:
+1. Hangi tip komut/istek olduğunu belirle (PowerShell, CMD, Linux, Doğal Dil)
+2. Eğer PowerShell veya CMD komutu ise, Linux eşdeğerine çevir
+3. Eğer doğal dil ise, uygun Linux komutlarına çevir
+4. Sadece güvenli, salt-okunur komutları öner (ls, pwd, cat, grep, find, date, uname, whoami, df, du, free, uptime, ps, echo, head, tail, wc, which, whereis)
+5. Tehlikeli komutları (rm, sudo, chmod vb.) ASLA önerme
+
+JSON formatında yanıt ver:
+{{
+  "detected_type": "PowerShell/CMD/Linux/NaturalLanguage",
+  "original": "orijinal girdi",
+  "converted": "dönüştürülmüş Linux komut(ları)",
+  "explanation": "ne yaptığının açıklaması"
+}}
+
+Örnekler:
+- "Get-ChildItem" → "ls -la" 
+- "dir" → "ls -la"
+- "dosyaları listele" → "ls -la"
+- "kim benim" → "whoami"
+- "sistemin ne" → "uname -a"
+- "Get-Location" → "pwd"
+- "cls" → "clear"
+- "ipconfig" → "ip addr show"
+- "tasklist" → "ps aux"
+"""
+
+        response = openai_client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=[{"role": "user", "content": prompt}],
+            max_tokens=800,
+            temperature=0.1  # Low temperature for consistent results
+        )
+        
+        import json
+        result = json.loads(response.choices[0].message.content)
+        
+        converted_cmd = result.get("converted", user_input)
+        explanation = result.get("explanation", "Komut çevirisi yapıldı")
+        detected_type = result.get("detected_type", "Unknown")
+        
+        log_write(f"COMMAND INTELLIGENCE: {detected_type} detected")
+        log_write(f"Original: {user_input}")
+        log_write(f"Converted: {converted_cmd}")
+        log_write(f"Explanation: {explanation}")
+        
+        return converted_cmd, f"🤖 {detected_type} algılandı → {explanation}"
+        
+    except Exception as e:
+        log_write(f"Command Intelligence Error: {e}")
+        return user_input, f"Komut çevirisi hatası: {str(e)}"
+
 def parse_command_safely(cmd_string):
     """Safely parse command string using shlex"""
     try:
