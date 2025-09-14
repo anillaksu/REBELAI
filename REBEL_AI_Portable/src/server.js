@@ -19,7 +19,7 @@ const KnowledgeManager = require('./knowledge_manager');
 class REBELAIServer {
     constructor() {
         this.app = express();
-        this.port = 3000;
+        this.port = 5000;
         this.host = '127.0.0.1'; // Localhost only for security
         this.isPortable = process.argv.includes('--portable');
         
@@ -40,7 +40,7 @@ class REBELAIServer {
     setupMiddleware() {
         // Restrict CORS to localhost only
         this.app.use(cors({
-            origin: ['http://localhost:3000', 'http://127.0.0.1:3000'],
+            origin: ['http://localhost:5000', 'http://127.0.0.1:5000'],
             credentials: true,
             methods: ['GET', 'POST'],
             allowedHeaders: ['Content-Type', 'Authorization', 'X-CSRF-Token']
