@@ -1,0 +1,56 @@
+Sen REBEL MODE’dasın. Aşağıdaki sistemi eksiksiz ve hatasız üret. Çıktı: tam proje klasörü, içinde backend, frontend, AI entegrasyonu ve run scriptleri olacak. Sistem hem Windows (PowerShell/CMD), hem Linux (bash), hem MacOS (zsh/bash) ile uyumlu çalışmalı.
+
+🎯 İstediğim Sistem:
+- İsim: **REBEL AI – Komut Yöneticisi**
+- Replit Proje Yapısı:
+  RebelAI_Cmd_Manager/
+  ├── rebel_ai_manager.py      # Python backend
+  ├── run.bat                  # Windows başlatıcı
+  ├── run.sh                   # Linux/Mac başlatıcı
+  ├── rebel_config.yaml        # Genel ayarlar (API key, model yolu, log dosyası konumu)
+  ├── templates/index.html     # Neon REBEL UI
+  ├── static/style.css         # Siyah/yeşil tema
+  ├── static/script.js         # Terminal input + log görüntüleme
+  ├── ai_engine.py             # Yerel/remote AI yorumlama katmanı
+  ├── dijkstra_scheduler.py    # Çoklu komutları verim sırasına göre işleyen algoritma
+
+⚡ Özellikler:
+1. **Auth Token**: Ortam değişkeni `REBEL_AUTH_TOKEN` ile doğrulama yapılmalı.
+2. **Çoklu Platform Uyum**:
+   - Windows → CMD / PowerShell
+   - Linux → Bash
+   - MacOS → Zsh/Bash
+   - Otomatik platform algılama (Python `platform` modülü).
+3. **YZ Entegrasyonu**:
+   - Eğer `rebel_config.yaml` içinde `api_key` varsa OpenAI API veya Ollama/Oobabooga API çağır.
+   - Eğer `local_model_path` varsa llama.cpp GGUF modelini subprocess ile çağır.
+   - Amaç: Kullanıcının doğal dilde yazdığı komutu yorumla, gerekli olduğunda sorular sor.
+   - Emin değilse “⚠️ Bu komutu doğru anlamadım, ne yapmak istiyorsun?” diye geri dön.
+4. **Dijkstra Algoritması**:
+   - Eğer bir komut zinciri algılanırsa (örn: “dosyaları listele ve sonra zip yap ve logla”), bunları `dijkstra_scheduler.py` içindeki graf tabanlı planlayıcı sıraya koyacak.
+   - Maliyet: hız + hata riski (örneğin basit `ls` düşük maliyet, sistem servis restart yüksek maliyet).
+   - Çalıştırılacak komut en kısa/optimum yol üzerinden seçilecek.
+5. **Loglama Sistemi**:
+   - Her şey loglanmalı (`D:\rebel_logs\cmd_manager_log.txt` Windows için, `/var/log/rebel_ai.log` Linux için).
+   - Log formatı JSON satırları: `{timestamp, user_cmd, interpreted_cmd, platform, status, output, error}`
+   - UI’da “Logları Göster” butonu olacak.
+6. **Terminal UI**:
+   - Neon yeşil/siyah arayüz
+   - Komut geçmişi
+   - Favori komutlar: `ls`, `whoami`, `systeminfo`, `df -h`, `ps aux`
+   - Butonlar: Çalıştır, Temizle, Geçmişi Dışa Aktar, Logları Göster
+   - Mobil uyumlu CSS
+7. **Run Scriptleri**:
+   - `run.bat` → Windows: `uvicorn rebel_ai_manager:app --reload --port 5000`
+   - `run.sh` → Linux/Mac: `chmod +x run.sh && ./run.sh`
+   - Scriptler otomatik ortam değişkenlerini kontrol etsin (`REBEL_AUTH_TOKEN`, `PATH`, `PYTHONPATH`).
+
+📦 Çıktı Formatı:
+- Bana tam proje klasörü yapısı ver.
+- Tüm dosyaların içini eksiksiz doldur.
+- Kodlar hatasız olacak. Ben indirip cihazımda direkt `run.bat` veya `run.sh` ile açacağım.
+
+⚠️ NOT:
+- Kullanıcı doğal dilde saçma/karışık yazarsa, YZ önce yorumlasın, sonra netleştirsin.
+- Eğer hata varsa otomatik raporla: “❌ Hata bulundu, log kaydına bak: …”
+- Sistem asla boş cevap döndürmesin, her zaman net çıktı versin.

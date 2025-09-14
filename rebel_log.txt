@@ -309,3 +309,33 @@ Mem:            62Gi        31Gi       3.0Gi        45Mi        29Gi        31Gi
 Swap:             0B          0B          0B
 
 
+[2025-09-14 19:28:16.302373] UNAUTHORIZED ACCESS ATTEMPT
+[2025-09-14 19:28:32.201355] User input: ls -la
+[2025-09-14 19:28:35.810437] COMMAND INTELLIGENCE: Linux detected
+[2025-09-14 19:28:35.810542] Original: ls -la
+[2025-09-14 19:28:35.810588] Converted: ls -la
+[2025-09-14 19:28:35.810688] Explanation: Bu komut, mevcut dizindeki dosyaları ve dizinleri ayrıntılı bir şekilde listelemek için kullanılır. '-l' seçeneği uzun formatta listeleme yapar ve '-a' seçeneği gizli dosyaları da gösterir.
+[2025-09-14 19:28:35.810803] Original commands: ['ls -la']
+[2025-09-14 19:28:35.810870] Optimized order: ['ls -la']
+[2025-09-14 19:28:35.820741] CMD: ls -la
+OUTPUT:
+total 140
+drwxr-xr-x 1 runner runner   286 Sep 14 19:25 .
+drwxrwxrwx 1 runner runner    46 Sep 14 17:43 ..
+drwxr-xr-x 1 runner runner   184 Sep 14 18:52 attached_assets
+drwxr-xr-x 1 runner runner    16 Sep 14 17:44 .cache
+-rw-r--r-- 1 runner runner  1796 Sep 14 19:26 command_history.json
+drwxr-xr-x 1 runner runner   128 Sep 14 19:27 .git
+drwxr-xr-x 1 runner runner    10 Sep 14 17:43 .local
+-rw-r--r-- 1 runner runner 36339 Sep 14 19:25 main.py
+drwxr-xr-x 1 runner runner    40 Sep 14 19:25 __pycache__
+-rw-r--r-- 1 runner runner   232 Sep 14 19:20 pyproject.toml
+drwxr-xr-x 1 runner runner    86 Sep 14 17:44 .pythonlibs
+-rw-r--r-- 1 runner runner 18578 Sep 14 19:28 rebel_log.txt
+-rw-r--r-- 1 runner runner   656 Sep 14 19:23 .replit
+-rw-r--r-- 1 runner runner  3013 Sep 14 19:25 replit.md
+drwxr-xr-x 1 runner runner    40 Sep 14 19:23 templates
+drwxr-xr-x 1 runner runner    20 Sep 14 19:20 .upm
+-rw-r--r-- 1 runner runner 60561 Sep 14 19:20 uv.lock
+
+
