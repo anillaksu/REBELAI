@@ -295,3 +295,17 @@ OUTPUT:
 runner
 
 
+[2025-09-14 19:26:02.112239] User input: free -h
+[2025-09-14 19:26:06.025214] COMMAND INTELLIGENCE: Linux detected
+[2025-09-14 19:26:06.027323] Original: free -h
+[2025-09-14 19:26:06.028757] Converted: free -h
+[2025-09-14 19:26:06.030035] Explanation: Sistemdeki bellek kullanımını gösterir.
+[2025-09-14 19:26:06.031236] Original commands: ['free -h']
+[2025-09-14 19:26:06.031629] Optimized order: ['free -h']
+[2025-09-14 19:26:06.042758] CMD: free -h
+OUTPUT:
+               total        used        free      shared  buff/cache   available
+Mem:            62Gi        31Gi       3.0Gi        45Mi        29Gi        31Gi
+Swap:             0B          0B          0B
+
+

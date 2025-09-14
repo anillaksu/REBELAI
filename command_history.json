@@ -1,5 +1,10 @@
 [
   {
+    "timestamp": "2025-09-14T19:26:06.044611",
+    "command": "free -h",
+    "summary": "1 komut çalıştırıldı (AI çevirisi yapıldı)"
+  },
+  {
     "timestamp": "2025-09-14T19:25:56.175503",
     "command": "whoami",
     "summary": "1 komut çalıştırıldı (AI çevirisi yapıldı)"
