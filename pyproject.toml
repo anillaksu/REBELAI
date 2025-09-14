@@ -7,4 +7,5 @@ dependencies = [
     "flask>=3.1.2",
     "gunicorn>=23.0.0",
     "openai>=1.107.2",
+    "psutil>=7.0.0",
 ]

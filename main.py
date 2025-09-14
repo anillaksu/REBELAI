@@ -28,6 +28,13 @@ if not AUTH_TOKEN:
     print("Please set your auth token: export REBEL_AUTH_TOKEN='your_secure_token_here'")
     exit(1)
 
+# Admin security configuration - REQUIRED for admin panel
+ADMIN_TOKEN = os.environ.get("REBEL_ADMIN_TOKEN")
+if not ADMIN_TOKEN:
+    print("CRITICAL ERROR: REBEL_ADMIN_TOKEN environment variable is required for admin access.")
+    print("Please set your admin token: export REBEL_ADMIN_TOKEN='your_secure_admin_token_here'")
+    exit(1)
+
 # Command allowlist for security (only safe, read-only commands)
 ALLOWED_COMMANDS = {
     'ls', 'pwd', 'whoami', 'date', 'uname', 'cat', 'head', 'tail', 
@@ -134,6 +141,10 @@ def save_favorite(name, command):
 def validate_auth_token(token):
     """Validate authentication token"""
     return token == AUTH_TOKEN
+
+def validate_admin_token(token):
+    """Validate admin authentication token"""
+    return token == ADMIN_TOKEN
 
 def is_command_allowed(cmd_parts):
     """Check if command is in allowlist and not in blocklist"""
@@ -339,6 +350,233 @@ def run_command(cmd_string):
 def home():
     """Main page with terminal interface"""
     return render_template("index.html")
+
+@app.route("/admin")
+def admin_panel():
+    """Admin panel interface"""
+    return render_template("admin.html")
+
+@app.route("/admin/validate", methods=["POST"])
+def validate_admin():
+    """Validate admin token"""
+    admin_token = request.headers.get("X-Admin-Token", "")
+    if validate_admin_token(admin_token):
+        log_write(f"ADMIN LOGIN: Successful admin authentication")
+        return jsonify({"status": "authenticated", "role": "admin"}), 200
+    else:
+        log_write(f"ADMIN LOGIN FAILED: Invalid admin token attempt")
+        return jsonify({"error": "Invalid admin token"}), 401
+
+@app.route("/admin/dashboard", methods=["GET"])
+def admin_dashboard():
+    """Admin dashboard data"""
+    admin_token = request.headers.get("X-Admin-Token", "")
+    if not validate_admin_token(admin_token):
+        return jsonify({"error": "Unauthorized"}), 401
+    
+    try:
+        # Get system stats
+        import psutil
+        uptime = datetime.datetime.now() - datetime.datetime.fromtimestamp(psutil.boot_time())
+        
+        dashboard_data = {
+            "uptime": str(uptime).split('.')[0],  # Remove microseconds
+            "ai_available": openai_client is not None,
+            "history_count": len(load_history()),
+            "favorites_count": len(load_favorites()),
+            "allowed_commands": len(ALLOWED_COMMANDS),
+            "blocked_commands": len(BLOCKED_COMMANDS),
+            "system_load": psutil.getloadavg()[0] if hasattr(psutil, 'getloadavg') else 0,
+            "memory_usage": psutil.virtual_memory().percent,
+            "disk_usage": psutil.disk_usage('/').percent
+        }
+        return jsonify(dashboard_data)
+    except Exception as e:
+        log_write(f"Admin dashboard error: {e}")
+        return jsonify({"error": str(e)}), 500
+
+@app.route("/admin/execute", methods=["POST"])
+def admin_execute():
+    """Execute admin commands with root privileges"""
+    admin_token = request.headers.get("X-Admin-Token", "")
+    if not validate_admin_token(admin_token):
+        return jsonify({"error": "Unauthorized"}), 401
+    
+    try:
+        data = request.get_json()
+        command = data.get("command", "").strip()
+        
+        if not command:
+            return jsonify({"error": "Command required"}), 400
+        
+        log_write(f"ADMIN COMMAND: {command}")
+        
+        # Execute command with admin privileges (no restrictions)
+        cmd_parts = shlex.split(command)
+        result = subprocess.run(
+            cmd_parts,
+            capture_output=True,
+            text=True,
+            timeout=30,  # Longer timeout for admin commands
+            shell=False
+        )
+        
+        output = result.stdout
+        if result.stderr:
+            output += f"\nERROR: {result.stderr}"
+        
+        log_write(f"ADMIN COMMAND RESULT: {result.returncode}")
+        
+        return jsonify({
+            "output": output,
+            "returncode": result.returncode,
+            "success": result.returncode == 0
+        })
+        
+    except subprocess.TimeoutExpired:
+        error_msg = "Admin komut timeout (30 saniye)"
+        log_write(f"ADMIN TIMEOUT: {command}")
+        return jsonify({"error": error_msg}), 408
+    except Exception as e:
+        error_msg = f"Admin komut hatası: {str(e)}"
+        log_write(f"ADMIN ERROR: {error_msg}")
+        return jsonify({"error": error_msg}), 500
+
+@app.route("/admin/files", methods=["GET"])
+def admin_list_files():
+    """List files in directory with admin access"""
+    admin_token = request.headers.get("X-Admin-Token", "")
+    if not validate_admin_token(admin_token):
+        return jsonify({"error": "Unauthorized"}), 401
+    
+    try:
+        path = request.args.get("path", "/")
+        if not os.path.exists(path):
+            return jsonify({"error": "Path not found"}), 404
+        
+        files = []
+        for item in os.listdir(path):
+            item_path = os.path.join(path, item)
+            file_info = {
+                "name": item,
+                "path": item_path,
+                "type": "dir" if os.path.isdir(item_path) else "file",
+                "size": os.path.getsize(item_path) if os.path.isfile(item_path) else 0,
+                "modified": datetime.datetime.fromtimestamp(os.path.getmtime(item_path)).isoformat()
+            }
+            files.append(file_info)
+        
+        # Sort: directories first, then by name
+        files.sort(key=lambda x: (x["type"] != "dir", x["name"].lower()))
+        
+        return jsonify({"files": files, "current_path": path})
+        
+    except Exception as e:
+        log_write(f"Admin file list error: {e}")
+        return jsonify({"error": str(e)}), 500
+
+@app.route("/admin/logs/<log_type>", methods=["GET"])
+def admin_get_logs(log_type):
+    """Get system logs"""
+    admin_token = request.headers.get("X-Admin-Token", "")
+    if not validate_admin_token(admin_token):
+        return jsonify({"error": "Unauthorized"}), 401
+    
+    try:
+        if log_type == "rebel":
+            if os.path.exists(LOG_FILE):
+                with open(LOG_FILE, "r", encoding="utf-8") as f:
+                    # Get last 1000 lines
+                    lines = f.readlines()
+                    content = "".join(lines[-1000:])
+                    return content, 200, {'Content-Type': 'text/plain'}
+            else:
+                return "REBEL log dosyası bulunamadı.", 200, {'Content-Type': 'text/plain'}
+        
+        elif log_type == "system":
+            # Try to get system logs
+            try:
+                result = subprocess.run(
+                    ["journalctl", "-n", "500", "--no-pager"],
+                    capture_output=True,
+                    text=True,
+                    timeout=10
+                )
+                if result.returncode == 0:
+                    return result.stdout, 200, {'Content-Type': 'text/plain'}
+                else:
+                    return "Sistem logları alınamadı.", 200, {'Content-Type': 'text/plain'}
+            except:
+                return "Sistem log erişimi mevcut değil.", 200, {'Content-Type': 'text/plain'}
+        
+        else:
+            return jsonify({"error": "Invalid log type"}), 400
+            
+    except Exception as e:
+        log_write(f"Admin log error: {e}")
+        return jsonify({"error": str(e)}), 500
+
+@app.route("/admin/restart", methods=["POST"])
+def admin_restart():
+    """Restart REBEL AI system"""
+    admin_token = request.headers.get("X-Admin-Token", "")
+    if not validate_admin_token(admin_token):
+        return jsonify({"error": "Unauthorized"}), 401
+    
+    log_write("ADMIN RESTART: System restart initiated by admin")
+    
+    # Schedule restart after response
+    def restart_system():
+        import time
+        time.sleep(2)  # Give time for response to be sent
+        os.system("pkill -f gunicorn")  # This will cause workflow to restart
+    
+    import threading
+    threading.Thread(target=restart_system).start()
+    
+    return jsonify({"message": "System restart initiated"})
+
+@app.route("/admin/health", methods=["GET"])
+def admin_health():
+    """Comprehensive health check for admin"""
+    admin_token = request.headers.get("X-Admin-Token", "")
+    if not validate_admin_token(admin_token):
+        return jsonify({"error": "Unauthorized"}), 401
+    
+    try:
+        import psutil
+        
+        health_data = {
+            "timestamp": datetime.datetime.now().isoformat(),
+            "system": {
+                "cpu_percent": psutil.cpu_percent(interval=1),
+                "memory": {
+                    "total": psutil.virtual_memory().total,
+                    "available": psutil.virtual_memory().available,
+                    "percent": psutil.virtual_memory().percent
+                },
+                "disk": {
+                    "total": psutil.disk_usage('/').total,
+                    "free": psutil.disk_usage('/').free,
+                    "percent": psutil.disk_usage('/').percent
+                },
+                "processes": len(psutil.pids())
+            },
+            "rebel": {
+                "auth_enabled": bool(AUTH_TOKEN),
+                "admin_enabled": bool(ADMIN_TOKEN),
+                "ai_available": openai_client is not None,
+                "allowed_commands": len(ALLOWED_COMMANDS),
+                "log_file_exists": os.path.exists(LOG_FILE),
+                "history_file_exists": os.path.exists(HISTORY_FILE)
+            }
+        }
+        
+        return jsonify(health_data)
+        
+    except Exception as e:
+        log_write(f"Admin health check error: {e}")
+        return jsonify({"error": str(e)}), 500
 
 @app.route("/api/history", methods=["GET"])
 def get_history():

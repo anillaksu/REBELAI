@@ -163,3 +163,111 @@ OUTPUT:
 Linux 5e7b35c3ff73 6.2.16 #1-NixOS SMP PREEMPT_DYNAMIC Tue Jan  1 00:00:00 UTC 1980 x86_64 GNU/Linux
 
 
+[2025-09-14 19:12:55.301550] UNAUTHORIZED ACCESS ATTEMPT
+[2025-09-14 19:13:20.029581] User input: SELAM
+[2025-09-14 19:13:22.298336] Command Intelligence Error: Error code: 429 - {'error': {'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.', 'type': 'insufficient_quota', 'param': None, 'code': 'insufficient_quota'}}
+[2025-09-14 19:13:22.298740] Original commands: ['SELAM']
+[2025-09-14 19:13:22.298808] Optimized order: ['SELAM']
+[2025-09-14 19:13:22.299009] BLOCKED COMMAND: SELAM
+[2025-09-14 19:13:58.200784] User input: ls -la
+[2025-09-14 19:13:59.891022] Command Intelligence Error: Error code: 429 - {'error': {'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.', 'type': 'insufficient_quota', 'param': None, 'code': 'insufficient_quota'}}
+[2025-09-14 19:13:59.891168] Original commands: ['ls -la']
+[2025-09-14 19:13:59.891247] Optimized order: ['ls -la']
+[2025-09-14 19:13:59.901220] CMD: ls -la
+OUTPUT:
+total 120
+drwxr-xr-x 1 runner runner   286 Sep 14 19:06 .
+drwxrwxrwx 1 runner runner    46 Sep 14 17:43 ..
+drwxr-xr-x 1 runner runner   184 Sep 14 18:52 attached_assets
+drwxr-xr-x 1 runner runner    16 Sep 14 17:44 .cache
+-rw-r--r-- 1 runner runner   450 Sep 14 19:13 command_history.json
+drwxr-xr-x 1 runner runner   128 Sep 14 19:09 .git
+drwxr-xr-x 1 runner runner    10 Sep 14 17:43 .local
+-rw-r--r-- 1 runner runner 20557 Sep 14 19:06 main.py
+drwxr-xr-x 1 runner runner    40 Sep 14 19:06 __pycache__
+-rw-r--r-- 1 runner runner   211 Sep 14 19:04 pyproject.toml
+drwxr-xr-x 1 runner runner    86 Sep 14 17:44 .pythonlibs
+-rw-r--r-- 1 runner runner  8688 Sep 14 19:13 rebel_log.txt
+-rw-r--r-- 1 runner runner   607 Sep 14 19:03 .replit
+-rw-r--r-- 1 runner runner  2905 Sep 14 18:02 replit.md
+drwxr-xr-x 1 runner runner    20 Sep 14 19:02 templates
+drwxr-xr-x 1 runner runner    20 Sep 14 19:04 .upm
+-rw-r--r-- 1 runner runner 58136 Sep 14 19:04 uv.lock
+
+
+[2025-09-14 19:14:09.550015] User input: whoami
+[2025-09-14 19:14:11.676332] Command Intelligence Error: Error code: 429 - {'error': {'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.', 'type': 'insufficient_quota', 'param': None, 'code': 'insufficient_quota'}}
+[2025-09-14 19:14:11.676449] Original commands: ['whoami']
+[2025-09-14 19:14:11.676533] Optimized order: ['whoami']
+[2025-09-14 19:14:11.687612] CMD: whoami
+OUTPUT:
+runner
+
+
+[2025-09-14 19:14:18.221063] User input: df -h
+[2025-09-14 19:14:19.898642] Command Intelligence Error: Error code: 429 - {'error': {'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.', 'type': 'insufficient_quota', 'param': None, 'code': 'insufficient_quota'}}
+[2025-09-14 19:14:19.898774] Original commands: ['df -h']
+[2025-09-14 19:14:19.898835] Optimized order: ['df -h']
+[2025-09-14 19:14:19.921907] CMD: df -h
+OUTPUT:
+Filesystem                                               Size  Used Avail Use% Mounted on
+overlay                                                   50G   32G   16G  67% /
+tmpfs                                                     64M     0   64M   0% /dev
+/dev/disk/by-label/nixos                                  50G   32G   16G  67% /pid2
+/dev/nbd113                                               32G  9.0M   32G   1% /tmp
+tmpfs                                                     16G   39M   16G   1% /io
+overlay                                                   32G  9.0M   32G   1% /nix
+/dev/disk/by-id/google-nixmodules-617bba2-us-central1-c   15G   15G     0 100% /etc/nixmodules
+tmpfs                                                    8.0K     0  8.0K   0% /mnt/ruse
+shm                                                       64M     0   64M   0% /dev/shm
+overlay                                                   50G   32G   16G  67% /mnt/cacache/nix
+overlay                                                   50G   32G   16G  67% /mnt/cacache/nix/store
+devtmpfs                                                 3.2G     0  3.2G   0% /dev/tty
+tmpfs                                                     32G     0   32G   0% /proc/acpi
+tmpfs                                                     32G     0   32G   0% /proc/scsi
+tmpfs                                                     32G     0   32G   0% /sys/firmware
+overlay                                                   32G  9.0M   32G   1% /home/runner
+/dev/nbd34                                               256G   58M  254G   1% /home/runner/workspace
+/dev/nbd34                                               256G   58M  254G   1% /mnt/nix
+overlay                                                  256G   58M  254G   1% /nix/store
+
+
+[2025-09-14 19:14:35.201719] User input: ps aux
+[2025-09-14 19:14:36.783577] Command Intelligence Error: Error code: 429 - {'error': {'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.', 'type': 'insufficient_quota', 'param': None, 'code': 'insufficient_quota'}}
+[2025-09-14 19:14:36.783899] Original commands: ['ps aux']
+[2025-09-14 19:14:36.784226] Optimized order: ['ps aux']
+[2025-09-14 19:14:36.900669] CMD: ps aux
+OUTPUT:
+USER       PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND
+runner       1  0.1  0.0 2963648 50532 ?       Ssl  17:02   0:08 /nix/store/mzrby2ihiw6jrnpy281n1amfyn4y1rkq-pid1-0.0.1/bin/pid1
+runner      17  0.5  0.3 12089616 260248 ?     Sl   17:43   0:32 pid2 --no-deprecation --use-openssl-ca /pid2/bundles/0.0.1805/server.cjs --json-logs --start-timestamp=1757871804134 --socket-listener-fd=3
+runner      44  0.0  0.0   3984  2304 ?        S    17:43   0:00 nix-editor --return-output
+runner     665  0.0  0.0   2916  1920 ?        S    17:47   0:00 sh -c /nix/store/sgk3xs1ixrkrqpz6qqmnvmrwhspsk1i5-pyright-extended-2.0.13/bin/langserver.index.js --stdio
+runner     666  0.7  0.3 1082236 233780 ?      Sl   17:47   0:39 node /nix/store/sgk3xs1ixrkrqpz6qqmnvmrwhspsk1i5-pyright-extended-2.0.13/lib/langserver.index.js --stdio
+runner    7230  0.0  0.0  36568 25212 pts/0    Ss+  19:06   0:00 /nix/store/2lcqw1d28vklbk8ikiwad28iq2smwndv-python-wrapped-0.1.0/bin/python3 /home/runner/workspace/.pythonlibs/bin/gunicorn -w 2 -b 0.0.0.0:5000 --timeout 60 main:app
+runner    7242  0.1  0.0  78640 64552 pts/0    S+   19:06   0:00 /nix/store/2lcqw1d28vklbk8ikiwad28iq2smwndv-python-wrapped-0.1.0/bin/python3 /home/runner/workspace/.pythonlibs/bin/gunicorn -w 2 -b 0.0.0.0:5000 --timeout 60 main:app
+runner    7243  0.1  0.0  78628 65044 pts/0    S+   19:06   0:00 /nix/store/2lcqw1d28vklbk8ikiwad28iq2smwndv-python-wrapped-0.1.0/bin/python3 /home/runner/workspace/.pythonlibs/bin/gunicorn -w 2 -b 0.0.0.0:5000 --timeout 60 main:app
+runner    7708  0.0  0.0   5292  3200 ?        S    19:11   0:00 toml-editor -r
+runner    7716  0.0  0.0  10952  4480 ?        Rs   19:14   0:00 ps aux
+
+
+[2025-09-14 19:14:55.939392] User input: date
+[2025-09-14 19:14:57.612332] Command Intelligence Error: Error code: 429 - {'error': {'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.', 'type': 'insufficient_quota', 'param': None, 'code': 'insufficient_quota'}}
+[2025-09-14 19:14:57.613885] Original commands: ['date']
+[2025-09-14 19:14:57.613955] Optimized order: ['date']
+[2025-09-14 19:14:57.630420] CMD: date
+OUTPUT:
+Sun Sep 14 07:14:57 PM UTC 2025
+
+
+[2025-09-14 19:15:00.783820] User input: free -h
+[2025-09-14 19:15:02.577777] Command Intelligence Error: Error code: 429 - {'error': {'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.', 'type': 'insufficient_quota', 'param': None, 'code': 'insufficient_quota'}}
+[2025-09-14 19:15:02.577918] Original commands: ['free -h']
+[2025-09-14 19:15:02.577985] Optimized order: ['free -h']
+[2025-09-14 19:15:02.590313] CMD: free -h
+OUTPUT:
+               total        used        free      shared  buff/cache   available
+Mem:            62Gi        29Gi       5.3Gi        44Mi        28Gi        33Gi
+Swap:             0B          0B          0B
+
+
