@@ -27,7 +27,7 @@ outputType = "webview"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "export REBEL_AUTH_TOKEN='secure_production_token_2024' && python main.py"
+args = "export REBEL_AUTH_TOKEN='MySecure2024Token!' && python main.py"
 waitForPort = 5000
 
 [[ports]]
