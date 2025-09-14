@@ -1,8 +1,8 @@
 # Overview
 
-REBEL AI is a web-based command-line manager that provides a secure interface for executing system commands through a Flask web application. The system combines command execution capabilities with OpenAI-powered error analysis and implements security measures to prevent dangerous operations. It features a terminal-style web interface, intelligent command optimization, and comprehensive logging functionality.
+REBEL AI is a comprehensive web-based command-line manager that provides both user and administrator interfaces for executing system commands through a Flask web application. The system combines secure command execution capabilities with OpenAI-powered error analysis, intelligent command conversion (PowerShell, CMD, Turkish natural language), and a full-featured admin panel for system management.
 
-**Latest Update (September 14, 2025)**: Complete implementation with enhanced security, command optimization, and AI-powered error analysis. All security vulnerabilities addressed and production-ready for Replit deployment.
+**Latest Update (September 14, 2025)**: Complete implementation with dual-interface system - user terminal interface and comprehensive admin panel. Features enhanced security with dual-token authentication, root-level admin capabilities, file management, log monitoring, configuration management, and production-ready deployment with gunicorn.
 
 # User Preferences
 

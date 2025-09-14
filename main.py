@@ -404,6 +404,9 @@ def admin_execute():
     
     try:
         data = request.get_json()
+        if not data:
+            return jsonify({"error": "JSON data required"}), 400
+            
         command = data.get("command", "").strip()
         
         if not command:
@@ -435,11 +438,11 @@ def admin_execute():
         
     except subprocess.TimeoutExpired:
         error_msg = "Admin komut timeout (30 saniye)"
-        log_write(f"ADMIN TIMEOUT: {data.get('command', 'unknown')}")
+        log_write(f"ADMIN TIMEOUT: {command}")
         return jsonify({"error": error_msg}), 408
     except Exception as e:
         error_msg = f"Admin komut hatası: {str(e)}"
-        log_write(f"ADMIN ERROR: {error_msg} (command: {data.get('command', 'unknown') if 'data' in locals() else 'unknown'})")
+        log_write(f"ADMIN ERROR: {error_msg} (command: {command})")
         return jsonify({"error": error_msg}), 500
 
 @app.route("/admin/files", methods=["GET"])
@@ -658,7 +661,7 @@ def admin_upload_file():
         if not os.path.exists(target_path):
             return jsonify({"error": "Target path not found"}), 404
         
-        filename = file.filename
+        filename = file.filename or 'uploaded_file'
         file_path = os.path.join(target_path, filename)
         
         log_write(f"ADMIN UPLOAD: {file_path}")
@@ -668,6 +671,47 @@ def admin_upload_file():
         
     except Exception as e:
         log_write(f"Admin upload error: {e}")
+        return jsonify({"error": str(e)}), 500
+
+@app.route("/admin/logs/clear", methods=["POST"])
+def admin_clear_logs():
+    """Clear REBEL logs"""
+    admin_token = request.headers.get("X-Admin-Token", "")
+    if not validate_admin_token(admin_token):
+        return jsonify({"error": "Unauthorized"}), 401
+    
+    try:
+        if os.path.exists(LOG_FILE):
+            with open(LOG_FILE, "w", encoding="utf-8") as f:
+                f.write(f"[{datetime.datetime.now()}] ADMIN: Logs cleared by admin\n")
+            log_write("ADMIN: Log file cleared")
+            return jsonify({"message": "Logs cleared successfully"})
+        else:
+            return jsonify({"message": "No log file to clear"})
+    except Exception as e:
+        log_write(f"Admin clear logs error: {e}")
+        return jsonify({"error": str(e)}), 500
+
+@app.route("/admin/files/download", methods=["GET"])
+def admin_download_file():
+    """Download file"""
+    admin_token = request.headers.get("X-Admin-Token", "")
+    if not validate_admin_token(admin_token):
+        return jsonify({"error": "Unauthorized"}), 401
+    
+    try:
+        file_path = request.args.get("path", "")
+        if not file_path or not os.path.exists(file_path):
+            return jsonify({"error": "File not found"}), 404
+        
+        if os.path.isdir(file_path):
+            return jsonify({"error": "Cannot download directory"}), 400
+        
+        from flask import send_file
+        return send_file(file_path, as_attachment=True)
+        
+    except Exception as e:
+        log_write(f"Admin download error: {e}")
         return jsonify({"error": str(e)}), 500
 
 @app.route("/admin/config/update", methods=["POST"])

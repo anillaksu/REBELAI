@@ -271,3 +271,27 @@ Mem:            62Gi        29Gi       5.3Gi        44Mi        28Gi        33Gi
 Swap:             0B          0B          0B
 
 
+[2025-09-14 19:25:43.550444] User input: pwd
+[2025-09-14 19:25:45.727427] COMMAND INTELLIGENCE: PowerShell/CMD/Linux detected
+[2025-09-14 19:25:45.728170] Original: pwd
+[2025-09-14 19:25:45.728255] Converted: pwd
+[2025-09-14 19:25:45.728316] Explanation: Geçerli çalışma dizinini gösterir.
+[2025-09-14 19:25:45.728585] Original commands: ['pwd']
+[2025-09-14 19:25:45.728670] Optimized order: ['pwd']
+[2025-09-14 19:25:45.741347] CMD: pwd
+OUTPUT:
+/home/runner/workspace
+
+
+[2025-09-14 19:25:54.678561] User input: whoami
+[2025-09-14 19:25:56.165267] COMMAND INTELLIGENCE: NaturalLanguage detected
+[2025-09-14 19:25:56.165383] Original: whoami
+[2025-09-14 19:25:56.165438] Converted: whoami
+[2025-09-14 19:25:56.165506] Explanation: Kullanıcının kimliğini gösterir.
+[2025-09-14 19:25:56.165604] Original commands: ['whoami']
+[2025-09-14 19:25:56.165685] Optimized order: ['whoami']
+[2025-09-14 19:25:56.175269] CMD: whoami
+OUTPUT:
+runner
+
+
