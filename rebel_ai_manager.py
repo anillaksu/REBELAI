@@ -13,9 +13,13 @@ import datetime
 import shlex
 import signal
 import logging
+import hmac
+import hashlib
+import re
 from pathlib import Path
 from typing import Dict, Any, List, Optional, Tuple
 from flask import Flask, render_template, request, jsonify, send_file
+from functools import wraps
 try:
     import fcntl
 except ImportError:
@@ -54,6 +58,14 @@ class REBELAIManager:
         # Güvenlik kısıtlamaları
         self.allowed_commands = set(self.config.get('security_restrictions', {}).get('allowed_commands', []))
         self.blocked_commands = set(self.config.get('security_restrictions', {}).get('blocked_commands', []))
+        self.allowed_flags = self.config.get('security_restrictions', {}).get('allowed_flags', {})
+        
+        # Güvenlik regex'leri
+        self.DISALLOWED_CHARS = re.compile(r"[;&|`$()<>\n\r\x00-\x1f]")
+        self.MAX_COMMAND_LENGTH = 256
+        
+        # Güvenli çalışma dizini
+        self.execution_root = self.config.get('execution_root', os.getcwd())
         
         # Cache
         self.command_history = []
@@ -211,40 +223,114 @@ class REBELAIManager:
             print(f"⚠️ Log yazma hatası: {e}")
     
     def validate_token(self, token: str, is_admin: bool = False) -> bool:
-        """Token doğrulama"""
-        if is_admin:
-            return token == self.admin_token
-        else:
-            return token == self.auth_token
+        """Güvenli token doğrulama (constant-time comparison)"""
+        if not token:
+            return False
+        
+        expected_token = self.admin_token if is_admin else self.auth_token
+        if not expected_token:
+            return False
+        
+        # Constant-time comparison to prevent timing attacks
+        return hmac.compare_digest(str(token), str(expected_token))
+    
+    def _validate_user_input(self, user_input: str) -> None:
+        """Kullanıcı girdisini güvenlik açısından doğrula"""
+        if not user_input:
+            raise ValueError("Boş girdi")
+        
+        if len(user_input) > self.MAX_COMMAND_LENGTH:
+            raise ValueError(f"Girdi çok uzun (max {self.MAX_COMMAND_LENGTH} karakter)")
+        
+        # Kontrol karakterlerini kontrol et
+        if any(ord(c) < 32 for c in user_input if c not in '\t\n\r'):
+            raise ValueError("Geçersiz kontrol karakterleri")
+    
+    def _build_safe_argv(self, cmd_str: str) -> List[str]:
+        """Güvenli komut argümanları oluştur"""
+        if not cmd_str or len(cmd_str) > self.MAX_COMMAND_LENGTH:
+            raise ValueError("Geçersiz komut uzunluğu")
+        
+        if self.DISALLOWED_CHARS.search(cmd_str):
+            raise ValueError("Yasaklı karakterler tespit edildi")
+        
+        try:
+            argv = shlex.split(cmd_str, posix=(self.platform_name != 'windows'))
+        except ValueError as e:
+            raise ValueError(f"Komut ayrıştırma hatası: {e}")
+        
+        if not argv:
+            raise ValueError("Boş komut")
+        
+        # Temel komut kontrolü
+        base_command = Path(argv[0]).name
+        if base_command in self.blocked_commands:
+            raise ValueError(f"Yasaklı komut: {base_command}")
+        
+        if self.allowed_commands and base_command not in self.allowed_commands:
+            raise ValueError(f"İzinli komutlar listesinde değil: {base_command}")
+        
+        # Flag kontrolü
+        allowed_flags_for_cmd = self.allowed_flags.get(base_command, [])
+        for arg in argv[1:]:
+            if arg.startswith('-') and arg not in allowed_flags_for_cmd:
+                raise ValueError(f"İzinli flag listesinde değil: {arg}")
+        
+        return [base_command] + argv[1:]
+    
+    def _run_safe_command(self, argv: List[str]) -> Dict[str, Any]:
+        """Güvenli komut çalıştırma"""
+        # Güvenli çevre değişkenleri
+        safe_env = {
+            'PATH': '/usr/bin:/bin:/usr/local/bin' if self.platform_name != 'windows' else os.environ.get('PATH', ''),
+            'LANG': 'C.UTF-8',
+            'HOME': '/tmp' if self.platform_name != 'windows' else os.environ.get('TEMP', 'C:\\temp')
+        }
+        
+        try:
+            result = subprocess.run(
+                argv,
+                shell=False,  # Kritik güvenlik: shell=False
+                capture_output=True,
+                text=True,
+                timeout=15,  # Kısa timeout
+                env=safe_env,
+                cwd=self.execution_root
+            )
+            
+            return {
+                'stdout': result.stdout,
+                'stderr': result.stderr,
+                'returncode': result.returncode
+            }
+        except subprocess.TimeoutExpired:
+            raise RuntimeError("Komut timeout")
+        except Exception as e:
+            raise RuntimeError(f"Komut çalıştırma hatası: {e}")
     
     def is_command_safe(self, command: str) -> Tuple[bool, str]:
         """Komutun güvenli olup olmadığını kontrol et"""
-        if not command.strip():
-            return False, "Boş komut"
-        
-        # Komutun ilk kelimesini al
         try:
-            cmd_parts = shlex.split(command)
-            base_command = cmd_parts[0] if cmd_parts else ""
-        except ValueError:
-            return False, "Geçersiz komut sözdizimi"
-        
-        # Blocked komut kontrolü
-        if base_command in self.blocked_commands:
-            return False, f"Yasaklı komut: {base_command}"
-        
-        # Allowed komut kontrolü (eğer liste varsa)
-        if self.allowed_commands and base_command not in self.allowed_commands:
-            return False, f"İzinli komutlar listesinde değil: {base_command}"
-        
-        return True, "Güvenli komut"
+            self._validate_user_input(command)
+            self._build_safe_argv(command)
+            return True, "Güvenli komut"
+        except ValueError as e:
+            return False, str(e)
+        except Exception as e:
+            return False, f"Güvenlik kontrolü hatası: {e}"
     
     def execute_command(self, command: str, is_admin: bool = False) -> Dict[str, Any]:
-        """Komut çalıştır"""
+        """Güvenli komut çalıştırma"""
         start_time = datetime.datetime.now()
         
         try:
-            # Güvenlik kontrolü (admin değilse)
+            # Input validation
+            self._validate_user_input(command)
+            
+            # Güvenli argv oluştur
+            argv = self._build_safe_argv(command)
+            
+            # Admin değilse ekstra güvenlik kontrolü
             if not is_admin:
                 is_safe, safety_message = self.is_command_safe(command)
                 if not is_safe:
@@ -260,11 +346,8 @@ class REBELAIManager:
                     self._write_json_log(error_result)
                     return error_result
             
-            # Platform-specific komut çalıştırma
-            if self.platform_name == "windows":
-                result = self._execute_windows_command(command)
-            else:
-                result = self._execute_unix_command(command)
+            # Güvenli komut çalıştırma
+            result = self._run_safe_command(argv)
             
             # Sonucu hazırla
             end_time = datetime.datetime.now()
@@ -296,8 +379,11 @@ class REBELAIManager:
                 if len(self.command_history) > history_limit:
                     self.command_history = self.command_history[-history_limit:]
             
-            # JSON log yaz
-            self._write_json_log(command_result)
+            # JSON log yaz (token'ları loglamayın)
+            log_data = command_result.copy()
+            if 'token' in str(log_data).lower():
+                log_data['command'] = '[REDACTED - contains sensitive data]'
+            self._write_json_log(log_data)
             
             return command_result
             
@@ -308,7 +394,7 @@ class REBELAIManager:
                 'error': f"❌ Execution error: {str(e)}",
                 'command': command,
                 'platform': self.platform_name,
-                'execution_time': 0,
+                'execution_time': (datetime.datetime.now() - start_time).total_seconds(),
                 'timestamp': start_time.isoformat(),
                 'is_admin': is_admin
             }
@@ -366,8 +452,19 @@ class REBELAIManager:
         }
     
     def process_user_input(self, user_input: str, use_ai: bool = True, use_scheduler: bool = True) -> Dict[str, Any]:
-        """Kullanıcı girdisini işle"""
+        """Kullanıcı girdisini güvenli şekilde işle"""
         processing_start = datetime.datetime.now()
+        
+        try:
+            # Input validation
+            self._validate_user_input(user_input)
+        except ValueError as e:
+            return {
+                'user_input': user_input,
+                'error': f"Geçersiz girdi: {str(e)}",
+                'success': False,
+                'timestamp': processing_start.isoformat()
+            }
         
         # AI ile komut yorumlama
         interpreted_command = user_input
@@ -377,8 +474,21 @@ class REBELAIManager:
         if use_ai:
             try:
                 interpreted_command, ai_explanation, ai_confident = self.ai_engine.interpret_command(user_input)
+                
+                # AI güven seviyesi kontrolü
+                if not ai_confident:
+                    return {
+                        'user_input': user_input,
+                        'interpreted_command': interpreted_command,
+                        'ai_explanation': ai_explanation,
+                        'error': 'AI yorumlama güven seviyesi düşük',
+                        'success': False,
+                        'timestamp': processing_start.isoformat()
+                    }
+                    
             except Exception as e:
                 ai_explanation = f"AI hatası: {str(e)}"
+                ai_confident = False
         
         # Scheduler ile optimizasyon
         optimized_commands = [interpreted_command]
