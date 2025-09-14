@@ -40,18 +40,32 @@ class REBELGUIController:
                 'KDE': 'kde',
                 'XFCE': 'xfce',
                 'LXDE': 'lxde',
+                'LXQT': 'lxqt',
                 'Unity': 'unity',
                 'Cinnamon': 'cinnamon',
-                'MATE': 'mate'
+                'MATE': 'mate',
+                'Budgie': 'budgie',
+                'Pantheon': 'pantheon',
+                'i3': 'i3',
+                'Sway': 'sway'
             }),
             ('DESKTOP_SESSION', {
                 'gnome': 'gnome',
                 'kde': 'kde',
+                'plasma': 'kde',
                 'xfce': 'xfce',
                 'lxde': 'lxde',
+                'lxqt': 'lxqt',
                 'unity': 'unity',
                 'cinnamon': 'cinnamon',
-                'mate': 'mate'
+                'mate': 'mate',
+                'budgie': 'budgie',
+                'pantheon': 'pantheon',
+                'ubuntu': 'gnome',
+                'xubuntu': 'xfce',
+                'lubuntu': 'lxde',
+                'i3': 'i3',
+                'sway': 'sway'
             })
         ]
         
@@ -61,15 +75,24 @@ class REBELGUIController:
                 if key.upper() in value:
                     return desktop
         
-        # Fallback detection
-        if os.path.exists('/usr/bin/gnome-control-center'):
-            return 'gnome'
-        elif os.path.exists('/usr/bin/systemsettings5'):
-            return 'kde'
-        elif os.path.exists('/usr/bin/xfce4-settings-manager'):
-            return 'xfce'
-        else:
-            return 'unknown'
+        # Fallback detection via binary existence
+        fallback_bins = [
+            ('/usr/bin/gnome-control-center', 'gnome'),
+            ('/usr/bin/systemsettings5', 'kde'),
+            ('/usr/bin/systemsettings', 'kde'),
+            ('/usr/bin/xfce4-settings-manager', 'xfce'),
+            ('/usr/bin/mate-control-center', 'mate'),
+            ('/usr/bin/cinnamon-settings', 'cinnamon'),
+            ('/usr/bin/lxqt-config', 'lxqt'),
+            ('/usr/bin/budgie-control-center', 'budgie'),
+            ('/usr/bin/io.elementary.switchboard', 'pantheon')
+        ]
+        
+        for bin_path, desktop in fallback_bins:
+            if os.path.exists(bin_path):
+                return desktop
+        
+        return 'unknown'
     
     def _create_gui_mappings(self) -> Dict[str, Dict[str, Any]]:
         """GUI ayarları için komut haritalaması oluştur"""
@@ -79,6 +102,13 @@ class REBELGUIController:
                 "gnome": "gnome-control-center wifi",
                 "kde": "systemsettings5 kcm_networkmanagement",
                 "xfce": "nm-connection-editor",
+                "mate": "nm-connection-editor",
+                "cinnamon": "nm-connection-editor",
+                "lxqt": "nm-connection-editor",
+                "budgie": "gnome-control-center wifi",
+                "pantheon": "io.elementary.switchboard",
+                "i3": "nm-connection-editor",
+                "sway": "nm-connection-editor",
                 "generic": "nm-connection-editor",
                 "keywords": ["wifi", "wireless", "kablosuz", "ağ", "network", "internet"]
             },
@@ -86,6 +116,13 @@ class REBELGUIController:
                 "gnome": "gnome-control-center network",
                 "kde": "systemsettings5 kcm_networkmanagement",
                 "xfce": "nm-connection-editor",
+                "mate": "nm-connection-editor",
+                "cinnamon": "nm-connection-editor",
+                "lxqt": "nm-connection-editor",
+                "budgie": "gnome-control-center network",
+                "pantheon": "io.elementary.switchboard",
+                "i3": "nm-connection-editor",
+                "sway": "nm-connection-editor",
                 "generic": "nm-connection-editor",
                 "keywords": ["network", "ağ", "internet", "bağlantı", "connection"]
             },
@@ -95,6 +132,13 @@ class REBELGUIController:
                 "gnome": "gnome-control-center display",
                 "kde": "systemsettings5 kcm_displayconfiguration",
                 "xfce": "xfce4-display-settings",
+                "mate": "mate-display-properties",
+                "cinnamon": "cinnamon-settings display",
+                "lxqt": "lxqt-config-monitor",
+                "budgie": "gnome-control-center display",
+                "pantheon": "io.elementary.switchboard",
+                "i3": "arandr",
+                "sway": "wdisplays",
                 "generic": "xrandr --auto",
                 "keywords": ["display", "ekran", "monitor", "monitör", "çözünürlük", "resolution"]
             },
@@ -102,6 +146,13 @@ class REBELGUIController:
                 "gnome": "gnome-control-center display",
                 "kde": "systemsettings5 kcm_displayconfiguration",
                 "xfce": "xfce4-display-settings",
+                "mate": "mate-display-properties",
+                "cinnamon": "cinnamon-settings display",
+                "lxqt": "lxqt-config-monitor",
+                "budgie": "gnome-control-center display",
+                "pantheon": "io.elementary.switchboard",
+                "i3": "arandr",
+                "sway": "wdisplays",
                 "generic": "arandr",
                 "keywords": ["display settings", "ekran ayarları", "monitor settings"]
             },
@@ -111,6 +162,13 @@ class REBELGUIController:
                 "gnome": "gnome-control-center sound",
                 "kde": "systemsettings5 kcm_pulseaudio",
                 "xfce": "pavucontrol",
+                "mate": "mate-volume-control",
+                "cinnamon": "cinnamon-settings sound",
+                "lxqt": "pavucontrol-qt",
+                "budgie": "gnome-control-center sound",
+                "pantheon": "io.elementary.switchboard",
+                "i3": "pavucontrol",
+                "sway": "pavucontrol",
                 "generic": "pavucontrol",
                 "keywords": ["sound", "ses", "audio", "hoparlör", "speaker", "mikrofon", "microphone"]
             },
@@ -120,6 +178,13 @@ class REBELGUIController:
                 "gnome": "gnome-control-center power",
                 "kde": "systemsettings5 kcm_powerdevilprofilesconfig",
                 "xfce": "xfce4-power-manager-settings",
+                "mate": "mate-power-preferences",
+                "cinnamon": "cinnamon-settings power",
+                "lxqt": "lxqt-config-powermanagement",
+                "budgie": "gnome-control-center power",
+                "pantheon": "io.elementary.switchboard",
+                "i3": "xfce4-power-manager-settings",
+                "sway": "xfce4-power-manager-settings",
                 "generic": "xfce4-power-manager-settings",
                 "keywords": ["battery", "pil", "power", "güç", "enerji", "energy"]
             },
@@ -129,6 +194,13 @@ class REBELGUIController:
                 "gnome": "gnome-control-center bluetooth",
                 "kde": "systemsettings5 kcm_bluetooth",
                 "xfce": "blueman-manager",
+                "mate": "blueman-manager",
+                "cinnamon": "blueberry",
+                "lxqt": "blueman-manager",
+                "budgie": "gnome-control-center bluetooth",
+                "pantheon": "io.elementary.switchboard",
+                "i3": "blueman-manager",
+                "sway": "blueman-manager",
                 "generic": "blueman-manager",
                 "keywords": ["bluetooth", "kablosuz", "wireless"]
             },
@@ -138,6 +210,13 @@ class REBELGUIController:
                 "gnome": "gnome-control-center",
                 "kde": "systemsettings5",
                 "xfce": "xfce4-settings-manager",
+                "mate": "mate-control-center",
+                "cinnamon": "cinnamon-settings",
+                "lxqt": "lxqt-config",
+                "budgie": "budgie-control-center",
+                "pantheon": "io.elementary.switchboard",
+                "i3": "gnome-control-center",
+                "sway": "gnome-control-center",
                 "generic": "gnome-control-center",
                 "keywords": ["system", "sistem", "settings", "ayarlar", "control", "kontrol"]
             },

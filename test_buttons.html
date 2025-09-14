@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Button Fix</title>
+</head>
+<body>
+    <button onclick="alert('Button clicked: ' + typeof insertCommand)">Test insertCommand Function</button>
+    <script>
+        // Test if the function exists
+        if (typeof insertCommand === 'undefined') {
+            console.log('insertCommand is NOT defined');
+            
+            // Define it manually for testing
+            function insertCommand(command) {
+                console.log('Manual insertCommand called with:', command);
+                // Simulate sending to input field
+                alert('Would insert: ' + command);
+            }
+        } else {
+            console.log('insertCommand IS defined');
+        }
+        
+        // Test the function
+        setTimeout(() => {
+            console.log('Testing insertCommand...');
+            try {
+                insertCommand('ls -la');
+                console.log('insertCommand test successful');
+            } catch (e) {
+                console.error('insertCommand test failed:', e);
+            }
+        }, 1000);
+    </script>
+</body>
+</html>

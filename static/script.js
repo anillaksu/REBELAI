@@ -635,6 +635,13 @@ function executeCommand() {
 }
 
 function insertCommand(command) {
+    console.log('🎯 insertCommand called with:', command);
+    if (!terminal) {
+        console.error('❌ Terminal object not initialized!');
+        alert('Terminal henüz hazır değil. Lütfen sayfanın tamamen yüklenmesini bekleyin.');
+        return;
+    }
+    console.log('✅ Calling terminal.insertCommand...');
     terminal.insertCommand(command);
 }
 
@@ -680,7 +687,9 @@ function closeModal(modalId) {
 
 // Initialize terminal when page loads
 document.addEventListener('DOMContentLoaded', () => {
+    console.log('🔄 Initializing REBEL Terminal...');
     terminal = new REBELTerminal();
+    console.log('✅ REBEL Terminal initialized, global object available:', !!terminal);
 });
 
 // Handle page visibility changes
