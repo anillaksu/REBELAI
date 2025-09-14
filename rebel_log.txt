@@ -119,3 +119,38 @@ uv.lock
 [2025-09-14 18:32:35.824006] Authentication required: MySe***
 [2025-09-14 18:34:04.016197] Security enabled: 23 allowed commands
 [2025-09-14 18:34:04.016543] Authentication required: MySe***
+[2025-09-14 18:51:14.703148] User input: ls
+[2025-09-14 18:51:17.698828] Command Intelligence Error: Error code: 429 - {'error': {'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.', 'type': 'insufficient_quota', 'param': None, 'code': 'insufficient_quota'}}
+[2025-09-14 18:51:17.699181] Original commands: ['ls']
+[2025-09-14 18:51:17.701222] Optimized order: ['ls']
+[2025-09-14 18:51:17.717979] CMD: ls
+OUTPUT:
+attached_assets
+main.py
+pyproject.toml
+rebel_log.txt
+replit.md
+templates
+uv.lock
+
+
+[2025-09-14 18:51:33.711102] User input: deneme
+[2025-09-14 18:51:37.220366] Command Intelligence Error: Error code: 429 - {'error': {'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.', 'type': 'insufficient_quota', 'param': None, 'code': 'insufficient_quota'}}
+[2025-09-14 18:51:37.220618] Original commands: ['deneme']
+[2025-09-14 18:51:37.220880] Optimized order: ['deneme']
+[2025-09-14 18:51:37.221244] BLOCKED COMMAND: deneme
+[2025-09-14 18:55:32.209879] Security enabled: 23 allowed commands
+[2025-09-14 18:55:32.212296] Authentication required: MySe***
+[2025-09-14 18:59:24.925681] User input: pwd
+[2025-09-14 18:59:27.753165] Command Intelligence Error: Error code: 429 - {'error': {'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.', 'type': 'insufficient_quota', 'param': None, 'code': 'insufficient_quota'}}
+[2025-09-14 18:59:27.753736] Original commands: ['pwd']
+[2025-09-14 18:59:27.753852] Optimized order: ['pwd']
+[2025-09-14 18:59:27.764693] CMD: pwd
+OUTPUT:
+/home/runner/workspace
+
+
+[2025-09-14 18:59:49.204342] Security enabled: 23 allowed commands
+[2025-09-14 18:59:49.204473] Authentication required: Header-based token validation enabled
+[2025-09-14 19:03:01.524143] Security enabled: 23 allowed commands
+[2025-09-14 19:03:01.525977] Authentication required: Header-based token validation enabled

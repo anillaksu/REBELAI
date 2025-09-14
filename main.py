@@ -11,6 +11,8 @@ import os
 import datetime
 import shlex
 import signal
+import json
+import fcntl
 from openai import OpenAI
 
 app = Flask(__name__)
@@ -30,7 +32,7 @@ if not AUTH_TOKEN:
 ALLOWED_COMMANDS = {
     'ls', 'pwd', 'whoami', 'date', 'uname', 'cat', 'head', 'tail', 
     'wc', 'grep', 'find', 'echo', 'hostname', 'id', 'groups',
-    'df', 'du', 'free', 'uptime', 'ps', 'top', 'which', 'whereis'
+    'df', 'du', 'free', 'uptime', 'ps', 'which', 'whereis'
 }
 
 # Dangerous commands that are explicitly blocked
@@ -43,11 +45,91 @@ BLOCKED_COMMANDS = {
 }
 
 LOG_FILE = "rebel_log.txt"
+HISTORY_FILE = "command_history.json"
+FAVORITES_FILE = "favorites.json"
 
 def log_write(entry):
     """Write entry to rebel_log.txt with timestamp"""
     with open(LOG_FILE, "a", encoding="utf-8") as f:
         f.write(f"[{datetime.datetime.now()}] {entry}\n")
+
+def load_history():
+    """Load command history from file with file locking"""
+    try:
+        if os.path.exists(HISTORY_FILE):
+            with open(HISTORY_FILE, "r", encoding="utf-8") as f:
+                fcntl.flock(f.fileno(), fcntl.LOCK_SH)  # Shared lock for reading
+                try:
+                    return json.load(f)
+                finally:
+                    fcntl.flock(f.fileno(), fcntl.LOCK_UN)  # Release lock
+    except Exception as e:
+        log_write(f"History load error: {e}")
+    return []
+
+def save_to_history(command, result_summary):
+    """Save command to history with file locking"""
+    try:
+        # Load current history
+        history = load_history()
+        entry = {
+            "timestamp": datetime.datetime.now().isoformat(),
+            "command": command,
+            "summary": result_summary
+        }
+        history.insert(0, entry)  # Add to beginning
+        # Keep only last 50 commands
+        history = history[:50]
+        
+        # Write with exclusive lock
+        with open(HISTORY_FILE, "w", encoding="utf-8") as f:
+            fcntl.flock(f.fileno(), fcntl.LOCK_EX)  # Exclusive lock for writing
+            try:
+                json.dump(history, f, indent=2, ensure_ascii=False)
+            finally:
+                fcntl.flock(f.fileno(), fcntl.LOCK_UN)  # Release lock
+    except Exception as e:
+        log_write(f"History save error: {e}")
+
+def load_favorites():
+    """Load favorite commands from file with file locking"""
+    try:
+        if os.path.exists(FAVORITES_FILE):
+            with open(FAVORITES_FILE, "r", encoding="utf-8") as f:
+                fcntl.flock(f.fileno(), fcntl.LOCK_SH)  # Shared lock for reading
+                try:
+                    return json.load(f)
+                finally:
+                    fcntl.flock(f.fileno(), fcntl.LOCK_UN)  # Release lock
+    except Exception as e:
+        log_write(f"Favorites load error: {e}")
+    return []
+
+def save_favorite(name, command):
+    """Save a favorite command with file locking"""
+    try:
+        # Load current favorites
+        favorites = load_favorites()
+        entry = {
+            "name": name,
+            "command": command,
+            "timestamp": datetime.datetime.now().isoformat()
+        }
+        # Check if already exists
+        favorites = [f for f in favorites if f["command"] != command]
+        favorites.insert(0, entry)
+        
+        # Write with exclusive lock
+        with open(FAVORITES_FILE, "w", encoding="utf-8") as f:
+            fcntl.flock(f.fileno(), fcntl.LOCK_EX)  # Exclusive lock for writing
+            try:
+                json.dump(favorites, f, indent=2, ensure_ascii=False)
+            finally:
+                fcntl.flock(f.fileno(), fcntl.LOCK_UN)  # Release lock
+        return True
+    except Exception as e:
+        log_write(f"Favorite save error: {e}")
+        return False
 
 def validate_auth_token(token):
     """Validate authentication token"""
@@ -258,11 +340,137 @@ def home():
     """Main page with terminal interface"""
     return render_template("index.html")
 
+@app.route("/api/history", methods=["GET"])
+def get_history():
+    """Get command history"""
+    auth_token = request.headers.get("X-Auth-Token", "")
+    if not validate_auth_token(auth_token):
+        return jsonify({"error": "Unauthorized"}), 401
+    
+    return jsonify(load_history()[:20])  # Return last 20 commands
+
+@app.route("/api/favorites", methods=["GET"])
+def get_favorites():
+    """Get favorite commands"""
+    auth_token = request.headers.get("X-Auth-Token", "")
+    if not validate_auth_token(auth_token):
+        return jsonify({"error": "Unauthorized"}), 401
+    
+    return jsonify(load_favorites())
+
+@app.route("/api/favorites", methods=["POST"])
+def add_favorite():
+    """Add favorite command"""
+    auth_token = request.headers.get("X-Auth-Token", "")
+    if not validate_auth_token(auth_token):
+        return jsonify({"error": "Unauthorized"}), 401
+    
+    data = request.json or {}
+    name = data.get("name", "").strip()
+    command = data.get("command", "").strip()
+    
+    if not name or not command:
+        return jsonify({"error": "Name and command required"}), 400
+    
+    success = save_favorite(name, command)
+    if success:
+        return jsonify({"message": "Favorite saved"})
+    else:
+        return jsonify({"error": "Failed to save favorite"}), 500
+
+@app.route("/api/system-info", methods=["GET"])
+def get_system_info():
+    """Get system information"""
+    auth_token = request.headers.get("X-Auth-Token", "")
+    if not validate_auth_token(auth_token):
+        return jsonify({"error": "Unauthorized"}), 401
+    
+    try:
+        # Safe system information
+        info = {
+            "allowed_commands": len(ALLOWED_COMMANDS),
+            "blocked_commands": len(BLOCKED_COMMANDS),
+            "ai_enabled": openai_client is not None,
+            "uptime": datetime.datetime.now().isoformat(),
+            "history_count": len(load_history()),
+            "favorites_count": len(load_favorites())
+        }
+        return jsonify(info)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route("/healthz", methods=["GET"])
+def health_check():
+    """Health check endpoint for deployment verification"""
+    return jsonify({
+        "status": "healthy",
+        "timestamp": datetime.datetime.now().isoformat(),
+        "version": "1.0",
+        "ai_available": openai_client is not None
+    }), 200
+
+@app.route("/api/export", methods=["GET"])
+def export_data():
+    """Export command history or system data"""
+    auth_token = request.headers.get("X-Auth-Token", "")
+    if not validate_auth_token(auth_token):
+        return jsonify({"error": "Unauthorized"}), 401
+    
+    export_type = request.args.get("type", "history")
+    
+    try:
+        if export_type == "history":
+            history = load_history()
+            content = "REBEL AI CMD Manager - Komut Geçmişi\n"
+            content += "=" * 50 + "\n"
+            content += f"Dışa aktarma tarihi: {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n"
+            content += f"Toplam komut sayısı: {len(history)}\n\n"
+            
+            for i, item in enumerate(history, 1):
+                content += f"{i}. Komut: {item['command']}\n"
+                content += f"   Özet: {item['summary']}\n"
+                content += f"   Tarih: {datetime.datetime.fromisoformat(item['timestamp']).strftime('%Y-%m-%d %H:%M:%S')}\n"
+                content += "-" * 40 + "\n"
+            
+            response = app.response_class(
+                content,
+                mimetype='text/plain',
+                headers={"Content-Disposition": f"attachment; filename=rebel-ai-history-{datetime.datetime.now().strftime('%Y%m%d')}.txt"}
+            )
+            return response
+            
+        elif export_type == "favorites":
+            favorites = load_favorites()
+            content = "REBEL AI CMD Manager - Favori Komutlar\n"
+            content += "=" * 50 + "\n"
+            content += f"Dışa aktarma tarihi: {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n"
+            content += f"Toplam favori sayısı: {len(favorites)}\n\n"
+            
+            for i, item in enumerate(favorites, 1):
+                content += f"{i}. {item['name']}\n"
+                content += f"   Komut: {item['command']}\n"
+                content += f"   Eklenme tarihi: {datetime.datetime.fromisoformat(item['timestamp']).strftime('%Y-%m-%d %H:%M:%S')}\n"
+                content += "-" * 40 + "\n"
+            
+            response = app.response_class(
+                content,
+                mimetype='text/plain',
+                headers={"Content-Disposition": f"attachment; filename=rebel-ai-favorites-{datetime.datetime.now().strftime('%Y%m%d')}.txt"}
+            )
+            return response
+            
+        else:
+            return jsonify({"error": "Invalid export type"}), 400
+            
+    except Exception as e:
+        log_write(f"Export error: {e}")
+        return jsonify({"error": str(e)}), 500
+
 @app.route("/run", methods=["POST"])
 def run_cmd():
     """Process and execute commands with authentication and security"""
     # Check authentication token
-    auth_token = request.headers.get("X-Auth-Token") or (request.json.get("auth_token", "") if request.json else "")
+    auth_token = request.headers.get("X-Auth-Token", "")
     
     if not validate_auth_token(auth_token):
         log_write("UNAUTHORIZED ACCESS ATTEMPT")
@@ -304,6 +512,15 @@ def run_cmd():
             
         results.append(result)
 
+    # Save to command history
+    try:
+        result_summary = f"{len(commands)} komut çalıştırıldı"
+        if results and results[0].get("conversion_info"):
+            result_summary += " (AI çevirisi yapıldı)"
+        save_to_history(user_input, result_summary)
+    except Exception as e:
+        log_write(f"History save failed: {e}")
+
     return jsonify(results)
 
 if __name__ == "__main__":
@@ -314,13 +531,14 @@ if __name__ == "__main__":
     
     # Log security configuration
     log_write(f"Security enabled: {len(ALLOWED_COMMANDS)} allowed commands")
-    log_write(f"Authentication required: {AUTH_TOKEN[:4]}***")
+    log_write("Authentication required: Header-based token validation enabled")
     
-    # Production-ready Flask configuration
-    app.run(
-        host="0.0.0.0", 
-        port=5000, 
-        debug=False,
-        threaded=True,  # Handle multiple requests concurrently
-        use_reloader=False  # Disable auto-reload for production
-    )
+    # Only run Flask dev server if not using gunicorn (for development)
+    if __name__ == "__main__":
+        app.run(
+            host="0.0.0.0", 
+            port=5000, 
+            debug=False,
+            threaded=True,  # Handle multiple requests concurrently
+            use_reloader=False  # Disable auto-reload for production
+        )

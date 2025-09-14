@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>⚡ REBEL AI CMD</title>
+    <title>⚡ REBEL AI CMD Manager</title>
     <style>
         * {
             margin: 0;
@@ -11,65 +11,128 @@
             box-sizing: border-box;
         }
         
+        :root {
+            --primary-green: #0f0;
+            --dark-bg: #111;
+            --darker-bg: #000;
+            --accent-cyan: #0cf;
+            --accent-yellow: #ff0;
+            --error-red: #f44;
+            --success-green: #4f4;
+        }
+        
         body { 
-            background: #111; 
-            color: #0f0; 
+            background: var(--dark-bg);
+            color: var(--primary-green);
             font-family: 'Courier New', monospace;
-            padding: 20px;
             min-height: 100vh;
+            display: flex;
+            flex-direction: column;
         }
         
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-        
-        h2 {
+        .header {
+            background: var(--darker-bg);
+            padding: 15px 20px;
+            border-bottom: 2px solid var(--primary-green);
             text-align: center;
-            margin-bottom: 20px;
-            text-shadow: 0 0 10px #0f0;
         }
         
-        .input-section {
-            margin-bottom: 20px;
+        .header h1 {
+            text-shadow: 0 0 10px var(--primary-green);
+            margin-bottom: 5px;
         }
         
-        p {
+        .status-bar {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: var(--accent-cyan);
+            margin-top: 10px;
+        }
+        
+        .main-container {
+            display: flex;
+            flex: 1;
+            gap: 20px;
+            padding: 20px;
+        }
+        
+        .sidebar {
+            width: 300px;
+            background: var(--darker-bg);
+            border: 2px solid var(--primary-green);
+            border-radius: 8px;
+            padding: 15px;
+            max-height: calc(100vh - 160px);
+            overflow-y: auto;
+        }
+        
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .auth-section {
+            background: var(--darker-bg);
+            border: 2px solid var(--accent-yellow);
+            border-radius: 8px;
+            padding: 15px;
+        }
+        
+        .command-section {
+            background: var(--darker-bg);
+            border: 2px solid var(--primary-green);
+            border-radius: 8px;
+            padding: 15px;
+            flex: 1;
+        }
+        
+        .section-title {
+            color: var(--accent-cyan);
+            font-size: 14px;
+            font-weight: bold;
             margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
         
-        input {
-            width: 100%;
-            max-width: 600px;
-            padding: 8px 12px;
-            background: #000;
-            color: #0f0;
-            border: 2px solid #0f0;
-            border-radius: 4px;
+        input, button {
             font-family: 'Courier New', monospace;
             font-size: 14px;
         }
         
+        input {
+            width: 100%;
+            padding: 8px 12px;
+            background: var(--dark-bg);
+            color: var(--primary-green);
+            border: 1px solid var(--primary-green);
+            border-radius: 4px;
+            margin-bottom: 10px;
+        }
+        
         input:focus {
             outline: none;
-            box-shadow: 0 0 10px #0f0;
+            box-shadow: 0 0 10px var(--primary-green);
+            border-color: var(--accent-cyan);
         }
         
         button {
             padding: 8px 16px;
-            background: #0f0;
-            color: #000;
+            background: var(--primary-green);
+            color: var(--dark-bg);
             border: none;
             border-radius: 4px;
             cursor: pointer;
-            font-family: 'Courier New', monospace;
             font-weight: bold;
-            margin-left: 10px;
             transition: all 0.3s;
+            margin: 5px;
         }
         
-        button:hover {
-            background: #0c0;
+        button:hover:not(:disabled) {
+            background: var(--success-green);
             transform: scale(1.05);
         }
         
@@ -79,49 +142,89 @@
             transform: none;
         }
         
+        .btn-secondary {
+            background: var(--accent-cyan);
+            color: var(--dark-bg);
+        }
+        
+        .btn-danger {
+            background: var(--error-red);
+            color: white;
+        }
+        
+        .quick-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin: 10px 0;
+        }
+        
+        .quick-btn {
+            padding: 4px 8px;
+            font-size: 12px;
+            background: var(--accent-cyan);
+            color: var(--dark-bg);
+        }
+        
         #result {
-            background: #000;
+            background: var(--darker-bg);
             padding: 15px;
-            border: 2px solid #0f0;
-            border-radius: 4px;
-            margin-top: 20px;
-            min-height: 200px;
+            border: 2px solid var(--primary-green);
+            border-radius: 8px;
+            min-height: 300px;
             white-space: pre-wrap;
-            font-family: 'Courier New', monospace;
             font-size: 13px;
             line-height: 1.4;
             box-shadow: 0 0 20px rgba(0, 255, 0, 0.3);
+            overflow-y: auto;
+            max-height: 400px;
         }
         
-        .command-line {
-            color: #0ff;
+        .history-item, .favorite-item {
+            background: rgba(0, 255, 0, 0.1);
+            border: 1px solid var(--primary-green);
+            border-radius: 4px;
+            padding: 8px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .history-item:hover, .favorite-item:hover {
+            background: rgba(0, 255, 0, 0.2);
+            border-color: var(--accent-cyan);
+        }
+        
+        .item-command {
+            color: var(--accent-cyan);
             font-weight: bold;
+            margin-bottom: 5px;
         }
         
-        .output-section {
-            color: #0f0;
-            margin: 10px 0;
-        }
-        
-        .ai-suggestion {
-            color: #ff0;
-            background: rgba(255, 255, 0, 0.1);
-            padding: 10px;
-            border-left: 3px solid #ff0;
-            margin: 10px 0;
+        .item-meta {
+            color: #888;
+            font-size: 11px;
         }
         
         .conversion-info {
-            color: #0cf;
+            color: var(--accent-cyan);
             background: rgba(0, 204, 255, 0.1);
             padding: 10px;
-            border-left: 3px solid #0cf;
+            border-left: 3px solid var(--accent-cyan);
             margin: 10px 0;
             font-style: italic;
         }
         
+        .ai-suggestion {
+            color: var(--accent-yellow);
+            background: rgba(255, 255, 0, 0.1);
+            padding: 10px;
+            border-left: 3px solid var(--accent-yellow);
+            margin: 10px 0;
+        }
+        
         .loading {
-            color: #0ff;
+            color: var(--accent-cyan);
             animation: blink 1s infinite;
         }
         
@@ -130,58 +233,391 @@
             51%, 100% { opacity: 0.3; }
         }
         
-        .status {
+        .status-message {
             text-align: center;
             margin: 10px 0;
-            padding: 5px;
+            padding: 8px;
             border-radius: 4px;
+            font-size: 12px;
         }
         
-        .status.success {
+        .status-success {
             background: rgba(0, 255, 0, 0.2);
-            color: #0f0;
+            color: var(--success-green);
+            border: 1px solid var(--success-green);
         }
         
-        .status.error {
-            background: rgba(255, 0, 0, 0.2);
-            color: #f00;
+        .status-error {
+            background: rgba(255, 68, 68, 0.2);
+            color: var(--error-red);
+            border: 1px solid var(--error-red);
+        }
+        
+        .tabs {
+            display: flex;
+            border-bottom: 1px solid var(--primary-green);
+            margin-bottom: 15px;
+        }
+        
+        .tab {
+            padding: 8px 16px;
+            background: transparent;
+            border: none;
+            color: #888;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+        }
+        
+        .tab.active {
+            color: var(--primary-green);
+            border-bottom-color: var(--primary-green);
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .system-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            font-size: 12px;
+        }
+        
+        .stat-item {
+            background: rgba(0, 255, 0, 0.1);
+            padding: 8px;
+            border-radius: 4px;
+            text-align: center;
+        }
+        
+        .add-favorite-form {
+            display: none;
+            background: rgba(0, 204, 255, 0.1);
+            padding: 10px;
+            border-radius: 4px;
+            margin-top: 10px;
+        }
+        
+        .add-favorite-form input {
+            margin-bottom: 5px;
+        }
+        
+        @media (max-width: 768px) {
+            .main-container {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+                max-height: 300px;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h2>⚡ REBEL AI – Komut Yöneticisi ⚡</h2>
-        
-        <div class="input-section">
-            <p>🔐 Auth Token (Set REBEL_AUTH_TOKEN environment variable first):</p>
-            <p style="font-size: 12px; color: #888; margin-bottom: 10px;">💡 First set: export REBEL_AUTH_TOKEN='Enter your auth token here'</p>
-            <input id="authToken" type="password" placeholder="MySecure2024Token!" />
-            <p style="margin-top: 15px;">🧠 Akıllı Komut Yöneticisi (PowerShell, CMD, Doğal Dil destekli):</p>
-            <input id="cmd" placeholder="ör: Get-ChildItem ; dir ; dosyaları listele ; whoami ; sistem bilgisi" />
-            <button onclick="send()" id="runBtn">Çalıştır</button>
+    <div class="header">
+        <h1>⚡ REBEL AI – Komut Yöneticisi ⚡</h1>
+        <div class="status-bar">
+            <span id="connection-status">🔗 Bağlı</span>
+            <span id="ai-status">🧠 AI Aktif</span>
+            <span id="security-status">🔒 Güvenli</span>
+            <span id="system-time"></span>
+        </div>
+    </div>
+    
+    <div class="main-container">
+        <div class="sidebar">
+            <div class="tabs">
+                <button class="tab active" onclick="showTab('history')">Geçmiş</button>
+                <button class="tab" onclick="showTab('favorites')">Favoriler</button>
+                <button class="tab" onclick="showTab('system')">Sistem</button>
+            </div>
+            
+            <div id="history-tab" class="tab-content active">
+                <div class="section-title">📋 Komut Geçmişi</div>
+                <div id="history-list">Geçmiş yükleniyor...</div>
+            </div>
+            
+            <div id="favorites-tab" class="tab-content">
+                <div class="section-title">⭐ Favori Komutlar</div>
+                <div style="display: flex; gap: 5px; margin-bottom: 10px;">
+                    <button class="btn-secondary" onclick="toggleAddFavorite()">➕ Yeni Favori</button>
+                    <button class="btn-secondary" onclick="exportFavorites()">💾 Dışa Aktar</button>
+                </div>
+                <div class="add-favorite-form" id="add-favorite-form">
+                    <input type="text" id="favorite-name" placeholder="Favori adı" />
+                    <input type="text" id="favorite-command" placeholder="Komut" />
+                    <button onclick="saveFavorite()">Kaydet</button>
+                    <button class="btn-danger" onclick="toggleAddFavorite()">İptal</button>
+                </div>
+                <div id="favorites-list">Favoriler yükleniyor...</div>
+            </div>
+            
+            <div id="system-tab" class="tab-content">
+                <div class="section-title">📊 Sistem Bilgileri</div>
+                <div id="system-info" class="system-stats">
+                    <div class="stat-item">Bilgiler yükleniyor...</div>
+                </div>
+            </div>
         </div>
         
-        <div id="status" class="status" style="display: none;"></div>
-        <pre id="result">⚡ REBEL AI CMD Manager hazır.
-🔐 Auth token gerekli - REBEL_AUTH_TOKEN environment variable'ını ayarlayın.
-🧠 Akıllı komut desteği: PowerShell, CMD, ve doğal dil komutları otomatik Linux komutlarına çevrilir.
-⚡ Komutlar Dijkstra algoritması ile optimize edilir.</pre>
+        <div class="main-content">
+            <div class="auth-section">
+                <div class="section-title">🔐 Kimlik Doğrulama</div>
+                <p style="font-size: 12px; color: #888; margin-bottom: 10px;">
+                    💡 Önce REBEL_AUTH_TOKEN environment variable'ını ayarlayın
+                </p>
+                <input id="authToken" type="password" placeholder="Auth token'inizi girin" />
+            </div>
+            
+            <div class="command-section">
+                <div class="section-title">🧠 Akıllı Komut Terminal</div>
+                <p style="margin-bottom: 10px; color: var(--accent-cyan);">
+                    PowerShell, CMD ve doğal dil komutları desteklenir
+                </p>
+                
+                <div class="quick-actions">
+                    <button class="quick-btn" onclick="setCommand('ls -la')">📁 Dosya Listesi</button>
+                    <button class="quick-btn" onclick="setCommand('pwd')">📍 Mevcut Dizin</button>
+                    <button class="quick-btn" onclick="setCommand('whoami')">👤 Kim Benim</button>
+                    <button class="quick-btn" onclick="setCommand('uname -a')">💻 Sistem Bilgisi</button>
+                    <button class="quick-btn" onclick="setCommand('df -h')">💾 Disk Alanı</button>
+                    <button class="quick-btn" onclick="setCommand('ps aux')">⚙️ Procesler</button>
+                    <button class="quick-btn" onclick="setCommand('date')">🕐 Tarih/Saat</button>
+                    <button class="quick-btn" onclick="setCommand('free -h')">🧠 Bellek</button>
+                </div>
+                
+                <input id="cmd" placeholder="Komutunuzu yazın: Get-ChildItem, dir, dosyaları listele, ls -la..." />
+                <div style="display: flex; gap: 10px; margin-top: 10px;">
+                    <button onclick="executeCommand()" id="runBtn">⚡ Çalıştır</button>
+                    <button class="btn-secondary" onclick="clearOutput()">🗑️ Temizle</button>
+                    <button class="btn-secondary" onclick="exportResults()" id="exportBtn">💾 Geçmiş Dışa Aktar</button>
+                </div>
+                
+                <div id="status" class="status-message" style="display: none;"></div>
+                <pre id="result">⚡ REBEL AI CMD Manager hazır!
+🔐 Auth token girin ve komutlarınızı çalıştırmaya başlayın.
+🧠 Akıllı çeviri: PowerShell, CMD ve Türkçe komutlar desteklenir.
+⚡ Komutlar otomatik olarak optimize edilir.
+
+💡 Hızlı başlangıç örnekleri:
+• "Get-ChildItem" → ls -la
+• "dir" → ls -la  
+• "dosyaları listele" → ls -la
+• "kim benim" → whoami</pre>
+            </div>
+        </div>
     </div>
 
     <script>
         let isRunning = false;
+        let authToken = '';
+        let lastResults = [];
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            updateClock();
+            setInterval(updateClock, 1000);
+            document.getElementById("cmd").focus();
+            
+            // Load initial data
+            setTimeout(() => {
+                loadHistory();
+                loadFavorites();
+                loadSystemInfo();
+            }, 1000);
+        });
+        
+        function updateClock() {
+            document.getElementById('system-time').textContent = new Date().toLocaleTimeString();
+        }
+        
+        function showTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            
+            // Show selected tab
+            document.getElementById(tabName + '-tab').classList.add('active');
+            event.target.classList.add('active');
+            
+            // Load data for the tab
+            if (tabName === 'history') loadHistory();
+            else if (tabName === 'favorites') loadFavorites();
+            else if (tabName === 'system') loadSystemInfo();
+        }
+        
+        async function loadHistory() {
+            try {
+                const token = document.getElementById('authToken').value;
+                if (!token) return;
+                
+                const response = await fetch('/api/history', {
+                    headers: { 'X-Auth-Token': token }
+                });
+                
+                if (response.ok) {
+                    const history = await response.json();
+                    displayHistory(history);
+                }
+            } catch (error) {
+                console.error('History load error:', error);
+            }
+        }
+        
+        function displayHistory(history) {
+            const container = document.getElementById('history-list');
+            if (history.length === 0) {
+                container.innerHTML = '<div style="color: #888; text-align: center;">Henüz komut geçmişi yok</div>';
+                return;
+            }
+            
+            container.innerHTML = history.map(item => `
+                <div class="history-item" onclick="setCommand('${item.command.replace(/'/g, "\\'")}')">
+                    <div class="item-command">${item.command}</div>
+                    <div class="item-meta">${item.summary} • ${new Date(item.timestamp).toLocaleString()}</div>
+                </div>
+            `).join('');
+        }
+        
+        async function loadFavorites() {
+            try {
+                const token = document.getElementById('authToken').value;
+                if (!token) return;
+                
+                const response = await fetch('/api/favorites', {
+                    headers: { 'X-Auth-Token': token }
+                });
+                
+                if (response.ok) {
+                    const favorites = await response.json();
+                    displayFavorites(favorites);
+                }
+            } catch (error) {
+                console.error('Favorites load error:', error);
+            }
+        }
+        
+        function displayFavorites(favorites) {
+            const container = document.getElementById('favorites-list');
+            if (favorites.length === 0) {
+                container.innerHTML = '<div style="color: #888; text-align: center;">Henüz favori komut yok</div>';
+                return;
+            }
+            
+            container.innerHTML = favorites.map(item => `
+                <div class="favorite-item" onclick="setCommand('${item.command.replace(/'/g, "\\'")}')">
+                    <div class="item-command">${item.name}</div>
+                    <div style="color: var(--accent-cyan); font-size: 12px;">${item.command}</div>
+                    <div class="item-meta">${new Date(item.timestamp).toLocaleString()}</div>
+                </div>
+            `).join('');
+        }
+        
+        async function loadSystemInfo() {
+            try {
+                const token = document.getElementById('authToken').value;
+                if (!token) return;
+                
+                const response = await fetch('/api/system-info', {
+                    headers: { 'X-Auth-Token': token }
+                });
+                
+                if (response.ok) {
+                    const info = await response.json();
+                    displaySystemInfo(info);
+                }
+            } catch (error) {
+                console.error('System info load error:', error);
+            }
+        }
+        
+        function displaySystemInfo(info) {
+            const container = document.getElementById('system-info');
+            container.innerHTML = `
+                <div class="stat-item">
+                    <div style="color: var(--accent-cyan);">İzinli Komutlar</div>
+                    <div>${info.allowed_commands}</div>
+                </div>
+                <div class="stat-item">
+                    <div style="color: var(--error-red);">Engelli Komutlar</div>
+                    <div>${info.blocked_commands}</div>
+                </div>
+                <div class="stat-item">
+                    <div style="color: var(--accent-yellow);">AI Durumu</div>
+                    <div>${info.ai_enabled ? '✅ Aktif' : '❌ Pasif'}</div>
+                </div>
+                <div class="stat-item">
+                    <div style="color: var(--primary-green);">Geçmiş</div>
+                    <div>${info.history_count} komut</div>
+                </div>
+                <div class="stat-item" style="grid-column: 1 / -1;">
+                    <div style="color: var(--accent-cyan);">Sistem Zamanı</div>
+                    <div>${new Date(info.uptime).toLocaleString()}</div>
+                </div>
+            `;
+        }
+        
+        function setCommand(command) {
+            document.getElementById('cmd').value = command;
+            document.getElementById('cmd').focus();
+        }
+        
+        function toggleAddFavorite() {
+            const form = document.getElementById('add-favorite-form');
+            form.style.display = form.style.display === 'none' ? 'block' : 'none';
+        }
+        
+        async function saveFavorite() {
+            const name = document.getElementById('favorite-name').value.trim();
+            const command = document.getElementById('favorite-command').value.trim();
+            const token = document.getElementById('authToken').value;
+            
+            if (!name || !command) {
+                showStatus('Ad ve komut gerekli', 'error');
+                return;
+            }
+            
+            try {
+                const response = await fetch('/api/favorites', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Auth-Token': token
+                    },
+                    body: JSON.stringify({ name, command })
+                });
+                
+                if (response.ok) {
+                    showStatus('Favori kaydedildi', 'success');
+                    document.getElementById('favorite-name').value = '';
+                    document.getElementById('favorite-command').value = '';
+                    toggleAddFavorite();
+                    loadFavorites();
+                } else {
+                    showStatus('Favori kaydedilemedi', 'error');
+                }
+            } catch (error) {
+                showStatus('Hata oluştu', 'error');
+            }
+        }
         
         // Allow Enter key to run commands
         document.getElementById("cmd").addEventListener("keypress", function(event) {
             if (event.key === "Enter") {
-                send();
+                executeCommand();
             }
         });
         
         function showStatus(message, type) {
             const statusEl = document.getElementById("status");
             statusEl.textContent = message;
-            statusEl.className = `status ${type}`;
+            statusEl.className = `status-message status-${type}`;
             statusEl.style.display = "block";
             
             if (type === "success") {
@@ -191,7 +627,7 @@
             }
         }
         
-        async function send() {
+        async function executeCommand() {
             if (isRunning) return;
             
             const cmdInput = document.getElementById("cmd");
@@ -200,7 +636,7 @@
             const resultEl = document.getElementById("result");
             
             const cmd = cmdInput.value.trim();
-            const authToken = authInput.value.trim();
+            authToken = authInput.value.trim();
             
             if (!authToken) {
                 showStatus("Lütfen auth token girin", "error");
@@ -215,7 +651,7 @@
             // Set loading state
             isRunning = true;
             runBtn.disabled = true;
-            runBtn.textContent = "Çalıştırılıyor...";
+            runBtn.textContent = "⏳ Çalıştırılıyor...";
             resultEl.textContent = "Komutlar çalıştırılıyor...\n";
             resultEl.className = "loading";
             
@@ -234,6 +670,7 @@
                 }
                 
                 const data = await response.json();
+                lastResults = data;
                 
                 // Build output
                 let output = "";
@@ -261,25 +698,94 @@
                 resultEl.className = "";
                 showStatus("Komutlar başarıyla çalıştırıldı", "success");
                 
-                // Clear input
+                // Clear input and refresh data
                 cmdInput.value = "";
+                setTimeout(() => {
+                    loadHistory();
+                    loadSystemInfo();
+                }, 500);
                 
             } catch (error) {
-                resultEl.textContent = `Hata oluştu: ${error.message}`;
+                resultEl.textContent = `❌ Hata oluştu: ${error.message}`;
                 resultEl.className = "";
                 showStatus("Komut çalıştırma hatası", "error");
             } finally {
                 // Reset loading state
                 isRunning = false;
                 runBtn.disabled = false;
-                runBtn.textContent = "Çalıştır";
+                runBtn.textContent = "⚡ Çalıştır";
             }
         }
         
-        // Focus on input when page loads
-        window.addEventListener("load", function() {
-            document.getElementById("cmd").focus();
-        });
+        function clearOutput() {
+            document.getElementById('result').textContent = "⚡ Terminal temizlendi. Yeni komutlarınızı bekliyor...";
+            lastResults = [];
+        }
+        
+        async function exportResults() {
+            const token = document.getElementById('authToken').value;
+            if (!token) {
+                showStatus("Export için auth token gerekli", "error");
+                return;
+            }
+            
+            try {
+                // Export history
+                const response = await fetch('/api/export?type=history', {
+                    headers: { 'X-Auth-Token': token }
+                });
+                
+                if (response.ok) {
+                    const blob = await response.blob();
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `rebel-ai-history-${new Date().toISOString().slice(0,10)}.txt`;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+                    
+                    showStatus("Geçmiş başarıyla dışa aktarıldı", "success");
+                } else {
+                    showStatus("Export hatası", "error");
+                }
+            } catch (error) {
+                showStatus("Export hatası: " + error.message, "error");
+            }
+        }
+        
+        async function exportFavorites() {
+            const token = document.getElementById('authToken').value;
+            if (!token) {
+                showStatus("Export için auth token gerekli", "error");
+                return;
+            }
+            
+            try {
+                const response = await fetch('/api/export?type=favorites', {
+                    headers: { 'X-Auth-Token': token }
+                });
+                
+                if (response.ok) {
+                    const blob = await response.blob();
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `rebel-ai-favorites-${new Date().toISOString().slice(0,10)}.txt`;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+                    
+                    showStatus("Favoriler başarıyla dışa aktarıldı", "success");
+                } else {
+                    showStatus("Export hatası", "error");
+                }
+            } catch (error) {
+                showStatus("Export hatası: " + error.message, "error");
+            }
+        }
     </script>
 </body>
 </html>
