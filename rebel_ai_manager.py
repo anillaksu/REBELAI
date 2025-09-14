@@ -16,7 +16,11 @@ import logging
 from pathlib import Path
 from typing import Dict, Any, List, Optional, Tuple
 from flask import Flask, render_template, request, jsonify, send_file
-import fcntl
+try:
+    import fcntl
+except ImportError:
+    # Windows doesn't have fcntl, we'll handle this gracefully
+    fcntl = None
 
 # REBEL AI modülleri
 from ai_engine import REBELAIEngine
@@ -187,12 +191,22 @@ class REBELAIManager:
         
         try:
             with open(self.log_file, 'a', encoding='utf-8') as f:
-                fcntl.flock(f.fileno(), fcntl.LOCK_EX)
+                # File locking (Unix/Linux only)
+                if fcntl:
+                    try:
+                        fcntl.flock(f.fileno(), fcntl.LOCK_EX)
+                    except (OSError, AttributeError):
+                        pass  # Windows or unsupported platform
+                
                 try:
                     json.dump(log_data, f, ensure_ascii=False)
                     f.write('\\n')
                 finally:
-                    fcntl.flock(f.fileno(), fcntl.LOCK_UN)
+                    if fcntl:
+                        try:
+                            fcntl.flock(f.fileno(), fcntl.LOCK_UN)
+                        except (OSError, AttributeError):
+                            pass
         except Exception as e:
             print(f"⚠️ Log yazma hatası: {e}")
     

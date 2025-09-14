@@ -1,0 +1,76 @@
+Sen REBEL MODE’dasın. Bana eksiksiz çalışan bir proje klasörü ver. Bu proje cihazımda direkt çalışacak, Replit sadece kodu üretecek. Çıktıda tam dosya yapısı ve dosyaların içeriği olacak. Kodlar hatasız, direkt çalışır halde olsun.
+
+🎯 İstediğim Sistem: 
+**REBEL AI – Komut Yöneticisi (REBEL Core Manager)**
+
+📂 Proje Yapısı:
+RebelAI_Core_Manager/
+├── rebel_ai_manager.py        # Backend: FastAPI tabanlı komut yürütücü
+├── ai_engine.py               # AI entegrasyonu (API veya yerel model)
+├── dijkstra_scheduler.py      # Komut zinciri çözümleyici (Dijkstra)
+├── plugin_loader.py           # Plugin sistemi (plugins klasörünü tarar)
+├── rebel_config.yaml          # Ayarlar (API key, model yolu, log dosyaları)
+├── run.bat                    # Windows başlatıcı
+├── run.sh                     # Linux/Mac başlatıcı
+├── templates/index.html       # Terminal UI (Neon REBEL stili)
+├── static/style.css           # Tema
+├── static/script.js           # Terminal input + loglar
+├── plugins/                   # Yeni modüller için klasör
+│   ├── example_plugin.py      # Örnek plugin
+└── logs/                      # Log dosyaları
+    └── rebel_core.log
+
+⚡ Özellikler:
+1. **Çoklu Platform Uyum**: 
+   - Windows → CMD/PowerShell 
+   - Linux/Mac → Bash/Zsh
+   - Backend otomatik platform algılasın.
+
+2. **Auth Token**: 
+   - Ortam değişkeni `REBEL_AUTH_TOKEN` ile doğrulama.
+
+3. **AI Entegrasyonu**: 
+   - `ai_engine.py`:
+     - Eğer `rebel_config.yaml` içinde `api_key` varsa → OpenAI API veya Ollama/Oobabooga API çağır.
+     - Eğer `local_model_path` varsa → llama.cpp (GGUF) subprocess ile çağır.
+   - Kullanıcı doğal dilde yazınca AI yorumlayıp komuta çevirsin. 
+   - Emin değilse “⚠️ Bu komutu doğru anlamadım, ne yapmak istiyorsun?” diye sorsun.
+
+4. **Dijkstra Algoritması**:
+   - `dijkstra_scheduler.py` zincirleme komutları (örn: “dosyaları listele, zip yap, logla”) sıralar.
+   - Maliyet = hız + hata riski.
+   - En kısa/optimum yoldan çalıştırır.
+   - Hata olursa otomatik loglar ve durur.
+
+5. **Plugin Sistemi (YankıOS mantığı)**:
+   - `plugins/` klasöründeki `.py` dosyalarını otomatik tarasın.
+   - Her plugin kendi komutunu UI’da buton olarak göstersin.
+   - Örn: `wifi_scanner.py` eklenirse panelde “Wi-Fi Tara” çıkar.
+
+6. **Loglama ve Analiz**:
+   - Tüm çıktılar `logs/rebel_core.log` içine JSON formatında yazılsın:
+     `{timestamp, user_cmd, interpreted_cmd, platform, status, output, error}`
+   - UI’da “Logları Göster” butonu → logları listeler.
+   - Log analiz fonksiyonu → hataları özetler ve “Son 10 hata” raporu çıkarır.
+
+7. **Terminal UI (index.html)**:
+   - Neon yeşil/siyah tema.
+   - Input alanı + “Çalıştır, Temizle, Logları Göster, Pluginler” butonları.
+   - Komut geçmişi ve favoriler: `ls`, `whoami`, `systeminfo`, `df -h`, `ps aux`.
+   - Mobil uyumlu CSS.
+   - Easter Egg: `play rebel` yazınca ASCII mini oyun açılır (Starfield animasyon).
+
+8. **Run Scriptleri**:
+   - `run.bat`: Windows → `uvicorn rebel_ai_manager:app --reload --port 5000`
+   - `run.sh`: Linux/Mac → `chmod +x run.sh && ./run.sh`
+
+📦 Çıktı Formatı:
+- Bana tam proje klasörü yapısı ver.
+- Her dosyanın içeriğini eksiksiz doldur.
+- Kodlar hatasız olacak.
+- Ben cihazıma indirip direkt `run.bat` veya `run.sh` ile çalıştıracağım.
+
+⚠️ Kurallar:
+- Komutlar her zaman net çıktı versin, asla boş dönmesin.
+- Hata olursa otomatik logla ve raporla.
+- Kullanıcı doğal dilde karışık yazarsa AI önce yorumlasın, gerekirse sorular sorsun.
