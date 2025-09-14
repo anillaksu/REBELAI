@@ -435,11 +435,11 @@ def admin_execute():
         
     except subprocess.TimeoutExpired:
         error_msg = "Admin komut timeout (30 saniye)"
-        log_write(f"ADMIN TIMEOUT: {command}")
+        log_write(f"ADMIN TIMEOUT: {data.get('command', 'unknown')}")
         return jsonify({"error": error_msg}), 408
     except Exception as e:
         error_msg = f"Admin komut hatası: {str(e)}"
-        log_write(f"ADMIN ERROR: {error_msg}")
+        log_write(f"ADMIN ERROR: {error_msg} (command: {data.get('command', 'unknown') if 'data' in locals() else 'unknown'})")
         return jsonify({"error": error_msg}), 500
 
 @app.route("/admin/files", methods=["GET"])
@@ -576,6 +576,141 @@ def admin_health():
         
     except Exception as e:
         log_write(f"Admin health check error: {e}")
+        return jsonify({"error": str(e)}), 500
+
+@app.route("/admin/files/delete", methods=["POST"])
+def admin_delete_file():
+    """Delete file or directory"""
+    admin_token = request.headers.get("X-Admin-Token", "")
+    if not validate_admin_token(admin_token):
+        return jsonify({"error": "Unauthorized"}), 401
+    
+    try:
+        data = request.get_json()
+        file_path = data.get("path", "").strip()
+        
+        if not file_path or file_path == "/":
+            return jsonify({"error": "Invalid path"}), 400
+        
+        if not os.path.exists(file_path):
+            return jsonify({"error": "File not found"}), 404
+        
+        log_write(f"ADMIN DELETE: {file_path}")
+        
+        if os.path.isdir(file_path):
+            import shutil
+            shutil.rmtree(file_path)
+        else:
+            os.remove(file_path)
+        
+        return jsonify({"message": "File deleted successfully"})
+        
+    except Exception as e:
+        log_write(f"Admin delete error: {e}")
+        return jsonify({"error": str(e)}), 500
+
+@app.route("/admin/files/create", methods=["POST"])
+def admin_create_folder():
+    """Create new folder"""
+    admin_token = request.headers.get("X-Admin-Token", "")
+    if not validate_admin_token(admin_token):
+        return jsonify({"error": "Unauthorized"}), 401
+    
+    try:
+        data = request.get_json()
+        parent_path = data.get("parent", "/").strip()
+        folder_name = data.get("name", "").strip()
+        
+        if not folder_name:
+            return jsonify({"error": "Folder name required"}), 400
+        
+        new_path = os.path.join(parent_path, folder_name)
+        
+        if os.path.exists(new_path):
+            return jsonify({"error": "File/folder already exists"}), 400
+        
+        log_write(f"ADMIN CREATE FOLDER: {new_path}")
+        os.makedirs(new_path)
+        
+        return jsonify({"message": "Folder created successfully", "path": new_path})
+        
+    except Exception as e:
+        log_write(f"Admin create folder error: {e}")
+        return jsonify({"error": str(e)}), 500
+
+@app.route("/admin/files/upload", methods=["POST"])
+def admin_upload_file():
+    """Upload file"""
+    admin_token = request.headers.get("X-Admin-Token", "")
+    if not validate_admin_token(admin_token):
+        return jsonify({"error": "Unauthorized"}), 401
+    
+    try:
+        if 'file' not in request.files:
+            return jsonify({"error": "No file provided"}), 400
+        
+        file = request.files['file']
+        target_path = request.form.get('path', '/tmp') or '/tmp'
+        
+        if file.filename == '':
+            return jsonify({"error": "No file selected"}), 400
+        
+        if not os.path.exists(target_path):
+            return jsonify({"error": "Target path not found"}), 404
+        
+        filename = file.filename
+        file_path = os.path.join(target_path, filename)
+        
+        log_write(f"ADMIN UPLOAD: {file_path}")
+        file.save(file_path)
+        
+        return jsonify({"message": "File uploaded successfully", "path": file_path})
+        
+    except Exception as e:
+        log_write(f"Admin upload error: {e}")
+        return jsonify({"error": str(e)}), 500
+
+@app.route("/admin/config/update", methods=["POST"])
+def admin_update_config():
+    """Update system configuration"""
+    admin_token = request.headers.get("X-Admin-Token", "")
+    if not validate_admin_token(admin_token):
+        return jsonify({"error": "Unauthorized"}), 401
+    
+    try:
+        data = request.get_json()
+        config_type = data.get("type", "")
+        value = data.get("value", "")
+        
+        if config_type == "allowed_commands":
+            # Update allowed commands (this is runtime only, not persistent)
+            new_commands = set(cmd.strip() for cmd in value.split(',') if cmd.strip())
+            # Note: This doesn't persist across restarts
+            global ALLOWED_COMMANDS
+            ALLOWED_COMMANDS = new_commands
+            log_write(f"ADMIN CONFIG: Updated allowed commands to {len(new_commands)} items")
+            return jsonify({"message": f"Allowed commands updated ({len(new_commands)} commands)"})
+        
+        elif config_type == "openai_key":
+            # Update OpenAI key (runtime only)
+            global openai_client, OPENAI_API_KEY
+            OPENAI_API_KEY = value
+            if value:
+                try:
+                    openai_client = OpenAI(api_key=value)
+                    log_write("ADMIN CONFIG: OpenAI client updated")
+                    return jsonify({"message": "OpenAI key updated successfully"})
+                except Exception as e:
+                    return jsonify({"error": f"Invalid OpenAI key: {str(e)}"}), 400
+            else:
+                openai_client = None
+                return jsonify({"message": "OpenAI disabled"})
+        
+        else:
+            return jsonify({"error": "Unknown config type"}), 400
+            
+    except Exception as e:
+        log_write(f"Admin config update error: {e}")
         return jsonify({"error": str(e)}), 500
 
 @app.route("/api/history", methods=["GET"])

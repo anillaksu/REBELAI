@@ -651,6 +651,157 @@
             console.log('Success: ' + message);
         }
 
+        function deleteFile(filePath) {
+            if (confirm('Bu dosyayı silmek istediğinizden emin misiniz?')) {
+                adminRequest('/admin/files/delete', {
+                    method: 'POST',
+                    body: JSON.stringify({ path: filePath })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        showError(data.error);
+                    } else {
+                        showSuccess('Dosya silindi!');
+                        listFiles(); // Refresh file list
+                    }
+                })
+                .catch(error => showError('Silme hatası: ' + error.message));
+            }
+        }
+
+        function downloadFile(filePath) {
+            // Create download link
+            const link = document.createElement('a');
+            link.href = `/admin/files/download?path=${encodeURIComponent(filePath)}`;
+            link.download = filePath.split('/').pop();
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        function createFolder() {
+            const folderName = prompt('Yeni klasör adı:');
+            if (folderName) {
+                const currentPath = document.getElementById('file-path').value;
+                adminRequest('/admin/files/create', {
+                    method: 'POST',
+                    body: JSON.stringify({ 
+                        parent: currentPath,
+                        name: folderName 
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        showError(data.error);
+                    } else {
+                        showSuccess('Klasör oluşturuldu!');
+                        listFiles(); // Refresh file list
+                    }
+                })
+                .catch(error => showError('Klasör oluşturma hatası: ' + error.message));
+            }
+        }
+
+        function uploadFile() {
+            const fileInput = document.getElementById('file-upload');
+            const file = fileInput.files[0];
+            if (!file) {
+                showError('Lütfen bir dosya seçin');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('path', document.getElementById('file-path').value);
+
+            fetch('/admin/files/upload', {
+                method: 'POST',
+                headers: {
+                    'X-Admin-Token': adminToken
+                },
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    showError(data.error);
+                } else {
+                    showSuccess('Dosya yüklendi!');
+                    fileInput.value = ''; // Clear input
+                    listFiles(); // Refresh file list
+                }
+            })
+            .catch(error => showError('Yükleme hatası: ' + error.message));
+        }
+
+        function updateAllowedCommands() {
+            const commands = document.getElementById('allowed-commands').value;
+            adminRequest('/admin/config/update', {
+                method: 'POST',
+                body: JSON.stringify({
+                    type: 'allowed_commands',
+                    value: commands
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    showError(data.error);
+                } else {
+                    showSuccess(data.message);
+                }
+            })
+            .catch(error => showError('Güncelleme hatası: ' + error.message));
+        }
+
+        function updateOpenAIKey() {
+            const apiKey = document.getElementById('openai-key').value;
+            adminRequest('/admin/config/update', {
+                method: 'POST',
+                body: JSON.stringify({
+                    type: 'openai_key',
+                    value: apiKey
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    showError(data.error);
+                } else {
+                    showSuccess(data.message);
+                    document.getElementById('openai-key').value = ''; // Clear for security
+                }
+            })
+            .catch(error => showError('API key güncelleme hatası: ' + error.message));
+        }
+
+        function downloadLogs() {
+            const link = document.createElement('a');
+            link.href = `/admin/logs/rebel`;
+            link.download = `rebel-logs-${new Date().toISOString().slice(0,10)}.txt`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        function clearLogs() {
+            if (confirm('Tüm logları temizlemek istediğinizden emin misiniz?')) {
+                adminRequest('/admin/logs/clear', { method: 'POST' })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.error) {
+                            showError(data.error);
+                        } else {
+                            showSuccess('Loglar temizlendi!');
+                            viewRebelLogs(); // Refresh logs view
+                        }
+                    })
+                    .catch(error => showError('Log temizleme hatası: ' + error.message));
+            }
+        }
+
         // Auto-refresh dashboard every 30 seconds
         setInterval(() => {
             if (currentSection === 'dashboard' && adminToken) {
