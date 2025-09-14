@@ -116,9 +116,9 @@ class REBELAIManager:
         if self.platform_name == "windows":
             log_path = log_config.get('windows_log_path', 'D:\\rebel_logs\\cmd_manager_log.txt')
         elif self.platform_name == "linux":
-            log_path = log_config.get('linux_log_path', '/var/log/rebel_ai.log')
+            log_path = log_config.get('linux_log_path', 'rebel_log.txt')
         elif self.platform_name == "darwin":  # macOS
-            log_path = log_config.get('macos_log_path', '/var/log/rebel_ai.log')
+            log_path = log_config.get('macos_log_path', 'rebel_log.txt')
         else:
             log_path = log_config.get('fallback_log_path', './logs/rebel_ai.log')
         

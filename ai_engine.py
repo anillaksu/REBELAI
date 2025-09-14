@@ -87,6 +87,9 @@ class REBELAIEngine:
     def _interpret_with_openai(self, user_input: str) -> Tuple[str, str, bool]:
         """OpenAI ile komut yorumlama"""
         try:
+            if not self.openai_client:
+                return user_input, "OpenAI istemci mevcut değil", False
+                
             platform_shell = self._get_platform_shell()
             
             system_prompt = f"""Sen REBEL AI komut yorumlayıcısısın. Kullanıcının Türkçe/İngilizce komutunu {self.platform_name} ({platform_shell}) için uygun shell komutuna çevir.
@@ -114,7 +117,10 @@ KURALLAR:
                 response_format={"type": "json_object"}
             )
             
-            result = json.loads(response.choices[0].message.content)
+            content = response.choices[0].message.content
+            if not content:
+                return user_input, "OpenAI boş yanıt döndü", False
+            result = json.loads(content)
             return (
                 result.get('command', user_input),
                 result.get('explanation', 'AI yorumlaması'),

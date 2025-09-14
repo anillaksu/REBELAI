@@ -5,6 +5,7 @@ integrations = ["python_openai:1.0.0"]
 
 [nix]
 channel = "stable-25_05"
+packages = ["libyaml"]
 
 [workflows]
 runButton = "Project"
@@ -27,7 +28,7 @@ outputType = "webview"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "gunicorn -w 2 -b 0.0.0.0:5000 --timeout 60 main:app"
+args = "gunicorn -w 2 -b 0.0.0.0:5000 --timeout 60 rebel_ai_manager:app"
 waitForPort = 5000
 
 [[ports]]

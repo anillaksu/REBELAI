@@ -61,8 +61,8 @@ logging:
   enabled: true
   format: "json"  # json veya text
   windows_log_path: "D:\\rebel_logs\\cmd_manager_log.txt"
-  linux_log_path: "/var/log/rebel_ai.log"
-  macos_log_path: "/var/log/rebel_ai.log"
+  linux_log_path: "rebel_log.txt"
+  macos_log_path: "rebel_log.txt"
   fallback_log_path: "./logs/rebel_ai.log"
   max_log_size_mb: 100
   backup_count: 5

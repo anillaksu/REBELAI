@@ -1,0 +1,79 @@
+[2025-09-14 20:20:27.703587] User input: Ls
+[2025-09-14 20:20:31.206887] COMMAND INTELLIGENCE: PowerShell/CMD detected
+[2025-09-14 20:20:31.207015] Original: Ls
+[2025-09-14 20:20:31.207062] Converted: ls
+[2025-09-14 20:20:31.207139] Explanation: Dosya ve dizinleri listelemek için kullanılan bir komut.
+[2025-09-14 20:20:31.207232] Original commands: ['ls']
+[2025-09-14 20:20:31.207313] Optimized order: ['ls']
+[2025-09-14 20:20:31.215773] CMD: ls
+OUTPUT:
+ai_engine.py
+attached_assets
+dijkstra_scheduler.py
+logs
+pyproject.toml
+README.md
+RebelAI_Complete_Package.tar.gz
+rebel_ai_manager.py
+RebelAI_Package
+rebel_config.yaml
+rebel_log.txt
+replit.md
+requirements.txt
+run.bat
+run.sh
+static
+templates
+uv.lock
+
+
+[2025-09-14 20:20:53.163035] User input: Ben kimim?
+[2025-09-14 20:20:55.867864] COMMAND INTELLIGENCE: NaturalLanguage detected
+[2025-09-14 20:20:55.867968] Original: Ben kimim?
+[2025-09-14 20:20:55.868086] Converted: whoami
+[2025-09-14 20:20:55.868238] Explanation: Bu komut, mevcut kullanıcıyı tanımlar ve hangi kullanıcı hesabıyla oturum açtığınızı gösterir.
+[2025-09-14 20:20:55.868436] Original commands: ['whoami']
+[2025-09-14 20:20:55.868568] Optimized order: ['whoami']
+[2025-09-14 20:20:55.877926] CMD: whoami
+OUTPUT:
+runner
+
+
+[2025-09-14 20:21:18.794097] User input: Ben REBEL!
+[2025-09-14 20:21:22.555919] COMMAND INTELLIGENCE: NaturalLanguage detected
+[2025-09-14 20:21:22.556022] Original: Ben REBEL!
+[2025-09-14 20:21:22.556074] Converted: echo 'Ben REBEL!'
+[2025-09-14 20:21:22.556158] Explanation: Kullanıcının 'Ben REBEL!' ifadesini terminalde yazdırmak için echo komutu kullanıldı.
+[2025-09-14 20:21:22.556244] Original commands: ["echo 'Ben REBEL!'"]
+[2025-09-14 20:21:22.556316] Optimized order: ["echo 'Ben REBEL!'"]
+[2025-09-14 20:21:22.564955] CMD: echo 'Ben REBEL!'
+OUTPUT:
+Ben REBEL!
+
+
+[2025-09-14 20:21:42.239176] User input: pwd
+[2025-09-14 20:21:43.958037] COMMAND INTELLIGENCE: PowerShell/CMD/Linux detected
+[2025-09-14 20:21:43.958165] Original: pwd
+[2025-09-14 20:21:43.958229] Converted: pwd
+[2025-09-14 20:21:43.958309] Explanation: Geçerli çalışma dizinini gösterir.
+[2025-09-14 20:21:43.958474] Original commands: ['pwd']
+[2025-09-14 20:21:43.958532] Optimized order: ['pwd']
+[2025-09-14 20:21:43.966975] CMD: pwd
+OUTPUT:
+/home/runner/workspace
+
+
+[2025-09-14 20:21:57.026947] User input: uname -a
+[2025-09-14 20:22:01.448831] COMMAND INTELLIGENCE: Linux detected
+[2025-09-14 20:22:01.448943] Original: uname -a
+[2025-09-14 20:22:01.449000] Converted: uname -a
+[2025-09-14 20:22:01.449051] Explanation: Sistemin çekirdek bilgilerini ve diğer sistem bilgilerini gösterir.
+[2025-09-14 20:22:01.449164] Original commands: ['uname -a']
+[2025-09-14 20:22:01.449213] Optimized order: ['uname -a']
+[2025-09-14 20:22:01.458560] CMD: uname -a
+OUTPUT:
+Linux 5e7b35c3ff73 6.2.16 #1-NixOS SMP PREEMPT_DYNAMIC Tue Jan  1 00:00:00 UTC 1980 x86_64 GNU/Linux
+
+
+{"timestamp": "2025-09-14T20:26:39.582638", "event": "REBEL_AI_STARTUP", "platform": "linux", "shell": "bash", "ai_status": {"openai_available": true, "ollama_enabled": false, "oobabooga_enabled": false, "local_model_enabled": false, "platform": "linux", "shell": "bash"}, "scheduler_enabled": true}\n{"timestamp": "2025-09-14T20:26:39.582857", "event": "REBEL_AI_STARTUP", "platform": "linux", "shell": "bash", "ai_status": {"openai_available": true, "ollama_enabled": false, "oobabooga_enabled": false, "local_model_enabled": false, "platform": "linux", "shell": "bash"}, "scheduler_enabled": true}\n2025-09-14 20:26:39 - INFO - REBEL AI started on linux
+2025-09-14 20:26:39 - INFO - REBEL AI started on linux

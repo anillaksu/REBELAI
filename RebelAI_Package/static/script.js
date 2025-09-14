@@ -254,10 +254,17 @@ class REBELTerminal {
         
         const entry = document.createElement('div');
         entry.className = 'command-entry';
-        entry.innerHTML = `
-            <div class="command-input">${prompt} ${command}</div>
-            <div class="timestamp">${timestamp}</div>
-        `;
+        // Secure DOM manipulation instead of innerHTML
+        const commandInputDiv = document.createElement('div');
+        commandInputDiv.className = 'command-input';
+        commandInputDiv.textContent = `${prompt} ${command}`;
+        
+        const timestampDiv = document.createElement('div');
+        timestampDiv.className = 'timestamp';
+        timestampDiv.textContent = timestamp;
+        
+        entry.appendChild(commandInputDiv);
+        entry.appendChild(timestampDiv);
         
         this.terminalOutput.appendChild(entry);
         this.scrollToBottom();
@@ -270,7 +277,7 @@ class REBELTerminal {
         if (result.ai_explanation && result.ai_explanation !== 'AI kullanılmadı') {
             const aiDiv = document.createElement('div');
             aiDiv.className = 'ai-explanation';
-            aiDiv.innerHTML = `🤖 AI: ${result.ai_explanation}`;
+            aiDiv.textContent = `🤖 AI: ${result.ai_explanation}`;
             entry.appendChild(aiDiv);
         }
         
@@ -278,7 +285,7 @@ class REBELTerminal {
         if (result.optimization_info && result.optimization_info.optimization_applied) {
             const optDiv = document.createElement('div');
             optDiv.className = 'ai-explanation';
-            optDiv.innerHTML = `🧠 Scheduler: ${result.optimized_commands.length} komut optimize edildi`;
+            optDiv.textContent = `🧠 Scheduler: ${result.optimized_commands.length} komut optimize edildi`;
             entry.appendChild(optDiv);
         }
         
@@ -287,7 +294,7 @@ class REBELTerminal {
             if (result.optimized_commands.length > 1) {
                 const cmdDiv = document.createElement('div');
                 cmdDiv.className = 'command-input';
-                cmdDiv.innerHTML = `${index + 1}. ${result.optimized_commands[index]}`;
+                cmdDiv.textContent = `${index + 1}. ${result.optimized_commands[index]}`;
                 entry.appendChild(cmdDiv);
             }
             
@@ -312,7 +319,7 @@ class REBELTerminal {
             if (cmdResult.ai_error_analysis) {
                 const errorAnalysisDiv = document.createElement('div');
                 errorAnalysisDiv.className = 'ai-explanation';
-                errorAnalysisDiv.innerHTML = `🔍 AI Analiz: ${cmdResult.ai_error_analysis}`;
+                errorAnalysisDiv.textContent = `🔍 AI Analiz: ${cmdResult.ai_error_analysis}`;
                 entry.appendChild(errorAnalysisDiv);
             }
         });
@@ -327,7 +334,7 @@ class REBELTerminal {
         
         const outputDiv = document.createElement('div');
         outputDiv.className = `command-output command-${type}`;
-        outputDiv.innerHTML = `[${timestamp}] ${message}`;
+        outputDiv.textContent = `[${timestamp}] ${message}`;
         
         entry.appendChild(outputDiv);
         this.terminalOutput.appendChild(entry);

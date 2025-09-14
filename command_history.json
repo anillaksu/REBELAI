@@ -1,0 +1,27 @@
+[
+  {
+    "timestamp": "2025-09-14T20:22:01.458737",
+    "command": "uname -a",
+    "summary": "1 komut çalıştırıldı (AI çevirisi yapıldı)"
+  },
+  {
+    "timestamp": "2025-09-14T20:21:43.967442",
+    "command": "pwd",
+    "summary": "1 komut çalıştırıldı (AI çevirisi yapıldı)"
+  },
+  {
+    "timestamp": "2025-09-14T20:21:22.565254",
+    "command": "Ben REBEL!",
+    "summary": "1 komut çalıştırıldı (AI çevirisi yapıldı)"
+  },
+  {
+    "timestamp": "2025-09-14T20:20:55.878174",
+    "command": "Ben kimim?",
+    "summary": "1 komut çalıştırıldı (AI çevirisi yapıldı)"
+  },
+  {
+    "timestamp": "2025-09-14T20:20:31.215881",
+    "command": "Ls",
+    "summary": "1 komut çalıştırıldı (AI çevirisi yapıldı)"
+  }
+]

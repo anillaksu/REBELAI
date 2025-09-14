@@ -370,23 +370,29 @@ class REBELTerminal {
     }
     
     clearOutput() {
-        this.terminalOutput.innerHTML = `
-            <div class="welcome-message">
-                <div class="ascii-art">
-██████╗ ███████╗██████╗ ███████╗██╗         █████╗ ██╗
-██╔══██╗██╔════╝██╔══██╗██╔════╝██║        ██╔══██╗██║
-██████╔╝█████╗  ██████╔╝█████╗  ██║        ███████║██║
-██╔══██╗██╔══╝  ██╔══██╗██╔══╝  ██║        ██╔══██║██║
-██║  ██║███████╗██████╔╝███████╗███████╗   ██║  ██║██║
-╚═╝  ╚═╝╚══════╝╚═════╝ ╚══════╝╚══════╝   ╚═╝  ╚═╝╚═╝
-                </div>
-                <div class="welcome-text">
-                    🌟 <strong>REBEL AI Komut Yöneticisi'ne Hoş Geldiniz!</strong><br>
-                    🚀 Cross-Platform | 🤖 AI-Powered | 🧠 Dijkstra Optimized<br>
-                    💬 Doğal dilde komut yazın, AI yorumlayacak!
-                </div>
-            </div>
-        `;
+        // Secure way to add welcome message
+        this.terminalOutput.innerHTML = ''; // Clear first
+        const welcomeDiv = document.createElement('div');
+        welcomeDiv.className = 'welcome-message';
+        
+        const asciiDiv = document.createElement('div');
+        asciiDiv.className = 'ascii-art';
+        asciiDiv.textContent = '██████╗ ███████╗██████╗ ███████╗██╗         █████╗ ██╗\n██╔══██╗██╔════╝██╔══██╗██╔════╝██║        ██╔══██╗██║\n██████╔╝█████╗  ██████╔╝█████╗  ██║        ███████║██║\n██╔══██╗██╔══╝  ██╔══██╗██╔══╝  ██║        ██╔══██║██║\n██║  ██║███████╗██████╔╝███████╗███████╗   ██║  ██║██║\n╚═╝  ╚═╝╚══════╝╚═════╝ ╚══════╝╚══════╝   ╚═╝  ╚═╝╚═╝';
+        
+        const welcomeTextDiv = document.createElement('div');
+        welcomeTextDiv.className = 'welcome-text';
+        const strongEl = document.createElement('strong');
+        strongEl.textContent = 'REBEL AI Komut Yöneticisi\'ne Hoş Geldiniz!';
+        welcomeTextDiv.appendChild(document.createTextNode('🌟 '));
+        welcomeTextDiv.appendChild(strongEl);
+        welcomeTextDiv.appendChild(document.createElement('br'));
+        welcomeTextDiv.appendChild(document.createTextNode('🚀 Cross-Platform | 🤖 AI-Powered | 🧠 Dijkstra Optimized'));
+        welcomeTextDiv.appendChild(document.createElement('br'));
+        welcomeTextDiv.appendChild(document.createTextNode('💬 Doğal dilde komut yazın, AI yorumlayacak!'));
+        
+        welcomeDiv.appendChild(asciiDiv);
+        welcomeDiv.appendChild(welcomeTextDiv);
+        this.terminalOutput.appendChild(welcomeDiv);
     }
     
     showLoading() {
@@ -415,8 +421,10 @@ class REBELTerminal {
     displayHistory(history) {
         const historyList = document.getElementById('historyList');
         
-        // Clear existing content
-        historyList.innerHTML = '';
+        // Clear existing content securely
+        while (historyList.firstChild) {
+            historyList.removeChild(historyList.firstChild);
+        }
         
         if (history.length === 0) {
             const emptyDiv = document.createElement('div');
@@ -463,8 +471,10 @@ class REBELTerminal {
     displayFavorites(favorites) {
         const favoritesList = document.getElementById('favoritesList');
         
-        // Clear existing content
-        favoritesList.innerHTML = '';
+        // Clear existing content securely
+        while (favoritesList.firstChild) {
+            favoritesList.removeChild(favoritesList.firstChild);
+        }
         
         if (favorites.length === 0) {
             const emptyDiv = document.createElement('div');
@@ -492,8 +502,14 @@ class REBELTerminal {
         if (confirm('Komut geçmişini temizlemek istediğinizden emin misiniz?')) {
             this.commandHistory = [];
             this.historyIndex = -1;
-            document.getElementById('historyList').innerHTML = 
-                '<div class="history-empty">Geçmiş temizlendi</div>';
+            const historyList = document.getElementById('historyList');
+            while (historyList.firstChild) {
+                historyList.removeChild(historyList.firstChild);
+            }
+            const emptyDiv = document.createElement('div');
+            emptyDiv.className = 'history-empty';
+            emptyDiv.textContent = 'Geçmiş temizlendi';
+            historyList.appendChild(emptyDiv);
         }
     }
     

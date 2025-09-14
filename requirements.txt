@@ -18,3 +18,5 @@ psutil>=5.9.0
 
 # Optional: Local AI Model Support
 # llama-cpp-python>=0.2.0  # Uncomment if using local models
+pyyaml
+pyyaml
