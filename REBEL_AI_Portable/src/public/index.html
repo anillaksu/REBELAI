@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🚀 REBEL AI - Dijkstra Edition</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🚀</text></svg>">
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div id="loadingScreen" class="loading-screen">
+        <div class="loading-content">
+            <div class="logo">🚀 REBEL AI</div>
+            <div class="loading-text">Dijkstra Edition</div>
+            <div class="loading-spinner"></div>
+            <div class="loading-status">Initializing portable terminal...</div>
+        </div>
+    </div>
+
+    <!-- Main Application -->
+    <div id="mainApp" class="main-app" style="display: none;">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-left">
+                <div class="logo-main">🚀 REBEL AI</div>
+                <div class="edition">Dijkstra Edition</div>
+            </div>
+            <div class="header-center">
+                <div class="system-info" id="systemInfo">
+                    <span class="platform" id="platformInfo">Loading...</span>
+                    <span class="status" id="statusInfo">●</span>
+                </div>
+            </div>
+            <div class="header-right">
+                <button class="info-btn" id="hardwareBtn" title="Hardware Info">💻</button>
+                <button class="info-btn" id="knowledgeBtn" title="AI Knowledge">🧠</button>
+                <button class="info-btn" id="statsBtn" title="Statistics">📊</button>
+            </div>
+        </header>
+
+        <!-- Terminal Container -->
+        <main class="terminal-container">
+            <!-- Terminal Header -->
+            <div class="terminal-header">
+                <div class="terminal-controls">
+                    <span class="control-btn close"></span>
+                    <span class="control-btn minimize"></span>
+                    <span class="control-btn maximize"></span>
+                </div>
+                <div class="terminal-title">Portable AI Terminal</div>
+                <div class="optimization-indicator" id="optimizationIndicator">
+                    <span class="indicator-light"></span>
+                    <span class="indicator-text">Dijkstra: Active</span>
+                </div>
+            </div>
+
+            <!-- Terminal Content -->
+            <div class="terminal-content">
+                <!-- Output Area -->
+                <div class="terminal-output" id="terminalOutput">
+                    <div class="welcome-message">
+                        <div class="ascii-art">
+🚀 REBEL AI - Dijkstra Edition 🚀
+═══════════════════════════════════
+Portable AI Terminal with Self-Learning
+Cross-Platform | Optimized | Intelligent
+                        </div>
+                        <div class="welcome-text">
+                            ⚡ <strong>Welcome to REBEL AI Portable Terminal!</strong><br>
+                            🧠 AI-Powered Command Optimization<br>
+                            📚 Self-Learning Knowledge Database<br>
+                            🎯 Type commands or use quick actions below
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Input Area -->
+                <div class="terminal-input-container">
+                    <div class="terminal-prompt" id="terminalPrompt">rebel@portable:~$</div>
+                    <input type="text" class="terminal-input" id="commandInput" 
+                           placeholder="Enter your command (e.g., 'ls -la', 'ps aux', 'ping google.com')" 
+                           autocomplete="off" spellcheck="false">
+                    <button class="execute-btn" id="executeBtn" title="Execute Command (Enter)">
+                        ⚡ Execute
+                    </button>
+                </div>
+            </div>
+        </main>
+
+        <!-- Quick Actions Sidebar -->
+        <aside class="sidebar">
+            <!-- Quick Actions -->
+            <div class="sidebar-section">
+                <h3 class="section-title">🚀 Quick Actions</h3>
+                <div class="quick-actions">
+                    <button class="quick-btn" data-action="list_files" title="List Files">📁 Files</button>
+                    <button class="quick-btn" data-action="current_user" title="Current User">👤 Who Am I</button>
+                    <button class="quick-btn" data-action="current_directory" title="Current Directory">📍 Location</button>
+                    <button class="quick-btn" data-action="current_date" title="Date and Time">🕒 Date</button>
+                    <button class="quick-btn" data-action="disk_usage" title="Disk Usage">💾 Disk</button>
+                    <button class="quick-btn" data-action="processes" title="Running Processes">⚙️ Processes</button>
+                </div>
+            </div>
+
+            <!-- System Commands -->
+            <div class="sidebar-section">
+                <h3 class="section-title">💻 System</h3>
+                <div class="system-commands">
+                    <button class="system-btn" data-command="systeminfo" title="System Information">ℹ️ Info</button>
+                    <button class="system-btn" data-command="netstat -an" title="Network Status">🌐 Network</button>
+                    <button class="system-btn" data-command="top" title="System Monitor">📊 Monitor</button>
+                    <button class="system-btn" data-command="free -h" title="Memory Usage">🧠 Memory</button>
+                </div>
+            </div>
+
+            <!-- Learning Stats -->
+            <div class="sidebar-section">
+                <h3 class="section-title">📈 AI Learning</h3>
+                <div class="learning-stats" id="learningStats">
+                    <div class="stat-item">
+                        <span class="stat-label">Commands:</span>
+                        <span class="stat-value" id="commandCount">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Success Rate:</span>
+                        <span class="stat-value" id="successRate">0%</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Optimizations:</span>
+                        <span class="stat-value" id="optimizationCount">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Device ID:</span>
+                        <span class="stat-value" id="deviceId">Loading...</span>
+                    </div>
+                </div>
+                <button class="stats-refresh" id="refreshStats">🔄 Refresh</button>
+            </div>
+
+            <!-- Command History -->
+            <div class="sidebar-section">
+                <h3 class="section-title">📜 Recent Commands</h3>
+                <div class="command-history" id="commandHistory">
+                    <div class="history-empty">No commands executed yet</div>
+                </div>
+                <div class="history-controls">
+                    <button class="history-btn" id="clearHistory">🗑️ Clear</button>
+                    <button class="history-btn" id="exportHistory">💾 Export</button>
+                </div>
+            </div>
+        </aside>
+    </div>
+
+    <!-- Modals -->
+    <!-- Hardware Info Modal -->
+    <div id="hardwareModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>💻 Hardware Information</h3>
+                <button class="modal-close" data-modal="hardwareModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="hardware-info" id="hardwareInfo">
+                    <div class="loading">Loading hardware information...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Knowledge Modal -->
+    <div id="knowledgeModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>🧠 AI Knowledge Database</h3>
+                <button class="modal-close" data-modal="knowledgeModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="knowledge-info" id="knowledgeInfo">
+                    <div class="loading">Loading knowledge data...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Statistics Modal -->
+    <div id="statsModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>📊 System Statistics</h3>
+                <button class="modal-close" data-modal="statsModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="stats-info" id="statsInfo">
+                    <div class="loading">Loading statistics...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Context Menu -->
+    <div id="contextMenu" class="context-menu" style="display: none;">
+        <div class="context-item" data-action="copy">📋 Copy</div>
+        <div class="context-item" data-action="paste">📄 Paste</div>
+        <div class="context-item" data-action="clear">🗑️ Clear</div>
+        <div class="context-item" data-action="help">❓ Help</div>
+    </div>
+
+    <!-- Notification Container -->
+    <div id="notifications" class="notifications"></div>
+
+    <!-- Scripts -->
+    <script src="rebel_ui.js"></script>
+</body>
+</html>

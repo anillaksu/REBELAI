@@ -1,0 +1,29 @@
+{
+  "command_success_rates": {},
+  "platform_specific_commands": {
+    "windows": {
+      "list_files": ["dir", "ls"],
+      "current_user": ["whoami", "echo %USERNAME%"],
+      "current_directory": ["cd", "echo %CD%"],
+      "disk_usage": ["dir", "wmic logicaldisk get size,freespace,caption"],
+      "processes": ["tasklist", "wmic process list brief"]
+    },
+    "linux": {
+      "list_files": ["ls -la", "ls", "dir"],
+      "current_user": ["whoami", "id"],
+      "current_directory": ["pwd", "echo $PWD"],
+      "disk_usage": ["df -h", "lsblk"],
+      "processes": ["ps aux", "top"]
+    },
+    "darwin": {
+      "list_files": ["ls -la", "ls"],
+      "current_user": ["whoami", "id"],
+      "current_directory": ["pwd"],
+      "disk_usage": ["df -h"],
+      "processes": ["ps aux", "top"]
+    }
+  },
+  "fallback_routes": {},
+  "learned_optimizations": {},
+  "device_profiles": {}
+}
