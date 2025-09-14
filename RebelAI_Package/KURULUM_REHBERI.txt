@@ -1,0 +1,129 @@
+===============================================
+⚡ REBEL AI - KOMUT YÖNETİCİSİ
+===============================================
+Bilgisayarınızda Kurulum ve Çalıştırma Rehberi
+
+📋 GEREKSİNİMLER
+===============================================
+✅ Python 3.8 veya üzeri
+✅ İnternet bağlantısı (AI özellikleri için)
+✅ 50 MB boş disk alanı
+
+📦 KURULUM ADIMLARI
+===============================================
+
+1️⃣ PYTHON KURULUMU
+-------------------
+▶ Python yoksa indirin: https://www.python.org/downloads/
+▶ Kurulum sırasında "Add Python to PATH" seçeneğini işaretleyin
+
+2️⃣ DOSYALARI YERLEŞTİRİN
+------------------------
+▶ Bu klasörü bilgisayarınızda uygun bir yere kopyalayın
+▶ Örnek: C:\RebelAI_Package\ veya ~/RebelAI_Package/
+
+3️⃣ BAĞIMLILIKLARI YÜKLEYİN
+---------------------------
+▶ Komut satırını açın (CMD/Terminal)
+▶ Proje klasörüne gidin:
+   cd C:\RebelAI_Package\
+
+▶ Gerekli Python paketlerini yükleyin:
+   pip install -r requirements.txt
+
+4️⃣ ORTAM DEĞİŞKENLERİNİ AYARLAYIN
+----------------------------------
+🔐 GÜVENLİK TOKEN'LARINI OLUŞTURUN:
+
+Windows CMD:
+-----------
+set REBEL_AUTH_TOKEN=RebelUser123!@#
+set REBEL_ADMIN_TOKEN=RebelAdmin456!@#
+set OPENAI_API_KEY=your_openai_api_key_here
+
+Windows PowerShell:
+------------------
+$env:REBEL_AUTH_TOKEN = "RebelUser123!@#"
+$env:REBEL_ADMIN_TOKEN = "RebelAdmin456!@#"
+$env:OPENAI_API_KEY = "your_openai_api_key_here"
+
+Linux/macOS Terminal:
+--------------------
+export REBEL_AUTH_TOKEN="RebelUser123!@#"
+export REBEL_ADMIN_TOKEN="RebelAdmin456!@#"
+export OPENAI_API_KEY="your_openai_api_key_here"
+
+📝 NOT: Token'ları güçlü ve benzersiz yapın!
+
+5️⃣ ÇALIŞTIRIN
+--------------
+Windows:
+   run.bat
+
+Linux/macOS:
+   chmod +x run.sh
+   ./run.sh
+
+6️⃣ TARAYICIDA AÇIN
+------------------
+🌐 http://localhost:5000
+
+🔑 Giriş: REBEL_AUTH_TOKEN'ınızı girin
+
+===============================================
+🎯 KULLANIM ÖRNEKLERİ
+===============================================
+
+Terminal'de şunları yazabilirsiniz:
+• "dosyaları listele"
+• "ben kimim"
+• "sistem bilgisi"
+• "disk kullanımı"
+• "çalışan programlar"
+
+AI doğal dili anlayacak ve uygun komutlara çevirecek!
+
+===============================================
+🛠️ SORUN GİDERME
+===============================================
+
+❌ "Port 5000 kullanımda" hatası:
+   ▶ Başka bir program portu kullanıyor
+   ▶ Programı kapatın veya bilgisayarı yeniden başlatın
+
+❌ "Python bulunamadı" hatası:
+   ▶ Python PATH'e eklenmemiş
+   ▶ Python'u yeniden kurun, "Add to PATH" seçin
+
+❌ "ModuleNotFoundError" hatası:
+   ▶ pip install -r requirements.txt
+   ▶ İnternet bağlantınızı kontrol edin
+
+❌ "Token hatası":
+   ▶ Ortam değişkenlerini doğru ayarladığınızdan emin olun
+   ▶ Yeni terminal/cmd açıp tekrar deneyin
+
+❌ AI çalışmıyor:
+   ▶ OpenAI API key'inizi kontrol edin
+   ▶ API key geçerli ve kredisi olmalı
+
+===============================================
+📞 YARDIM
+===============================================
+
+🔧 Teknik Sorunlar:
+   ▶ rebel_config.yaml dosyasını kontrol edin
+   ▶ logs/ klasöründeki hata loglarına bakın
+
+🤖 AI Ayarları:
+   ▶ rebel_config.yaml içinden AI motorunu değiştirebilirsiniz
+   ▶ OpenAI, Ollama, yerel model seçenekleri var
+
+🛡️ Güvenlik:
+   ▶ Token'larınızı kimseyle paylaşmayın
+   ▶ Güçlü şifreler kullanın
+
+===============================================
+🎉 REBEL AI'ı bilgisayarınızda kullanmaya
+   başlamaya hazırsınız!
+===============================================

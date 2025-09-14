@@ -1,0 +1,20 @@
+# REBEL AI - Komut Yöneticisi Bağımlılıkları
+# ==========================================
+
+# Web Framework
+Flask>=2.3.0
+
+# YAML Configuration
+PyYAML>=6.0
+
+# AI Integration
+openai>=1.0.0
+
+# HTTP Requests
+requests>=2.31.0
+
+# System Information
+psutil>=5.9.0
+
+# Optional: Local AI Model Support
+# llama-cpp-python>=0.2.0  # Uncomment if using local models

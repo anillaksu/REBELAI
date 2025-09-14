@@ -1,0 +1,813 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>REBEL AI - Admin Panel</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Consolas', 'Monaco', 'Lucida Console', monospace;
+            background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
+            color: #00ff00;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .admin-header {
+            background: rgba(0,0,0,0.8);
+            border-bottom: 2px solid #00ff00;
+            padding: 15px 20px;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0,255,0,0.3);
+        }
+
+        .admin-title {
+            font-size: 24px;
+            font-weight: bold;
+            color: #00ff00;
+            text-shadow: 0 0 10px #00ff00;
+        }
+
+        .admin-subtitle {
+            font-size: 14px;
+            color: #888;
+            margin-top: 5px;
+        }
+
+        .auth-container {
+            max-width: 400px;
+            margin: 100px auto;
+            padding: 30px;
+            background: rgba(0,0,0,0.8);
+            border: 2px solid #00ff00;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 0 20px rgba(0,255,0,0.3);
+        }
+
+        .admin-container {
+            display: none;
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 20px;
+        }
+
+        .admin-nav {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .nav-btn {
+            padding: 10px 20px;
+            background: rgba(0,0,0,0.8);
+            border: 1px solid #00ff00;
+            color: #00ff00;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: all 0.3s;
+            font-family: inherit;
+        }
+
+        .nav-btn:hover, .nav-btn.active {
+            background: rgba(0,255,0,0.1);
+            box-shadow: 0 0 10px rgba(0,255,0,0.5);
+        }
+
+        .admin-section {
+            display: none;
+            background: rgba(0,0,0,0.8);
+            border: 1px solid #00ff00;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .admin-section.active {
+            display: block;
+        }
+
+        .section-title {
+            font-size: 18px;
+            color: #00ff00;
+            margin-bottom: 15px;
+            border-bottom: 1px solid #333;
+            padding-bottom: 10px;
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #00ff00;
+        }
+
+        .input-group input, .input-group select, .input-group textarea {
+            width: 100%;
+            padding: 10px;
+            background: rgba(0,0,0,0.8);
+            border: 1px solid #00ff00;
+            color: #00ff00;
+            border-radius: 5px;
+            font-family: inherit;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            background: rgba(0,255,0,0.1);
+            border: 1px solid #00ff00;
+            color: #00ff00;
+            cursor: pointer;
+            border-radius: 5px;
+            margin-right: 10px;
+            margin-bottom: 10px;
+            transition: all 0.3s;
+            font-family: inherit;
+        }
+
+        .btn:hover {
+            background: rgba(0,255,0,0.2);
+            box-shadow: 0 0 10px rgba(0,255,0,0.5);
+        }
+
+        .btn-danger {
+            border-color: #ff4444;
+            color: #ff4444;
+        }
+
+        .btn-danger:hover {
+            background: rgba(255,68,68,0.2);
+            box-shadow: 0 0 10px rgba(255,68,68,0.5);
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .info-card {
+            background: rgba(0,0,0,0.5);
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 15px;
+        }
+
+        .info-card h3 {
+            color: #00ff00;
+            margin-bottom: 10px;
+        }
+
+        .log-container {
+            background: rgba(0,0,0,0.9);
+            border: 1px solid #333;
+            border-radius: 5px;
+            padding: 15px;
+            max-height: 400px;
+            overflow-y: auto;
+            font-family: monospace;
+            white-space: pre-wrap;
+        }
+
+        .file-list {
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid #333;
+            border-radius: 5px;
+            padding: 10px;
+        }
+
+        .file-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px;
+            border-bottom: 1px solid #333;
+        }
+
+        .file-item:hover {
+            background: rgba(0,255,0,0.1);
+        }
+
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+
+        .status-running { background: #00ff00; }
+        .status-stopped { background: #ff4444; }
+        .status-warning { background: #ffaa00; }
+
+        .hidden {
+            display: none;
+        }
+
+        .error-message {
+            background: rgba(255,68,68,0.2);
+            border: 1px solid #ff4444;
+            color: #ff4444;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+
+        .success-message {
+            background: rgba(0,255,0,0.2);
+            border: 1px solid #00ff00;
+            color: #00ff00;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+
+        @media (max-width: 768px) {
+            .admin-nav {
+                flex-direction: column;
+            }
+            
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-header">
+        <div class="admin-title">🛡️ REBEL AI - Admin Panel</div>
+        <div class="admin-subtitle">Root Sistem Yönetimi - Tüm Yetkiler</div>
+    </div>
+
+    <!-- Authentication -->
+    <div class="auth-container" id="auth-container">
+        <h2>🔐 Admin Girişi</h2>
+        <div class="input-group">
+            <label for="adminToken">Admin Token:</label>
+            <input type="password" id="adminToken" placeholder="REBEL_ADMIN_TOKEN girin..." />
+        </div>
+        <button class="btn" onclick="authenticateAdmin()">🚀 Admin Paneline Giriş</button>
+        <div id="auth-error" class="error-message hidden">Geçersiz admin token!</div>
+    </div>
+
+    <!-- Admin Panel -->
+    <div class="admin-container" id="admin-container">
+        <!-- Navigation -->
+        <div class="admin-nav">
+            <button class="nav-btn active" onclick="showSection('dashboard')">📊 Dashboard</button>
+            <button class="nav-btn" onclick="showSection('system')">⚙️ Sistem</button>
+            <button class="nav-btn" onclick="showSection('files')">📁 Dosyalar</button>
+            <button class="nav-btn" onclick="showSection('users')">👥 Kullanıcılar</button>
+            <button class="nav-btn" onclick="showSection('logs')">📋 Loglar</button>
+            <button class="nav-btn" onclick="showSection('config')">🔧 Ayarlar</button>
+            <button class="nav-btn" onclick="showSection('security')">🔒 Güvenlik</button>
+        </div>
+
+        <!-- Dashboard Section -->
+        <div class="admin-section active" id="dashboard-section">
+            <div class="section-title">📊 Sistem Dashboard</div>
+            <div class="info-grid" id="dashboard-grid">
+                <div class="info-card">
+                    <h3>🖥️ Sistem Durumu</h3>
+                    <p><span class="status-indicator status-running"></span>Çalışıyor</p>
+                    <p>Uptime: <span id="system-uptime">Yükleniyor...</span></p>
+                </div>
+                <div class="info-card">
+                    <h3>🤖 AI Durumu</h3>
+                    <p id="ai-status">Yükleniyor...</p>
+                </div>
+                <div class="info-card">
+                    <h3>📊 Komut İstatistikleri</h3>
+                    <p>Geçmiş: <span id="history-count">0</span></p>
+                    <p>Favoriler: <span id="favorites-count">0</span></p>
+                </div>
+                <div class="info-card">
+                    <h3>🔒 Güvenlik</h3>
+                    <p>İzinli Komutlar: <span id="allowed-count">0</span></p>
+                    <p>Yasaklı Komutlar: <span id="blocked-count">0</span></p>
+                </div>
+            </div>
+            <button class="btn" onclick="refreshDashboard()">🔄 Yenile</button>
+        </div>
+
+        <!-- System Management Section -->
+        <div class="admin-section" id="system-section">
+            <div class="section-title">⚙️ Sistem Yönetimi</div>
+            
+            <div class="input-group">
+                <label>Sistem Komutları (Root Yetkili):</label>
+                <input type="text" id="admin-command" placeholder="Herhangi bir sistem komutu girin..." />
+                <button class="btn" onclick="executeAdminCommand()">⚡ Çalıştır</button>
+            </div>
+            
+            <div class="input-group">
+                <h3>🚀 Hizmet Yönetimi</h3>
+                <button class="btn" onclick="restartRebel()">🔄 REBEL AI Yeniden Başlat</button>
+                <button class="btn btn-danger" onclick="stopRebel()">⏹️ REBEL AI Durdur</button>
+                <button class="btn" onclick="checkSystemHealth()">🩺 Sistem Sağlık Kontrolü</button>
+            </div>
+
+            <div id="system-output" class="log-container">Sistem çıktısı burada görünecek...</div>
+        </div>
+
+        <!-- File Management Section -->
+        <div class="admin-section" id="files-section">
+            <div class="section-title">📁 Dosya Yönetimi</div>
+            
+            <div class="input-group">
+                <label>Dizin Yolu:</label>
+                <input type="text" id="file-path" value="/" placeholder="/home/user/" />
+                <button class="btn" onclick="listFiles()">📋 Listele</button>
+                <button class="btn" onclick="createFolder()">📁 Klasör Oluştur</button>
+            </div>
+
+            <div class="file-list" id="file-list">
+                Dosyalar yükleniyor...
+            </div>
+
+            <div class="input-group">
+                <label>Dosya Yükle:</label>
+                <input type="file" id="file-upload" />
+                <button class="btn" onclick="uploadFile()">📤 Yükle</button>
+            </div>
+        </div>
+
+        <!-- User Management Section -->
+        <div class="admin-section" id="users-section">
+            <div class="section-title">👥 Kullanıcı Yönetimi</div>
+            
+            <div class="input-group">
+                <label>Yeni Kullanıcı:</label>
+                <input type="text" id="new-username" placeholder="Kullanıcı adı" />
+                <input type="password" id="new-password" placeholder="Şifre" />
+                <button class="btn" onclick="createUser()">👤 Kullanıcı Oluştur</button>
+            </div>
+
+            <div class="input-group">
+                <h3>🔑 Token Yönetimi</h3>
+                <button class="btn" onclick="generateNewToken()">🔑 Yeni Token Oluştur</button>
+                <button class="btn btn-danger" onclick="revokeTokens()">❌ Tüm Tokenları İptal Et</button>
+            </div>
+
+            <div id="users-list" class="log-container">Kullanıcı listesi yükleniyor...</div>
+        </div>
+
+        <!-- Logs Section -->
+        <div class="admin-section" id="logs-section">
+            <div class="section-title">📋 Log Yönetimi</div>
+            
+            <div class="input-group">
+                <button class="btn" onclick="viewRebelLogs()">📋 REBEL Logları</button>
+                <button class="btn" onclick="viewSystemLogs()">🖥️ Sistem Logları</button>
+                <button class="btn" onclick="downloadLogs()">💾 Logları İndir</button>
+                <button class="btn btn-danger" onclick="clearLogs()">🗑️ Logları Temizle</button>
+            </div>
+
+            <div id="logs-content" class="log-container">Log içeriği yükleniyor...</div>
+        </div>
+
+        <!-- Configuration Section -->
+        <div class="admin-section" id="config-section">
+            <div class="section-title">🔧 Sistem Ayarları</div>
+            
+            <div class="input-group">
+                <label>İzinli Komutlar (Virgülle Ayırın):</label>
+                <textarea id="allowed-commands" rows="3" placeholder="ls, pwd, whoami..."></textarea>
+                <button class="btn" onclick="updateAllowedCommands()">💾 Güncelle</button>
+            </div>
+
+            <div class="input-group">
+                <label>OpenAI API Key:</label>
+                <input type="password" id="openai-key" placeholder="sk-..." />
+                <button class="btn" onclick="updateOpenAIKey()">🔑 Güncelle</button>
+            </div>
+
+            <div class="input-group">
+                <h3>🎛️ Sistem Parametreleri</h3>
+                <label>Komut Timeout (saniye):</label>
+                <input type="number" id="command-timeout" value="15" />
+                <button class="btn" onclick="updateTimeout()">⏱️ Güncelle</button>
+            </div>
+        </div>
+
+        <!-- Security Section -->
+        <div class="admin-section" id="security-section">
+            <div class="section-title">🔒 Güvenlik Yönetimi</div>
+            
+            <div class="input-group">
+                <h3>🛡️ Güvenlik Durumu</h3>
+                <button class="btn" onclick="securityScan()">🔍 Güvenlik Taraması</button>
+                <button class="btn" onclick="checkIntruders()">👮 Yetkisiz Giriş Kontrolü</button>
+                <button class="btn" onclick="backupSystem()">💾 Sistem Yedeği Al</button>
+            </div>
+
+            <div class="input-group">
+                <h3>🚫 IP Yasağı</h3>
+                <input type="text" id="ban-ip" placeholder="192.168.1.100" />
+                <button class="btn btn-danger" onclick="banIP()">🚫 IP Yasakla</button>
+            </div>
+
+            <div id="security-status" class="log-container">Güvenlik durumu yükleniyor...</div>
+        </div>
+    </div>
+
+    <script>
+        let adminToken = '';
+        let currentSection = 'dashboard';
+
+        function authenticateAdmin() {
+            const token = document.getElementById('adminToken').value;
+            if (!token) {
+                showError('Token gerekli!');
+                return;
+            }
+
+            adminToken = token;
+            
+            // Test admin token with backend
+            fetch('/admin/validate', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Admin-Token': token
+                },
+                body: JSON.stringify({ token })
+            })
+            .then(response => {
+                if (response.ok) {
+                    document.getElementById('auth-container').style.display = 'none';
+                    document.getElementById('admin-container').style.display = 'block';
+                    loadDashboard();
+                } else {
+                    showError('Geçersiz admin token!');
+                }
+            })
+            .catch(error => {
+                showError('Bağlantı hatası: ' + error.message);
+            });
+        }
+
+        function showSection(sectionName) {
+            // Hide all sections
+            document.querySelectorAll('.admin-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            // Remove active from all nav buttons
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Show selected section
+            document.getElementById(sectionName + '-section').classList.add('active');
+            event.target.classList.add('active');
+            
+            currentSection = sectionName;
+            
+            // Load section data
+            switch(sectionName) {
+                case 'dashboard':
+                    loadDashboard();
+                    break;
+                case 'system':
+                    loadSystemInfo();
+                    break;
+                case 'files':
+                    listFiles();
+                    break;
+                case 'users':
+                    loadUsers();
+                    break;
+                case 'logs':
+                    viewRebelLogs();
+                    break;
+                case 'config':
+                    loadConfig();
+                    break;
+                case 'security':
+                    loadSecurity();
+                    break;
+            }
+        }
+
+        function adminRequest(url, options = {}) {
+            const defaultOptions = {
+                headers: {
+                    'X-Admin-Token': adminToken,
+                    'Content-Type': 'application/json',
+                    ...options.headers
+                }
+            };
+            return fetch(url, { ...defaultOptions, ...options });
+        }
+
+        function loadDashboard() {
+            adminRequest('/admin/dashboard')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('system-uptime').textContent = data.uptime || 'Unknown';
+                    document.getElementById('ai-status').innerHTML = data.ai_available ? 
+                        '<span class="status-indicator status-running"></span>Aktif' : 
+                        '<span class="status-indicator status-stopped"></span>Pasif';
+                    document.getElementById('history-count').textContent = data.history_count || 0;
+                    document.getElementById('favorites-count').textContent = data.favorites_count || 0;
+                    document.getElementById('allowed-count').textContent = data.allowed_commands || 0;
+                    document.getElementById('blocked-count').textContent = data.blocked_commands || 0;
+                })
+                .catch(error => showError('Dashboard yüklenemedi: ' + error.message));
+        }
+
+        function refreshDashboard() {
+            loadDashboard();
+            showSuccess('Dashboard yenilendi!');
+        }
+
+        function executeAdminCommand() {
+            const command = document.getElementById('admin-command').value;
+            if (!command) return;
+
+            adminRequest('/admin/execute', {
+                method: 'POST',
+                body: JSON.stringify({ command })
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('system-output').textContent = data.output || data.error || 'Komut çalıştırıldı';
+                document.getElementById('admin-command').value = '';
+            })
+            .catch(error => showError('Komut hatası: ' + error.message));
+        }
+
+        function restartRebel() {
+            if (confirm('REBEL AI yeniden başlatılsın mı?')) {
+                adminRequest('/admin/restart', { method: 'POST' })
+                    .then(response => response.json())
+                    .then(data => showSuccess('REBEL AI yeniden başlatılıyor...'))
+                    .catch(error => showError('Restart hatası: ' + error.message));
+            }
+        }
+
+        function stopRebel() {
+            if (confirm('REBEL AI durdurulsun mu? Bu işlem hizmeti tamamen kapatır!')) {
+                adminRequest('/admin/stop', { method: 'POST' })
+                    .then(response => response.json())
+                    .then(data => showSuccess('REBEL AI durduruluyor...'))
+                    .catch(error => showError('Stop hatası: ' + error.message));
+            }
+        }
+
+        function checkSystemHealth() {
+            adminRequest('/admin/health')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('system-output').textContent = JSON.stringify(data, null, 2);
+                })
+                .catch(error => showError('Sağlık kontrolü hatası: ' + error.message));
+        }
+
+        function listFiles() {
+            const path = document.getElementById('file-path').value || '/';
+            adminRequest(`/admin/files?path=${encodeURIComponent(path)}`)
+                .then(response => response.json())
+                .then(data => {
+                    const fileList = document.getElementById('file-list');
+                    fileList.innerHTML = '';
+                    
+                    data.files.forEach(file => {
+                        const fileDiv = document.createElement('div');
+                        fileDiv.className = 'file-item';
+                        fileDiv.innerHTML = `
+                            <span>${file.type === 'dir' ? '📁' : '📄'} ${file.name}</span>
+                            <div>
+                                <button class="btn" onclick="downloadFile('${file.path}')">⬇️</button>
+                                <button class="btn btn-danger" onclick="deleteFile('${file.path}')">🗑️</button>
+                            </div>
+                        `;
+                        fileList.appendChild(fileDiv);
+                    });
+                })
+                .catch(error => showError('Dosya listesi hatası: ' + error.message));
+        }
+
+        function loadSystemInfo() {
+            document.getElementById('system-output').textContent = 'Sistem bilgileri yükleniyor...';
+        }
+
+        function loadUsers() {
+            document.getElementById('users-list').textContent = 'Kullanıcılar yükleniyor...';
+        }
+
+        function viewRebelLogs() {
+            adminRequest('/admin/logs/rebel')
+                .then(response => response.text())
+                .then(data => {
+                    document.getElementById('logs-content').textContent = data;
+                })
+                .catch(error => showError('Log hatası: ' + error.message));
+        }
+
+        function viewSystemLogs() {
+            adminRequest('/admin/logs/system')
+                .then(response => response.text())
+                .then(data => {
+                    document.getElementById('logs-content').textContent = data;
+                })
+                .catch(error => showError('Sistem log hatası: ' + error.message));
+        }
+
+        function loadConfig() {
+            // Load current configuration
+        }
+
+        function loadSecurity() {
+            document.getElementById('security-status').textContent = 'Güvenlik durumu kontrol ediliyor...';
+        }
+
+        function showError(message) {
+            const authError = document.getElementById('auth-error');
+            if (authError) {
+                authError.textContent = message;
+                authError.classList.remove('hidden');
+                setTimeout(() => authError.classList.add('hidden'), 5000);
+            } else {
+                alert('Error: ' + message);
+            }
+        }
+
+        function showSuccess(message) {
+            // Show success message (you can implement a proper success notification)
+            console.log('Success: ' + message);
+        }
+
+        function deleteFile(filePath) {
+            if (confirm('Bu dosyayı silmek istediğinizden emin misiniz?')) {
+                adminRequest('/admin/files/delete', {
+                    method: 'POST',
+                    body: JSON.stringify({ path: filePath })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        showError(data.error);
+                    } else {
+                        showSuccess('Dosya silindi!');
+                        listFiles(); // Refresh file list
+                    }
+                })
+                .catch(error => showError('Silme hatası: ' + error.message));
+            }
+        }
+
+        function downloadFile(filePath) {
+            // Create download link
+            const link = document.createElement('a');
+            link.href = `/admin/files/download?path=${encodeURIComponent(filePath)}`;
+            link.download = filePath.split('/').pop();
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        function createFolder() {
+            const folderName = prompt('Yeni klasör adı:');
+            if (folderName) {
+                const currentPath = document.getElementById('file-path').value;
+                adminRequest('/admin/files/create', {
+                    method: 'POST',
+                    body: JSON.stringify({ 
+                        parent: currentPath,
+                        name: folderName 
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        showError(data.error);
+                    } else {
+                        showSuccess('Klasör oluşturuldu!');
+                        listFiles(); // Refresh file list
+                    }
+                })
+                .catch(error => showError('Klasör oluşturma hatası: ' + error.message));
+            }
+        }
+
+        function uploadFile() {
+            const fileInput = document.getElementById('file-upload');
+            const file = fileInput.files[0];
+            if (!file) {
+                showError('Lütfen bir dosya seçin');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('path', document.getElementById('file-path').value);
+
+            fetch('/admin/files/upload', {
+                method: 'POST',
+                headers: {
+                    'X-Admin-Token': adminToken
+                },
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    showError(data.error);
+                } else {
+                    showSuccess('Dosya yüklendi!');
+                    fileInput.value = ''; // Clear input
+                    listFiles(); // Refresh file list
+                }
+            })
+            .catch(error => showError('Yükleme hatası: ' + error.message));
+        }
+
+        function updateAllowedCommands() {
+            const commands = document.getElementById('allowed-commands').value;
+            adminRequest('/admin/config/update', {
+                method: 'POST',
+                body: JSON.stringify({
+                    type: 'allowed_commands',
+                    value: commands
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    showError(data.error);
+                } else {
+                    showSuccess(data.message);
+                }
+            })
+            .catch(error => showError('Güncelleme hatası: ' + error.message));
+        }
+
+        function updateOpenAIKey() {
+            const apiKey = document.getElementById('openai-key').value;
+            adminRequest('/admin/config/update', {
+                method: 'POST',
+                body: JSON.stringify({
+                    type: 'openai_key',
+                    value: apiKey
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    showError(data.error);
+                } else {
+                    showSuccess(data.message);
+                    document.getElementById('openai-key').value = ''; // Clear for security
+                }
+            })
+            .catch(error => showError('API key güncelleme hatası: ' + error.message));
+        }
+
+        function downloadLogs() {
+            const link = document.createElement('a');
+            link.href = `/admin/logs/rebel`;
+            link.download = `rebel-logs-${new Date().toISOString().slice(0,10)}.txt`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        function clearLogs() {
+            if (confirm('Tüm logları temizlemek istediğinizden emin misiniz?')) {
+                adminRequest('/admin/logs/clear', { method: 'POST' })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.error) {
+                            showError(data.error);
+                        } else {
+                            showSuccess('Loglar temizlendi!');
+                            viewRebelLogs(); // Refresh logs view
+                        }
+                    })
+                    .catch(error => showError('Log temizleme hatası: ' + error.message));
+            }
+        }
+
+        // Auto-refresh dashboard every 30 seconds
+        setInterval(() => {
+            if (currentSection === 'dashboard' && adminToken) {
+                loadDashboard();
+            }
+        }, 30000);
+    </script>
+</body>
+</html>

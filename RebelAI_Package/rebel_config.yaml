@@ -1,0 +1,150 @@
+# REBEL AI - Komut Yöneticisi Yapılandırma Dosyası
+# =====================================================
+
+# Güvenlik Ayarları
+security:
+  auth_token_env: "REBEL_AUTH_TOKEN"  # Ortam değişkeni adı
+  admin_token_env: "REBEL_ADMIN_TOKEN"  # Admin token ortam değişkeni
+  require_auth: true
+
+# AI Motoru Ayarları
+ai_engine:
+  # OpenAI API Ayarları
+  openai:
+    api_key_env: "OPENAI_API_KEY"  # Ortam değişkeninden alınacak
+    model: "gpt-4o-mini"
+    max_tokens: 1000
+    temperature: 0.3
+  
+  # Ollama API Ayarları (Yerel)
+  ollama:
+    enabled: false
+    endpoint: "http://localhost:11434"
+    model: "llama2"
+  
+  # Oobabooga API Ayarları
+  oobabooga:
+    enabled: false
+    endpoint: "http://localhost:5000"
+    model: "default"
+  
+  # Yerel Model Ayarları (llama.cpp)
+  local_model:
+    enabled: false
+    model_path: "./models/ggml-model.bin"
+    executable_path: "./llama.cpp/main"
+    context_size: 2048
+
+# Dijkstra Scheduler Ayarları
+scheduler:
+  enabled: true
+  cost_weights:
+    speed: 0.4      # Hız maliyeti ağırlığı
+    risk: 0.6       # Risk maliyeti ağırlığı
+  command_costs:
+    # Düşük maliyet komutlar
+    "ls": 1
+    "pwd": 1
+    "whoami": 1
+    "date": 1
+    # Orta maliyet komutlar
+    "find": 3
+    "grep": 3
+    "ps": 3
+    # Yüksek maliyet komutlar
+    "systemctl": 8
+    "service": 8
+    "kill": 9
+
+# Loglama Ayarları
+logging:
+  enabled: true
+  format: "json"  # json veya text
+  windows_log_path: "D:\\rebel_logs\\cmd_manager_log.txt"
+  linux_log_path: "/var/log/rebel_ai.log"
+  macos_log_path: "/var/log/rebel_ai.log"
+  fallback_log_path: "./logs/rebel_ai.log"
+  max_log_size_mb: 100
+  backup_count: 5
+
+# Platform Ayarları
+platform:
+  auto_detect: true
+  windows:
+    shell: "powershell"  # cmd veya powershell
+    encoding: "utf-8"
+  linux:
+    shell: "bash"
+    encoding: "utf-8"
+  macos:
+    shell: "zsh"  # zsh veya bash
+    encoding: "utf-8"
+
+# Web Server Ayarları
+server:
+  host: "0.0.0.0"
+  port: 5000
+  debug: false
+  reload: true
+
+# UI Ayarları
+ui:
+  theme: "neon_green"
+  mobile_compatible: true
+  command_history_limit: 100
+  favorite_commands:
+    - "ls -la"
+    - "whoami"
+    - "systeminfo"
+    - "df -h"
+    - "ps aux"
+    - "pwd"
+    - "date"
+    - "uptime"
+
+# Güvenlik Kısıtlamaları
+security_restrictions:
+  allowed_commands:
+    - "ls"
+    - "pwd"
+    - "whoami"
+    - "date"
+    - "uptime"
+    - "df"
+    - "free"
+    - "uname"
+    - "echo"
+    - "cat"
+    - "head"
+    - "tail"
+    - "grep"
+    - "find"
+    - "wc"
+    - "sort"
+    - "uniq"
+    - "ps"
+    - "which"
+    - "whereis"
+  
+  blocked_commands:
+    - "rm"
+    - "rmdir"
+    - "mv"
+    - "cp"
+    - "chmod"
+    - "chown"
+    - "sudo"
+    - "su"
+    - "passwd"
+    - "useradd"
+    - "userdel"
+    - "mount"
+    - "umount"
+    - "fdisk"
+    - "mkfs"
+    - "dd"
+    - "iptables"
+    - "systemctl"
+    - "service"
+    - "kill"
+    - "killall"
