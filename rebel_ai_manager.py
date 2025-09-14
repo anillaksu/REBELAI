@@ -535,6 +535,50 @@ class REBELAIManager:
 # Flask web uygulaması
 rebel_manager = REBELAIManager()
 
+# Güvenlik middleware ve decorator'ları
+def require_auth(admin=False):
+    """Decorator for authentication requirement"""
+    def decorator(func):
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            token = request.headers.get('X-Auth-Token', '')
+            if not rebel_manager.validate_token(token, is_admin=admin):
+                return jsonify({'error': 'Unauthorized'}), 401
+            return func(*args, **kwargs)
+        return wrapper
+    return decorator
+
+@app.after_request
+def add_security_headers(response):
+    """Güvenlik başlıklarını ekle"""
+    # Content Security Policy
+    csp = (
+        "default-src 'self'; "
+        "script-src 'self'; "
+        "style-src 'self' 'unsafe-inline'; "
+        "connect-src 'self'; "
+        "img-src 'self' data:; "
+        "font-src 'self'; "
+        "object-src 'none'; "
+        "base-uri 'self';"
+    )
+    response.headers['Content-Security-Policy'] = csp
+    
+    # Diğer güvenlik başlıkları
+    response.headers['X-Content-Type-Options'] = 'nosniff'
+    response.headers['X-Frame-Options'] = 'DENY'
+    response.headers['X-XSS-Protection'] = '1; mode=block'
+    response.headers['Strict-Transport-Security'] = 'max-age=31536000; includeSubDomains'
+    response.headers['Referrer-Policy'] = 'strict-origin-when-cross-origin'
+    
+    # Cache kontrol (güvenli içerik için)
+    if request.endpoint in ['home']:
+        response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
+        response.headers['Pragma'] = 'no-cache'
+        response.headers['Expires'] = '0'
+    
+    return response
+
 
 @app.route("/")
 def home():
@@ -543,15 +587,14 @@ def home():
 
 
 @app.route("/api/execute", methods=["POST"])
+@require_auth(admin=False)
 def api_execute():
     """Komut çalıştırma API"""
-    # Token kontrolü
-    auth_token = request.headers.get("X-Auth-Token", "")
-    if not rebel_manager.validate_token(auth_token):
-        return jsonify({"error": "Unauthorized"}), 401
-    
     try:
         data = request.get_json()
+        if not data:
+            return jsonify({"error": "JSON data required"}), 400
+            
         user_input = data.get("command", "").strip()
         use_ai = data.get("use_ai", True)
         use_scheduler = data.get("use_scheduler", True)
@@ -569,15 +612,14 @@ def api_execute():
 
 
 @app.route("/api/admin/execute", methods=["POST"])
+@require_auth(admin=True)
 def api_admin_execute():
     """Admin komut çalıştırma API"""
-    # Admin token kontrolü
-    admin_token = request.headers.get("X-Admin-Token", "")
-    if not rebel_manager.validate_token(admin_token, is_admin=True):
-        return jsonify({"error": "Unauthorized"}), 401
-    
     try:
         data = request.get_json()
+        if not data:
+            return jsonify({"error": "JSON data required"}), 400
+            
         command = data.get("command", "").strip()
         
         if not command:
@@ -593,32 +635,23 @@ def api_admin_execute():
 
 
 @app.route("/api/history", methods=["GET"])
+@require_auth(admin=False)
 def api_get_history():
     """Komut geçmişi"""
-    auth_token = request.headers.get("X-Auth-Token", "")
-    if not rebel_manager.validate_token(auth_token):
-        return jsonify({"error": "Unauthorized"}), 401
-    
     return jsonify(rebel_manager.command_history[-50:])  # Son 50 komut
 
 
 @app.route("/api/favorites", methods=["GET"])
+@require_auth(admin=False)
 def api_get_favorites():
     """Favori komutlar"""
-    auth_token = request.headers.get("X-Auth-Token", "")
-    if not rebel_manager.validate_token(auth_token):
-        return jsonify({"error": "Unauthorized"}), 401
-    
     return jsonify(rebel_manager.favorites)
 
 
 @app.route("/api/status", methods=["GET"])
+@require_auth(admin=False)
 def api_get_status():
     """Sistem durumu"""
-    auth_token = request.headers.get("X-Auth-Token", "")
-    if not rebel_manager.validate_token(auth_token):
-        return jsonify({"error": "Unauthorized"}), 401
-    
     return jsonify({
         'platform': rebel_manager.platform_name,
         'shell': rebel_manager.platform_config['shell'],
@@ -630,12 +663,9 @@ def api_get_status():
 
 
 @app.route("/api/logs", methods=["GET"])
+@require_auth(admin=True)
 def api_get_logs():
     """Log dosyasını döndür"""
-    admin_token = request.headers.get("X-Admin-Token", "")
-    if not rebel_manager.validate_token(admin_token, is_admin=True):
-        return jsonify({"error": "Unauthorized"}), 401
-    
     try:
         if os.path.exists(rebel_manager.log_file):
             return send_file(rebel_manager.log_file, as_attachment=True, download_name="rebel_ai_logs.txt")

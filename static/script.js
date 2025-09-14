@@ -254,10 +254,17 @@ class REBELTerminal {
         
         const entry = document.createElement('div');
         entry.className = 'command-entry';
-        entry.innerHTML = `
-            <div class="command-input">${prompt} ${command}</div>
-            <div class="timestamp">${timestamp}</div>
-        `;
+        
+        const commandDiv = document.createElement('div');
+        commandDiv.className = 'command-input';
+        commandDiv.textContent = `${prompt} ${command}`;
+        
+        const timestampDiv = document.createElement('div');
+        timestampDiv.className = 'timestamp';
+        timestampDiv.textContent = timestamp;
+        
+        entry.appendChild(commandDiv);
+        entry.appendChild(timestampDiv);
         
         this.terminalOutput.appendChild(entry);
         this.scrollToBottom();
@@ -270,7 +277,7 @@ class REBELTerminal {
         if (result.ai_explanation && result.ai_explanation !== 'AI kullanılmadı') {
             const aiDiv = document.createElement('div');
             aiDiv.className = 'ai-explanation';
-            aiDiv.innerHTML = `🤖 AI: ${result.ai_explanation}`;
+            aiDiv.textContent = `🤖 AI: ${result.ai_explanation}`;
             entry.appendChild(aiDiv);
         }
         
@@ -278,7 +285,7 @@ class REBELTerminal {
         if (result.optimization_info && result.optimization_info.optimization_applied) {
             const optDiv = document.createElement('div');
             optDiv.className = 'ai-explanation';
-            optDiv.innerHTML = `🧠 Scheduler: ${result.optimized_commands.length} komut optimize edildi`;
+            optDiv.textContent = `🧠 Scheduler: ${result.optimized_commands.length} komut optimize edildi`;
             entry.appendChild(optDiv);
         }
         
@@ -287,7 +294,7 @@ class REBELTerminal {
             if (result.optimized_commands.length > 1) {
                 const cmdDiv = document.createElement('div');
                 cmdDiv.className = 'command-input';
-                cmdDiv.innerHTML = `${index + 1}. ${result.optimized_commands[index]}`;
+                cmdDiv.textContent = `${index + 1}. ${result.optimized_commands[index]}`;
                 entry.appendChild(cmdDiv);
             }
             
@@ -312,7 +319,7 @@ class REBELTerminal {
             if (cmdResult.ai_error_analysis) {
                 const errorAnalysisDiv = document.createElement('div');
                 errorAnalysisDiv.className = 'ai-explanation';
-                errorAnalysisDiv.innerHTML = `🔍 AI Analiz: ${cmdResult.ai_error_analysis}`;
+                errorAnalysisDiv.textContent = `🔍 AI Analiz: ${cmdResult.ai_error_analysis}`;
                 entry.appendChild(errorAnalysisDiv);
             }
         });
@@ -327,7 +334,7 @@ class REBELTerminal {
         
         const outputDiv = document.createElement('div');
         outputDiv.className = `command-output command-${type}`;
-        outputDiv.innerHTML = `[${timestamp}] ${message}`;
+        outputDiv.textContent = `[${timestamp}] ${message}`;
         
         entry.appendChild(outputDiv);
         this.terminalOutput.appendChild(entry);
@@ -408,17 +415,34 @@ class REBELTerminal {
     displayHistory(history) {
         const historyList = document.getElementById('historyList');
         
+        // Clear existing content
+        historyList.innerHTML = '';
+        
         if (history.length === 0) {
-            historyList.innerHTML = '<div class="history-empty">Henüz komut çalıştırılmadı</div>';
+            const emptyDiv = document.createElement('div');
+            emptyDiv.className = 'history-empty';
+            emptyDiv.textContent = 'Henüz komut çalıştırılmadı';
+            historyList.appendChild(emptyDiv);
             return;
         }
         
-        historyList.innerHTML = history.slice(-10).reverse().map(item => `
-            <div class="history-item" onclick="terminal.insertCommand('${item.command.replace(/'/g, "\\'")}')">
-                <div class="command">${item.command}</div>
-                <div class="timestamp">${new Date(item.timestamp).toLocaleString()}</div>
-            </div>
-        `).join('');
+        history.slice(-10).reverse().forEach(item => {
+            const itemDiv = document.createElement('div');
+            itemDiv.className = 'history-item';
+            itemDiv.onclick = () => this.insertCommand(item.command);
+            
+            const commandDiv = document.createElement('div');
+            commandDiv.className = 'command';
+            commandDiv.textContent = item.command;
+            
+            const timestampDiv = document.createElement('div');
+            timestampDiv.className = 'timestamp';
+            timestampDiv.textContent = new Date(item.timestamp).toLocaleString();
+            
+            itemDiv.appendChild(commandDiv);
+            itemDiv.appendChild(timestampDiv);
+            historyList.appendChild(itemDiv);
+        });
     }
     
     async loadFavorites() {
@@ -439,16 +463,29 @@ class REBELTerminal {
     displayFavorites(favorites) {
         const favoritesList = document.getElementById('favoritesList');
         
+        // Clear existing content
+        favoritesList.innerHTML = '';
+        
         if (favorites.length === 0) {
-            favoritesList.innerHTML = '<div class="history-empty">Henüz favori eklenmedi</div>';
+            const emptyDiv = document.createElement('div');
+            emptyDiv.className = 'history-empty';
+            emptyDiv.textContent = 'Henüz favori eklenmedi';
+            favoritesList.appendChild(emptyDiv);
             return;
         }
         
-        favoritesList.innerHTML = favorites.map(item => `
-            <div class="favorite-item" onclick="terminal.insertCommand('${item.replace(/'/g, "\\'")}')">
-                <div class="command">${item}</div>
-            </div>
-        `).join('');
+        favorites.forEach(item => {
+            const itemDiv = document.createElement('div');
+            itemDiv.className = 'favorite-item';
+            itemDiv.onclick = () => this.insertCommand(item);
+            
+            const commandDiv = document.createElement('div');
+            commandDiv.className = 'command';
+            commandDiv.textContent = item;
+            
+            itemDiv.appendChild(commandDiv);
+            favoritesList.appendChild(itemDiv);
+        });
     }
     
     clearHistory() {
@@ -503,7 +540,11 @@ class REBELTerminal {
         const item = document.createElement('div');
         item.className = 'favorite-item';
         item.onclick = () => this.insertCommand(command);
-        item.innerHTML = `<div class="command">${command}</div>`;
+        
+        const commandDiv = document.createElement('div');
+        commandDiv.className = 'command';
+        commandDiv.textContent = command;
+        item.appendChild(commandDiv);
         
         favoritesList.appendChild(item);
         

@@ -148,3 +148,45 @@ security_restrictions:
     - "service"
     - "kill"
     - "killall"
+  
+  # İzinli flag'ler (komut başına)
+  allowed_flags:
+    "ls":
+      - "-l"
+      - "-la"
+      - "-a"
+      - "-h"
+      - "-t"
+      - "-r"
+    "ps":
+      - "aux"
+      - "-ef"
+      - "-u"
+    "df":
+      - "-h"
+      - "-T"
+    "free":
+      - "-h"
+      - "-m"
+    "cat":
+      - "-n"
+      - "-A"
+    "head":
+      - "-n"
+    "tail":
+      - "-n"
+      - "-f"
+    "grep":
+      - "-i"
+      - "-v"
+      - "-n"
+      - "-r"
+
+# Güvenlik ayarları
+security:
+  max_command_length: 256
+  execution_root: "/tmp/rebel_safe"  # Güvenli çalışma dizini
+  rate_limit:
+    enabled: true
+    requests_per_minute: 60
+    burst_size: 10
