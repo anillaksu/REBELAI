@@ -154,3 +154,12 @@ OUTPUT:
 [2025-09-14 18:59:49.204473] Authentication required: Header-based token validation enabled
 [2025-09-14 19:03:01.524143] Security enabled: 23 allowed commands
 [2025-09-14 19:03:01.525977] Authentication required: Header-based token validation enabled
+[2025-09-14 19:09:04.510056] User input: uname -a
+[2025-09-14 19:09:06.381596] Command Intelligence Error: Error code: 429 - {'error': {'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.', 'type': 'insufficient_quota', 'param': None, 'code': 'insufficient_quota'}}
+[2025-09-14 19:09:06.382560] Original commands: ['uname -a']
+[2025-09-14 19:09:06.383065] Optimized order: ['uname -a']
+[2025-09-14 19:09:06.394202] CMD: uname -a
+OUTPUT:
+Linux 5e7b35c3ff73 6.2.16 #1-NixOS SMP PREEMPT_DYNAMIC Tue Jan  1 00:00:00 UTC 1980 x86_64 GNU/Linux
+
+
