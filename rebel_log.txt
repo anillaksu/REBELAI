@@ -1,0 +1,94 @@
+[2025-09-14 17:47:39.560863] REBEL AI CMD Manager Started
+[2025-09-14 17:52:33.307655] Security enabled: 23 allowed commands
+[2025-09-14 17:52:33.307756] Authentication required: rebe***
+[2025-09-14 17:53:43.679272] Security enabled: 23 allowed commands
+[2025-09-14 17:53:43.679381] Authentication required: rebe***
+[2025-09-14 17:54:19.731246] Executing 1 commands: ['ls -la']
+[2025-09-14 17:54:19.744094] CMD: ls -la
+OUTPUT:
+total 84
+drwxr-xr-x 1 runner runner   206 Sep 14 17:54 .
+drwxrwxrwx 1 runner runner    46 Sep 14 17:43 ..
+drwxr-xr-x 1 runner runner   144 Sep 14 17:43 attached_assets
+drwxr-xr-x 1 runner runner    16 Sep 14 17:44 .cache
+drwxr-xr-x 1 runner runner   128 Sep 14 17:53 .git
+drwxr-xr-x 1 runner runner    10 Sep 14 17:43 .local
+-rw-r--r-- 1 runner runner  6958 Sep 14 17:52 main.py
+-rw-r--r-- 1 runner runner   187 Sep 14 17:45 pyproject.toml
+drwxr-xr-x 1 runner runner    86 Sep 14 17:44 .pythonlibs
+-rw-r--r-- 1 runner runner   378 Sep 14 17:54 rebel_log.txt
+-rw-r--r-- 1 runner runner   619 Sep 14 17:54 .replit
+drwxr-xr-x 1 runner runner    20 Sep 14 17:53 templates
+drwxr-xr-x 1 runner runner    20 Sep 14 17:45 .upm
+-rw-r--r-- 1 runner runner 56788 Sep 14 17:45 uv.lock
+
+
+[2025-09-14 17:54:33.653937] UNAUTHORIZED ACCESS ATTEMPT
+[2025-09-14 17:54:34.838343] Executing 1 commands: ['rm -rf /']
+[2025-09-14 17:54:34.838537] BLOCKED COMMAND: rm -rf /
+[2025-09-14 17:54:36.084655] Executing 1 commands: ['sudo whoami']
+[2025-09-14 17:54:36.084881] BLOCKED COMMAND: sudo whoami
+[2025-09-14 17:54:36.296164] Executing 3 commands: ['pwd', 'whoami', 'ls']
+[2025-09-14 17:54:36.304898] CMD: pwd
+OUTPUT:
+/home/runner/workspace
+
+
+[2025-09-14 17:54:36.316879] CMD: whoami
+OUTPUT:
+runner
+
+
+[2025-09-14 17:54:36.324510] CMD: ls
+OUTPUT:
+attached_assets
+main.py
+pyproject.toml
+rebel_log.txt
+templates
+uv.lock
+
+
+[2025-09-14 17:54:51.654797] Executing 1 commands: ['echo test && rm -rf /']
+[2025-09-14 17:54:51.665923] CMD: echo test && rm -rf /
+OUTPUT:
+test && rm -rf /
+
+
+[2025-09-14 17:59:07.587846] Security enabled: 23 allowed commands
+[2025-09-14 17:59:07.590829] Authentication required: secu***
+[2025-09-14 17:59:19.586508] Security enabled: 23 allowed commands
+[2025-09-14 17:59:19.586614] Authentication required: secu***
+[2025-09-14 17:59:26.397000] Command optimization applied: ['pwd(w:1)', 'whoami(w:1)', 'date(w:1)', 'echo(w:2)', 'ls(w:3)']
+[2025-09-14 17:59:26.397260] Original commands: ['ls', 'pwd', 'whoami', 'date', 'echo test']
+[2025-09-14 17:59:26.397335] Optimized order: ['pwd', 'whoami', 'date', 'echo test', 'ls']
+[2025-09-14 17:59:26.406554] CMD: pwd
+OUTPUT:
+/home/runner/workspace
+
+
+[2025-09-14 17:59:26.414779] CMD: whoami
+OUTPUT:
+runner
+
+
+[2025-09-14 17:59:26.428432] CMD: date
+OUTPUT:
+Sun Sep 14 05:59:26 PM UTC 2025
+
+
+[2025-09-14 17:59:26.436656] CMD: echo test
+OUTPUT:
+test
+
+
+[2025-09-14 17:59:26.443533] CMD: ls
+OUTPUT:
+attached_assets
+main.py
+pyproject.toml
+rebel_log.txt
+templates
+uv.lock
+
+

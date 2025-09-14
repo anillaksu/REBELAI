@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>⚡ REBEL AI CMD</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body { 
+            background: #111; 
+            color: #0f0; 
+            font-family: 'Courier New', monospace;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            text-shadow: 0 0 10px #0f0;
+        }
+        
+        .input-section {
+            margin-bottom: 20px;
+        }
+        
+        p {
+            margin-bottom: 10px;
+        }
+        
+        input {
+            width: 100%;
+            max-width: 600px;
+            padding: 8px 12px;
+            background: #000;
+            color: #0f0;
+            border: 2px solid #0f0;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+        }
+        
+        input:focus {
+            outline: none;
+            box-shadow: 0 0 10px #0f0;
+        }
+        
+        button {
+            padding: 8px 16px;
+            background: #0f0;
+            color: #000;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            margin-left: 10px;
+            transition: all 0.3s;
+        }
+        
+        button:hover {
+            background: #0c0;
+            transform: scale(1.05);
+        }
+        
+        button:disabled {
+            background: #666;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        #result {
+            background: #000;
+            padding: 15px;
+            border: 2px solid #0f0;
+            border-radius: 4px;
+            margin-top: 20px;
+            min-height: 200px;
+            white-space: pre-wrap;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            line-height: 1.4;
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.3);
+        }
+        
+        .command-line {
+            color: #0ff;
+            font-weight: bold;
+        }
+        
+        .output-section {
+            color: #0f0;
+            margin: 10px 0;
+        }
+        
+        .ai-suggestion {
+            color: #ff0;
+            background: rgba(255, 255, 0, 0.1);
+            padding: 10px;
+            border-left: 3px solid #ff0;
+            margin: 10px 0;
+        }
+        
+        .loading {
+            color: #0ff;
+            animation: blink 1s infinite;
+        }
+        
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0.3; }
+        }
+        
+        .status {
+            text-align: center;
+            margin: 10px 0;
+            padding: 5px;
+            border-radius: 4px;
+        }
+        
+        .status.success {
+            background: rgba(0, 255, 0, 0.2);
+            color: #0f0;
+        }
+        
+        .status.error {
+            background: rgba(255, 0, 0, 0.2);
+            color: #f00;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>⚡ REBEL AI – Komut Yöneticisi ⚡</h2>
+        
+        <div class="input-section">
+            <p>🔐 Auth Token (Set REBEL_AUTH_TOKEN environment variable first):</p>
+            <p style="font-size: 12px; color: #888; margin-bottom: 10px;">💡 First set: export REBEL_AUTH_TOKEN='your_secure_token_here'</p>
+            <input id="authToken" type="password" placeholder="Enter your auth token here" />
+            <p style="margin-top: 15px;">⚡ Komutları yaz (Dijkstra optimization aktif - hızlı komutlar öncelik alır):</p>
+            <input id="cmd" placeholder="ör: ls -la ; pwd ; whoami ; uname -a" />
+            <button onclick="send()" id="runBtn">Çalıştır</button>
+        </div>
+        
+        <div id="status" class="status" style="display: none;"></div>
+        <pre id="result">⚡ REBEL AI CMD Manager hazır.
+🔐 Auth token gerekli - REBEL_AUTH_TOKEN environment variable'ını ayarlayın.
+⚡ Multiple commands are optimized using Dijkstra algorithm for faster execution.</pre>
+    </div>
+
+    <script>
+        let isRunning = false;
+        
+        // Allow Enter key to run commands
+        document.getElementById("cmd").addEventListener("keypress", function(event) {
+            if (event.key === "Enter") {
+                send();
+            }
+        });
+        
+        function showStatus(message, type) {
+            const statusEl = document.getElementById("status");
+            statusEl.textContent = message;
+            statusEl.className = `status ${type}`;
+            statusEl.style.display = "block";
+            
+            if (type === "success") {
+                setTimeout(() => {
+                    statusEl.style.display = "none";
+                }, 3000);
+            }
+        }
+        
+        async function send() {
+            if (isRunning) return;
+            
+            const cmdInput = document.getElementById("cmd");
+            const authInput = document.getElementById("authToken");
+            const runBtn = document.getElementById("runBtn");
+            const resultEl = document.getElementById("result");
+            
+            const cmd = cmdInput.value.trim();
+            const authToken = authInput.value.trim();
+            
+            if (!authToken) {
+                showStatus("Lütfen auth token girin", "error");
+                return;
+            }
+            
+            if (!cmd) {
+                showStatus("Lütfen bir komut girin", "error");
+                return;
+            }
+            
+            // Set loading state
+            isRunning = true;
+            runBtn.disabled = true;
+            runBtn.textContent = "Çalıştırılıyor...";
+            resultEl.textContent = "Komutlar çalıştırılıyor...\n";
+            resultEl.className = "loading";
+            
+            try {
+                const response = await fetch("/run", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-Auth-Token": authToken
+                    },
+                    body: JSON.stringify({ command: cmd })
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const data = await response.json();
+                
+                // Build output
+                let output = "";
+                data.forEach((result, index) => {
+                    output += `▶ ${result.cmd}\n`;
+                    output += `Çıktı:\n${result.output}\n`;
+                    
+                    if (result.fix) {
+                        output += `💡 AI Öneri:\n${result.fix}\n`;
+                    }
+                    
+                    if (index < data.length - 1) {
+                        output += "\n" + "=".repeat(50) + "\n\n";
+                    }
+                });
+                
+                resultEl.textContent = output;
+                resultEl.className = "";
+                showStatus("Komutlar başarıyla çalıştırıldı", "success");
+                
+                // Clear input
+                cmdInput.value = "";
+                
+            } catch (error) {
+                resultEl.textContent = `Hata oluştu: ${error.message}`;
+                resultEl.className = "";
+                showStatus("Komut çalıştırma hatası", "error");
+            } finally {
+                // Reset loading state
+                isRunning = false;
+                runBtn.disabled = false;
+                runBtn.textContent = "Çalıştır";
+            }
+        }
+        
+        // Focus on input when page loads
+        window.addEventListener("load", function() {
+            document.getElementById("cmd").focus();
+        });
+    </script>
+</body>
+</html>
