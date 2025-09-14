@@ -1,0 +1,165 @@
+# ==========================================
+# ⚡ REBEL AI – CMD/PowerShell Manager
+# ==========================================
+# Bu prompt Replit üzerinde eksiksiz REBEL AI projesi kurar.
+# - Flask backend
+# - Komut çalıştırma (Replit’te Linux ortamında)
+# - Dijkstra algoritması ile optimize edilmiş komut sıralama
+# - OpenAI API ile hata analizi / çözüm
+# - rebel_log.txt dosyasına kayıt
+# ==========================================
+
+# ==========================================
+# 📂 Dosya Yapısı
+# ==========================================
+# /main.py               → Flask backend
+# /templates/index.html  → Web arayüz
+# /rebel_log.txt         → Loglar
+# ==========================================
+
+# ==========================================
+# main.py
+# ==========================================
+from flask import Flask, render_template, request, jsonify
+import subprocess, os, datetime, heapq
+import openai
+
+app = Flask(__name__)
+openai.api_key = os.getenv("OPENAI_API_KEY")
+
+LOG_FILE = "rebel_log.txt"
+
+def log_write(entry):
+    with open(LOG_FILE, "a", encoding="utf-8") as f:
+        f.write(f"[{datetime.datetime.now()}] {entry}\n")
+
+# Dijkstra algoritması → komut sıralama
+def dijkstra(commands):
+    graph = {cmd: {} for cmd in commands}
+    for i, cmd in enumerate(commands):
+        for j, next_cmd in enumerate(commands):
+            if i != j:
+                cost = len(next_cmd) + abs(i - j)
+                graph[cmd][next_cmd] = cost
+
+    start = commands[0]
+    shortest = {node: float("inf") for node in graph}
+    shortest[start] = 0
+    pq = [(0, start)]
+    path = {}
+
+    while pq:
+        current_dist, current = heapq.heappop(pq)
+        for neighbor, weight in graph[current].items():
+            dist = current_dist + weight
+            if dist < shortest[neighbor]:
+                shortest[neighbor] = dist
+                path[neighbor] = current
+                heapq.heappush(pq, (dist, neighbor))
+
+    order = [start]
+    while len(order) < len(commands):
+        next_node = min(
+            (node for node in commands if node not in order),
+            key=lambda n: shortest[n],
+            default=None
+        )
+        if next_node:
+            order.append(next_node)
+        else:
+            break
+    return order
+
+def run_command(cmd):
+    try:
+        result = subprocess.run(cmd, shell=True, capture_output=True, text=True, timeout=30)
+        output = result.stdout if result.stdout else result.stderr
+        log_write(f"CMD: {cmd}\nOUTPUT:\n{output}\n")
+
+        if result.returncode != 0:
+            ai_fix = openai.chat.completions.create(
+                model="gpt-4o-mini",
+                messages=[{"role": "user", "content": f"Bu hata çıktı:\n{output}\nNasıl çözülür?"}]
+            )
+            fix_msg = ai_fix.choices[0].message.content
+            log_write(f"AI Fix Suggestion: {fix_msg}\n")
+            return output, fix_msg
+
+        return output, None
+    except Exception as e:
+        log_write(f"ERROR: {e}\n")
+        return str(e), None
+
+@app.route("/")
+def home():
+    return render_template("index.html")
+
+@app.route("/run", methods=["POST"])
+def run_cmd():
+    user_input = request.json.get("command")
+    commands = [c.strip() for c in user_input.split(";") if c.strip()]
+
+    if len(commands) > 1:
+        commands = dijkstra(commands)
+
+    results = []
+    for cmd in commands:
+        output, fix = run_command(cmd)
+        results.append({"cmd": cmd, "output": output, "fix": fix})
+
+    return jsonify(results)
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=8080, debug=True)
+
+# ==========================================
+# templates/index.html
+# ==========================================
+<!DOCTYPE html>
+<html>
+<head>
+  <title>⚡ REBEL AI CMD</title>
+  <style>
+    body { background:#111; color:#0f0; font-family:monospace; }
+    input { width:400px; padding:6px; background:#000; color:#0f0; border:1px solid #0f0; }
+    button { padding:6px 12px; background:#0f0; color:#000; border:none; cursor:pointer; }
+    pre { background:#000; padding:10px; border:1px solid #0f0; margin-top:15px; }
+  </style>
+</head>
+<body>
+  <h2>⚡ REBEL AI – Komut Yöneticisi ⚡</h2>
+  <p>Komutları yaz (birden fazla ise ; ile ayır):</p>
+  <input id="cmd" placeholder="ör: ls ; pwd ; whoami" />
+  <button onclick="send()">Çalıştır</button>
+  <pre id="result"></pre>
+
+  <script>
+    async function send(){
+      let cmd = document.getElementById("cmd").value;
+      let res = await fetch("/run", {
+        method:"POST",
+        headers:{"Content-Type":"application/json"},
+        body: JSON.stringify({command: cmd})
+      });
+      let data = await res.json();
+      let out = "";
+      data.forEach(r => {
+        out += "▶ " + r.cmd + "\nÇıktı:\n" + r.output + "\n";
+        if(r.fix) out += "💡 AI Öneri:\n" + r.fix + "\n";
+        out += "\n";
+      });
+      document.getElementById("result").textContent = out;
+    }
+  </script>
+</body>
+</html>
+
+# ==========================================
+# 🛠️ Kurulum
+# ==========================================
+# 1. Replit’te “Python (Flask)” projesi aç.
+# 2. main.py ve templates/index.html dosyalarını oluştur, kodu yapıştır.
+# 3. Replit Secrets → OPENAI_API_KEY ekle.
+# 4. Run → URL aç → web arayüzünden komut yaz.
+# 5. Komut çıktıları web arayüzünde + rebel_log.txt dosyasında.
+# ==========================================
