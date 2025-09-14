@@ -345,8 +345,11 @@ body {
 .terminal-output {
     flex: 1;
     overflow-y: auto;
+    max-height: 60vh; /* Ekranın %60'ı kadar yükseklik */
     margin-bottom: 20px;
     line-height: 1.6;
+    padding-right: 10px; /* Scroll bar için alan */
+    scroll-behavior: smooth; /* Yumuşak kaydırma */
 }
 
 .welcome-message {
@@ -915,3 +918,29 @@ body {
 
 .hidden { display: none !important; }
 .visible { display: block !important; }
+
+/* Custom Scrollbar for Terminal Output */
+.terminal-output::-webkit-scrollbar {
+    width: 8px;
+}
+
+.terminal-output::-webkit-scrollbar-track {
+    background: var(--dark-gray);
+    border-radius: 4px;
+}
+
+.terminal-output::-webkit-scrollbar-thumb {
+    background: var(--neon-green);
+    border-radius: 4px;
+    box-shadow: var(--glow-small);
+}
+
+.terminal-output::-webkit-scrollbar-thumb:hover {
+    background: var(--neon-green-bright);
+}
+
+/* Firefox Scrollbar */
+.terminal-output {
+    scrollbar-width: thin;
+    scrollbar-color: var(--neon-green) var(--dark-gray);
+}
