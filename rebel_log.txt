@@ -93,3 +93,9 @@ uv.lock
 
 
 [2025-09-14 18:04:50.371629] UNAUTHORIZED ACCESS ATTEMPT
+[2025-09-14 18:08:46.800092] Security enabled: 23 allowed commands
+[2025-09-14 18:08:46.800217] Authentication required: secu***
+[2025-09-14 18:12:20.400859] Security enabled: 23 allowed commands
+[2025-09-14 18:12:20.402282] Authentication required: secu***
+[2025-09-14 18:17:13.439325] UNAUTHORIZED ACCESS ATTEMPT
+[2025-09-14 18:17:17.209368] UNAUTHORIZED ACCESS ATTEMPT

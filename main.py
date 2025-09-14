@@ -72,6 +72,9 @@ def detect_and_convert_command(user_input):
     if not openai_client:
         return user_input, "No AI available"
     
+    # Check if user input contains semicolons (multiple commands)
+    has_semicolons = ';' in user_input
+    
     try:
         # Create comprehensive prompt for command intelligence
         prompt = f"""
@@ -81,8 +84,9 @@ Bu girdiyi analiz et ve:
 1. Hangi tip komut/istek olduğunu belirle (PowerShell, CMD, Linux, Doğal Dil)
 2. Eğer PowerShell veya CMD komutu ise, Linux eşdeğerine çevir
 3. Eğer doğal dil ise, uygun Linux komutlarına çevir
-4. Sadece güvenli, salt-okunur komutları öner (ls, pwd, cat, grep, find, date, uname, whoami, df, du, free, uptime, ps, echo, head, tail, wc, which, whereis)
-5. Tehlikeli komutları (rm, sudo, chmod vb.) ASLA önerme
+4. SADECE bu komutları kullan: ls, pwd, whoami, date, uname, cat, head, tail, wc, grep, find, echo, hostname, id, groups, df, du, free, uptime, ps, top, which, whereis
+5. Tehlikeli komutları (rm, sudo, chmod, clear, ip vb.) ASLA önerme
+6. Orijinal girdide noktalı virgül (;) yoksa, tek bir komut döndür - birden fazla komut oluşturma
 
 JSON formatında yanıt ver:
 {{
@@ -92,27 +96,32 @@ JSON formatında yanıt ver:
   "explanation": "ne yaptığının açıklaması"
 }}
 
-Örnekler:
+İzinli komutlarla örnekler:
 - "Get-ChildItem" → "ls -la" 
 - "dir" → "ls -la"
 - "dosyaları listele" → "ls -la"
 - "kim benim" → "whoami"
 - "sistemin ne" → "uname -a"
 - "Get-Location" → "pwd"
-- "cls" → "clear"
-- "ipconfig" → "ip addr show"
+- "hostname nedir" → "hostname"
 - "tasklist" → "ps aux"
+- "sistem zamanı" → "date"
+- "disk bilgisi" → "df -h"
 """
 
         response = openai_client.chat.completions.create(
             model="gpt-4o-mini",
             messages=[{"role": "user", "content": prompt}],
             max_tokens=800,
-            temperature=0.1  # Low temperature for consistent results
+            temperature=0.1,  # Low temperature for consistent results
+            response_format={"type": "json_object"}  # Ensure reliable JSON response
         )
         
         import json
-        result = json.loads(response.choices[0].message.content)
+        content = response.choices[0].message.content
+        if not content:
+            raise Exception("OpenAI returned empty response")
+        result = json.loads(content)
         
         converted_cmd = result.get("converted", user_input)
         explanation = result.get("explanation", "Komut çevirisi yapıldı")
@@ -264,8 +273,12 @@ def run_cmd():
     if not user_input.strip():
         return jsonify([{"cmd": "", "output": "Boş komut girdiniz.", "fix": None}])
     
+    # Apply intelligent command conversion
+    log_write(f"User input: {user_input}")
+    converted_input, conversion_info = detect_and_convert_command(user_input)
+    
     # Split commands by semicolon and apply Dijkstra optimization
-    raw_commands = [c.strip() for c in user_input.split(";") if c.strip()]
+    raw_commands = [c.strip() for c in converted_input.split(";") if c.strip()]
     commands = optimize_command_order(raw_commands)
     
     # Limit number of commands for security
@@ -277,13 +290,19 @@ def run_cmd():
 
     # Execute each command
     results = []
-    for cmd in commands:
+    for i, cmd in enumerate(commands):
         output, fix = run_command(cmd)
-        results.append({
+        result = {
             "cmd": cmd, 
             "output": output, 
             "fix": fix
-        })
+        }
+        
+        # Add conversion info to the first command result
+        if i == 0 and conversion_info != "No AI available":
+            result["conversion_info"] = conversion_info
+            
+        results.append(result)
 
     return jsonify(results)
 

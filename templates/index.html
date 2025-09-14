@@ -111,6 +111,15 @@
             margin: 10px 0;
         }
         
+        .conversion-info {
+            color: #0cf;
+            background: rgba(0, 204, 255, 0.1);
+            padding: 10px;
+            border-left: 3px solid #0cf;
+            margin: 10px 0;
+            font-style: italic;
+        }
+        
         .loading {
             color: #0ff;
             animation: blink 1s infinite;
@@ -147,15 +156,16 @@
             <p>🔐 Auth Token (Set REBEL_AUTH_TOKEN environment variable first):</p>
             <p style="font-size: 12px; color: #888; margin-bottom: 10px;">💡 First set: export REBEL_AUTH_TOKEN='your_secure_token_here'</p>
             <input id="authToken" type="password" placeholder="Enter your auth token here" />
-            <p style="margin-top: 15px;">⚡ Komutları yaz (Dijkstra optimization aktif - hızlı komutlar öncelik alır):</p>
-            <input id="cmd" placeholder="ör: ls -la ; pwd ; whoami ; uname -a" />
+            <p style="margin-top: 15px;">🧠 Akıllı Komut Yöneticisi (PowerShell, CMD, Doğal Dil destekli):</p>
+            <input id="cmd" placeholder="ör: Get-ChildItem ; dir ; dosyaları listele ; whoami ; sistem bilgisi" />
             <button onclick="send()" id="runBtn">Çalıştır</button>
         </div>
         
         <div id="status" class="status" style="display: none;"></div>
         <pre id="result">⚡ REBEL AI CMD Manager hazır.
 🔐 Auth token gerekli - REBEL_AUTH_TOKEN environment variable'ını ayarlayın.
-⚡ Multiple commands are optimized using Dijkstra algorithm for faster execution.</pre>
+🧠 Akıllı komut desteği: PowerShell, CMD, ve doğal dil komutları otomatik Linux komutlarına çevrilir.
+⚡ Komutlar Dijkstra algoritması ile optimize edilir.</pre>
     </div>
 
     <script>
@@ -227,6 +237,13 @@
                 
                 // Build output
                 let output = "";
+                
+                // Show conversion info first if available
+                if (data.length > 0 && data[0].conversion_info) {
+                    output += `🧠 Komut Çevirisi: ${data[0].conversion_info}\n`;
+                    output += "=".repeat(60) + "\n\n";
+                }
+                
                 data.forEach((result, index) => {
                     output += `▶ ${result.cmd}\n`;
                     output += `Çıktı:\n${result.output}\n`;
