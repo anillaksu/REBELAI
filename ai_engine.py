@@ -11,6 +11,7 @@ import requests
 import platform
 from typing import Optional, Tuple, Dict, Any
 from openai import OpenAI
+from gui_controller import REBELGUIController
 
 
 class REBELAIEngine:
@@ -25,6 +26,9 @@ class REBELAIEngine:
         self.ollama_enabled = self.ai_config.get('ollama', {}).get('enabled', False)
         self.oobabooga_enabled = self.ai_config.get('oobabooga', {}).get('enabled', False)
         self.local_model_enabled = self.ai_config.get('local_model', {}).get('enabled', False)
+        
+        # GUI Controller'ı başlat
+        self.gui_controller = REBELGUIController(config_path)
         
         print(f"🤖 REBEL AI Engine initialized for {self.platform_name}")
     
@@ -60,6 +64,11 @@ class REBELAIEngine:
             Tuple[interpreted_command, explanation, is_confident]
         """
         try:
+            # Önce GUI komutu mu kontrol et
+            gui_command, gui_explanation, gui_confident = self.gui_controller.interpret_gui_command(user_input)
+            if gui_confident and gui_command:
+                return f"GUI:{gui_command}", gui_explanation, True
+            
             # Önce OpenAI dene
             if self.openai_client:
                 return self._interpret_with_openai(user_input)
@@ -99,7 +108,8 @@ KURALLAR:
 2. Emin değilsen "⚠️ Bu komutu doğru anlamadım" diye başla
 3. Yanıt formatı: JSON {{"command": "shell_komutu", "explanation": "açıklama", "confident": true/false}}
 4. Tehlikeli komutları (rm, sudo, etc.) asla önerme
-5. Platform: {self.platform_name}, Shell: {platform_shell}
+5. GUI/Ayarlar komutları için "GUI:" prefix'i kullan
+6. Platform: {self.platform_name}, Shell: {platform_shell}
 
 ÖRNEKLER:
 - "dosyaları listele" → "ls -la" (Linux/Mac) veya "dir" (Windows)
@@ -336,7 +346,7 @@ Türkçe olarak:
                     temperature=0.3
                 )
                 
-                return response.choices[0].message.content
+                return response.choices[0].message.content or "❌ Boş yanıt alındı"
             else:
                 return f"❌ Hata bulundu: {error_output}\n💡 İpucu: Komut sözdizimini kontrol edin veya yetki gerekebilir."
                 

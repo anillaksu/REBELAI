@@ -319,11 +319,70 @@ class REBELAIManager:
         except Exception as e:
             return False, f"Güvenlik kontrolü hatası: {e}"
     
+    def _execute_gui_command(self, gui_command: str, start_time: datetime.datetime) -> Dict[str, Any]:
+        """GUI komutunu çalıştır"""
+        try:
+            # GUI controller'dan komutu çalıştır
+            success, message = self.ai_engine.gui_controller.execute_gui_command(gui_command)
+            
+            end_time = datetime.datetime.now()
+            execution_time = (end_time - start_time).total_seconds()
+            
+            command_result = {
+                'success': success,
+                'output': message if success else '',
+                'error': '' if success else message,
+                'command': f"GUI:{gui_command}",
+                'platform': self.platform_name,
+                'shell': 'GUI',
+                'returncode': 0 if success else 1,
+                'execution_time': execution_time,
+                'timestamp': start_time.isoformat(),
+                'is_admin': False
+            }
+            
+            # Başarılı GUI komutlarını geçmişe ekle
+            if success:
+                self.command_history.append({
+                    'command': f"GUI:{gui_command}",
+                    'timestamp': start_time.isoformat(),
+                    'platform': self.platform_name
+                })
+                
+                # Geçmiş limitini kontrol et
+                history_limit = self.config.get('ui', {}).get('command_history_limit', 100)
+                if len(self.command_history) > history_limit:
+                    self.command_history = self.command_history[-history_limit:]
+            
+            self._write_json_log(command_result)
+            return command_result
+            
+        except Exception as e:
+            error_result = {
+                'success': False,
+                'output': '',
+                'error': f"❌ GUI komut hatası: {str(e)}",
+                'command': f"GUI:{gui_command}",
+                'platform': self.platform_name,
+                'shell': 'GUI',
+                'returncode': 1,
+                'execution_time': (datetime.datetime.now() - start_time).total_seconds(),
+                'timestamp': start_time.isoformat(),
+                'is_admin': False
+            }
+            self._write_json_log(error_result)
+            return error_result
+    
     def execute_command(self, command: str, is_admin: bool = False) -> Dict[str, Any]:
         """Güvenli komut çalıştırma"""
         start_time = datetime.datetime.now()
         
         try:
+            # GUI komut kontrolü
+            if command.startswith("GUI:"):
+                gui_command = command[4:]  # "GUI:" prefix'ini kaldır
+                return self._execute_gui_command(gui_command, start_time)
+            
             # Input validation
             self._validate_user_input(command)
             

@@ -5,7 +5,7 @@ integrations = ["python_openai:1.0.0"]
 
 [nix]
 channel = "stable-25_05"
-packages = ["libyaml"]
+packages = ["libyaml", "xdotool", "wmctrl"]
 
 [workflows]
 runButton = "Project"
