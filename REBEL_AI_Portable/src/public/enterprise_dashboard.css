@@ -1503,10 +1503,19 @@ body {
     
     .enterprise-header {
         padding: 0 1rem;
+        flex-wrap: wrap;
     }
     
     .header-left {
         gap: 1rem;
+        flex: 1;
+        min-width: 0;
+    }
+    
+    .header-center {
+        order: 3;
+        flex-basis: 100%;
+        margin-top: 0.5rem;
     }
     
     .system-status {
@@ -1517,8 +1526,33 @@ body {
         display: none;
     }
     
+    .enterprise-logo .company-name {
+        font-size: 1.2rem;
+    }
+    
+    .enterprise-logo .product-line {
+        font-size: 0.7rem;
+    }
+    
+    .user-avatar {
+        width: 32px;
+        height: 32px;
+    }
+    
     .content-module {
         padding: 1rem;
+    }
+    
+    .module-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+    
+    .module-actions {
+        width: 100%;
+        justify-content: flex-start;
+        flex-wrap: wrap;
     }
     
     .dashboard-grid {
@@ -1530,16 +1564,29 @@ body {
         grid-template-columns: 1fr;
         grid-template-rows: auto 1fr;
         gap: 1rem;
+        height: calc(100vh - var(--header-height) - 4rem);
     }
     
     .terminal-sidebar {
         order: 2;
-        max-height: 300px;
+        max-height: 250px;
+        overflow-y: auto;
     }
     
     .terminal-main {
         order: 1;
-        min-height: 400px;
+        min-height: 350px;
+    }
+    
+    .quick-actions {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 0.5rem;
+    }
+    
+    .quick-btn {
+        padding: 0.5rem 0.25rem;
+        font-size: 0.7rem;
+        text-align: center;
     }
     
     .notification-panel {
@@ -1552,6 +1599,12 @@ body {
         right: 1rem;
         width: calc(100% - 2rem);
         max-width: 300px;
+    }
+    
+    .global-notifications {
+        right: 1rem;
+        left: 1rem;
+        max-width: none;
     }
 }
 

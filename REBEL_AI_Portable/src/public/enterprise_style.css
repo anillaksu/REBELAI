@@ -915,18 +915,77 @@ body {
 /* Responsive Design */
 @media (max-width: 768px) {
     .enterprise-header {
-        padding: 1.5rem 1rem;
+        padding: 1rem;
         flex-direction: column;
         gap: 1rem;
         text-align: center;
+        min-height: auto;
+    }
+    
+    .header-left {
+        justify-content: center;
+    }
+    
+    .system-status {
+        display: none;
     }
     
     .auth-container {
-        padding: 1rem;
+        padding: 0.5rem;
+        margin: 0.5rem;
+        max-width: calc(100% - 1rem);
+        min-height: calc(100vh - 120px);
+        justify-content: flex-start;
+        padding-top: 2rem;
     }
     
     .auth-form {
-        padding: 2rem 1.5rem;
+        padding: 1.5rem 1rem;
+        max-width: 100%;
+        margin: 0;
+        border-radius: 12px;
+    }
+    
+    .form-title {
+        font-size: 1.5rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .form-subtitle {
+        font-size: 0.85rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .auth-input {
+        font-size: 16px; /* Prevents zoom on iOS */
+        padding: 0.875rem;
+    }
+    
+    .auth-btn {
+        padding: 0.875rem;
+        font-size: 1rem;
+    }
+    
+    .security-badge {
+        font-size: 0.7rem;
+        padding: 0.4rem 0.8rem;
+    }
+    
+    .feature-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    
+    .feature-item {
+        padding: 1rem;
+    }
+    
+    .notifications {
+        top: 1rem;
+        right: 1rem;
+        left: 1rem;
+        width: auto;
+        max-width: none;
     }
     
     .enterprise-footer {
@@ -953,21 +1012,65 @@ body {
 }
 
 @media (max-width: 480px) {
-    .auth-form {
-        padding: 1.5rem 1rem;
+    .enterprise-header {
+        padding: 0.75rem;
     }
     
-    .company-name {
-        font-size: 1.5rem;
+    .logo-text .company-name {
+        font-size: 1.2rem;
+    }
+    
+    .logo-text .product-line {
+        font-size: 0.7rem;
+    }
+    
+    .security-badge {
+        display: none;
+    }
+    
+    .auth-container {
+        padding: 0.25rem;
+        margin: 0.25rem;
+        max-width: calc(100% - 0.5rem);
+    }
+    
+    .auth-form {
+        padding: 1rem 0.75rem;
+        border-radius: 8px;
     }
     
     .form-title {
-        font-size: 1.5rem;
+        font-size: 1.3rem;
+    }
+    
+    .form-subtitle {
+        font-size: 0.8rem;
+    }
+    
+    .auth-input {
+        padding: 0.75rem;
+        font-size: 16px; /* iOS zoom prevention */
+    }
+    
+    .auth-btn {
+        padding: 0.75rem;
+    }
+    
+    .feature-item {
+        padding: 0.75rem;
+    }
+    
+    .feature-icon {
+        font-size: 1.2rem;
+    }
+    
+    .feature-text {
+        font-size: 0.8rem;
     }
     
     .auth-input.large-input {
-        font-size: 1.2rem;
-        letter-spacing: 0.3rem;
+        font-size: 1.1rem; /* Smaller for mobile but still readable */
+        letter-spacing: 0.2rem;
     }
 }
 

@@ -123,7 +123,7 @@ class EnterpriseAuth {
 
     async checkBootstrapStatus() {
         try {
-            const response = await fetch(`${this.apiBaseUrl}/bootstrap`, {
+            const response = await fetch(`${this.apiBaseUrl}/bootstrap/check`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json'
