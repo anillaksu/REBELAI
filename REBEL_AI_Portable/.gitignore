@@ -1,0 +1,44 @@
+# Security - Sensitive database and config files
+data/auth.db
+data/*.db
+*.db
+
+# Logs and runtime files
+logs/
+*.log
+tmp/
+.tmp/
+
+# Environment and secrets
+.env
+.env.local
+.env.production
+.env.development
+secrets.json
+config.local.json
+
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Runtime directories
+.rebel/
+.cache/
+.temp/
+
+# Backup files
+*.backup
+*.bak
+backup_*
+
+# System files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Temporary development files
+test_output/
+debug/

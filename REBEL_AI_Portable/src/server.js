@@ -457,8 +457,8 @@ class REBELAIServer {
             console.log('🚀==========================================🚀');
             console.log(`🌐 Server running at: http://${this.host}:${this.port}`);
             console.log(`🔒 Bound to: ${this.host} (localhost only for security)`);
-            console.log(`🔑 Session Token: ${this.sessionToken.substring(0, 8)}...`);
-            console.log(`🛡️  CSRF Token: ${this.csrfToken.substring(0, 8)}...`);
+            console.log(`🔑 Session Token: [SECURE - HIDDEN]`);
+            console.log(`🛡️  CSRF Token: [SECURE - HIDDEN]`);
             console.log(`📱 Platform: ${os.platform()} ${os.arch()}`);
             console.log(`💾 Portable Mode: ${this.isPortable ? 'ON' : 'OFF'}`);
             console.log(`🧠 AI Learning: ENABLED`);

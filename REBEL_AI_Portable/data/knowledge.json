@@ -189,10 +189,10 @@
         "success_rate": 0
       },
       "echo": {
-        "total_executions": 14,
-        "successful_executions": 14,
+        "total_executions": 15,
+        "successful_executions": 15,
         "failure_patterns": [],
-        "last_updated": "2025-09-15T10:21:46.302Z",
+        "last_updated": "2025-09-15T10:34:39.674Z",
         "success_rate": 100
       },
       "ne": {
@@ -519,7 +519,7 @@
           "echo \"🔋 Taşınabilir sistem. Pil bilgisi için: 'cat /proc/acpi/battery/BAT0/info' veya 'acpi -b'\""
         ],
         "confidence": 1,
-        "last_tested": "2025-09-15T10:21:46.302Z"
+        "last_tested": "2025-09-15T10:34:39.674Z"
       },
       "ne": {
         "works": false,
@@ -734,9 +734,9 @@
       "first_seen": "2025-09-15T07:09:24.054Z",
       "command_preferences": {
         "echo": {
-          "usage_count": 13,
+          "usage_count": 14,
           "success_rate": 100,
-          "avg_execution_time": 41.4703369140625
+          "avg_execution_time": 39.73516845703125
         },
         "date": {
           "usage_count": 2,
@@ -796,25 +796,25 @@
       },
       "performance_metrics": {},
       "capabilities": {},
-      "last_seen": "2025-09-15T10:24:04.548Z"
+      "last_seen": "2025-09-15T10:34:39.674Z"
     }
   },
   "conversationLearning": {
-    "totalConversations": 8,
+    "totalConversations": 9,
     "uniqueIntents": 1,
     "dijkstraNodes": 2,
     "topIntents": [
       {
         "intent": "command_execution",
-        "count": 8
+        "count": 9
       }
     ],
-    "learningEfficiency": 0.125,
+    "learningEfficiency": 0.1111111111111111,
     "dijkstraOptimizationMetrics": {
       "totalNodes": 2,
       "totalConnections": 2,
       "averageWeight": "2.925",
-      "pathUsage": 5,
+      "pathUsage": 6,
       "averageSuccessRate": "0.500",
       "optimizationEfficiency": "1.00"
     }
