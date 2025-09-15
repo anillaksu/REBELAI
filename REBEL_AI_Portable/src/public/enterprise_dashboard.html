@@ -105,6 +105,10 @@
                             <span class="nav-icon">📋</span>
                             <span class="nav-text">Audit Logs</span>
                         </a>
+                        <a href="#network" class="nav-item requires-system" data-module="network">
+                            <span class="nav-icon">🌐</span>
+                            <span class="nav-text">Network</span>
+                        </a>
                     </div>
                 </div>
 
@@ -1271,6 +1275,161 @@ Secure | Optimized | Intelligent
                             </div>
                             <div class="modal-body" id="logDetailsContent">
                                 <!-- Log details will be populated here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Network Module -->
+            <div class="content-module" id="networkModule">
+                <div class="module-header">
+                    <div class="module-title">
+                        <span class="module-icon">🌐</span>
+                        <h2>Network Monitoring</h2>
+                        <span class="module-badge">SYSTEM</span>
+                    </div>
+                    <div class="module-actions">
+                        <button class="btn btn-secondary" onclick="dashboard.refreshNetworkStatus()">
+                            <span class="btn-icon">🔄</span>
+                            Refresh
+                        </button>
+                        <button class="btn btn-primary" onclick="dashboard.runNetworkDiagnostics()">
+                            <span class="btn-icon">🔍</span>
+                            Diagnostics
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Network Overview Cards -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">🌐</div>
+                        <div class="stat-content">
+                            <div class="stat-value" id="networkInterface">Loading...</div>
+                            <div class="stat-label">Primary Interface</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">📡</div>
+                        <div class="stat-content">
+                            <div class="stat-value" id="networkIP">Loading...</div>
+                            <div class="stat-label">IP Address</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">⚡</div>
+                        <div class="stat-content">
+                            <div class="stat-value" id="networkLatency">Loading...</div>
+                            <div class="stat-label">Latency</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">🔌</div>
+                        <div class="stat-content">
+                            <div class="stat-value" id="networkConnections">Loading...</div>
+                            <div class="stat-label">Active Connections</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Network Tools Section -->
+                <div class="module-grid">
+                    <!-- Ping Tool -->
+                    <div class="module-card">
+                        <div class="card-header">
+                            <h3>🏓 Ping Tool</h3>
+                            <div class="card-actions">
+                                <button class="btn-icon" onclick="dashboard.clearPingResults()" title="Clear">🗑️</button>
+                            </div>
+                        </div>
+                        <div class="card-content">
+                            <div class="form-group">
+                                <label for="pingTarget">Target Host:</label>
+                                <div class="input-group">
+                                    <input type="text" id="pingTarget" placeholder="google.com, 8.8.8.8, etc." value="google.com">
+                                    <button class="btn btn-primary" onclick="dashboard.runPing()">
+                                        <span class="btn-icon">🏓</span>
+                                        Ping
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="ping-results" id="pingResults">
+                                <div class="ping-placeholder">Enter a host and click Ping to test connectivity</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Network Connections -->
+                    <div class="module-card">
+                        <div class="card-header">
+                            <h3>🔌 Active Connections</h3>
+                            <div class="card-actions">
+                                <button class="btn-icon" onclick="dashboard.refreshConnections()" title="Refresh">🔄</button>
+                            </div>
+                        </div>
+                        <div class="card-content">
+                            <div class="connections-table-container">
+                                <table class="connections-table" id="connectionsTable">
+                                    <thead>
+                                        <tr>
+                                            <th>Protocol</th>
+                                            <th>Local Address</th>
+                                            <th>Remote Address</th>
+                                            <th>State</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="connectionsTableBody">
+                                        <tr>
+                                            <td colspan="4" class="loading-row">Loading connections...</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Network Interface Info -->
+                    <div class="module-card">
+                        <div class="card-header">
+                            <h3>📡 Interface Information</h3>
+                            <div class="card-actions">
+                                <button class="btn-icon" onclick="dashboard.refreshInterfaceInfo()" title="Refresh">🔄</button>
+                            </div>
+                        </div>
+                        <div class="card-content">
+                            <div class="interface-info" id="interfaceInfo">
+                                <div class="info-loading">Loading interface information...</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Network Statistics -->
+                    <div class="module-card">
+                        <div class="card-header">
+                            <h3>📊 Network Statistics</h3>
+                            <div class="card-actions">
+                                <span class="live-indicator">🟢 LIVE</span>
+                            </div>
+                        </div>
+                        <div class="card-content">
+                            <div class="network-stats" id="networkStats">
+                                <div class="stat-row">
+                                    <span class="stat-name">Bytes Received:</span>
+                                    <span class="stat-value" id="bytesReceived">0</span>
+                                </div>
+                                <div class="stat-row">
+                                    <span class="stat-name">Bytes Sent:</span>
+                                    <span class="stat-value" id="bytesSent">0</span>
+                                </div>
+                                <div class="stat-row">
+                                    <span class="stat-name">Packets Received:</span>
+                                    <span class="stat-value" id="packetsReceived">0</span>
+                                </div>
+                                <div class="stat-row">
+                                    <span class="stat-name">Packets Sent:</span>
+                                    <span class="stat-value" id="packetsSent">0</span>
+                                </div>
                             </div>
                         </div>
                     </div>

@@ -71,6 +71,7 @@ class REBELAIServer {
         
         this.setupMiddleware();
         this.setupRoutes();
+        this.setupNetworkAPI();
         this.setupStaticFiles();
         this.setupWebSocket();
         this.startMetricsCollection();
@@ -966,6 +967,473 @@ class REBELAIServer {
                 new Date(log.timestamp) > new Date(Date.now() - 24 * 60 * 60 * 1000)
             ).length
         };
+    }
+
+    // ==========================================
+    // 🌐 Network API Endpoints
+    // ==========================================
+
+    setupNetworkAPI() {
+        // Network status overview
+        this.app.get('/api/network/status', this.authManager.authorize(['system:read']), async (req, res) => {
+            try {
+                const networkStatus = await this.getNetworkStatus();
+                res.json(networkStatus);
+            } catch (error) {
+                console.error('🌐 Network status error:', error);
+                res.status(500).json({ error: 'Failed to get network status' });
+            }
+        });
+
+        // Network diagnostics
+        this.app.post('/api/network/diagnostics', this.authManager.authorize(['system:read']), async (req, res) => {
+            try {
+                const diagnostics = await this.runNetworkDiagnostics();
+                res.json(diagnostics);
+            } catch (error) {
+                console.error('🔍 Network diagnostics error:', error);
+                res.status(500).json({ error: 'Failed to run network diagnostics' });
+            }
+        });
+
+        // Ping tool
+        this.app.post('/api/network/ping', this.authManager.authorize(['system:read']), async (req, res) => {
+            try {
+                const { target } = req.body;
+                
+                if (!target || typeof target !== 'string') {
+                    return res.status(400).json({ error: 'Target hostname or IP is required' });
+                }
+
+                const pingResult = await this.runPing(target);
+                res.json(pingResult);
+            } catch (error) {
+                console.error('🏓 Ping error:', error);
+                res.status(500).json({ error: 'Failed to ping target', target: req.body.target });
+            }
+        });
+
+        // Active connections
+        this.app.get('/api/network/connections', this.authManager.authorize(['system:read']), async (req, res) => {
+            try {
+                const connections = await this.getActiveConnections();
+                res.json({ connections });
+            } catch (error) {
+                console.error('🔌 Network connections error:', error);
+                res.status(500).json({ error: 'Failed to get network connections' });
+            }
+        });
+
+        // Network interfaces
+        this.app.get('/api/network/interfaces', this.authManager.authorize(['system:read']), async (req, res) => {
+            try {
+                const interfaces = await this.getNetworkInterfaces();
+                res.json({ interfaces });
+            } catch (error) {
+                console.error('📡 Network interfaces error:', error);
+                res.status(500).json({ error: 'Failed to get network interfaces' });
+            }
+        });
+
+        // Network statistics
+        this.app.get('/api/network/stats', this.authManager.authorize(['system:read']), async (req, res) => {
+            try {
+                const stats = await this.getNetworkStats();
+                res.json(stats);
+            } catch (error) {
+                console.error('📊 Network stats error:', error);
+                res.status(500).json({ error: 'Failed to get network statistics' });
+            }
+        });
+    }
+
+    // Network helper methods
+    async getNetworkStatus() {
+        const { spawn } = require('child_process');
+        
+        return new Promise((resolve) => {
+            // Get basic network info
+            const commands = {
+                interface: 'ip route | grep default | head -1 | awk \'{print $5}\'',
+                ip: 'hostname -I | awk \'{print $1}\'',
+                connections: 'netstat -an | grep ESTABLISHED | wc -l'
+            };
+
+            const results = {};
+            let completed = 0;
+            const total = Object.keys(commands).length;
+
+            for (const [key, cmd] of Object.entries(commands)) {
+                const child = spawn('bash', ['-c', cmd]);
+                let stdout = '';
+
+                child.stdout.on('data', (data) => {
+                    stdout += data.toString();
+                });
+
+                child.on('close', (code) => {
+                    results[key] = stdout.trim() || 'N/A';
+                    completed++;
+                    
+                    if (completed === total) {
+                        // Add latency test
+                        this.testLatency().then(latency => {
+                            resolve({
+                                interface: results.interface,
+                                ip: results.ip,
+                                latency: latency,
+                                connections: parseInt(results.connections) || 0
+                            });
+                        });
+                    }
+                });
+
+                child.on('error', () => {
+                    results[key] = 'Error';
+                    completed++;
+                    
+                    if (completed === total) {
+                        resolve({
+                            interface: results.interface || 'Unknown',
+                            ip: results.ip || 'Unknown',
+                            latency: 'N/A',
+                            connections: parseInt(results.connections) || 0
+                        });
+                    }
+                });
+            }
+        });
+    }
+
+    async testLatency() {
+        const { spawn } = require('child_process');
+        
+        return new Promise((resolve) => {
+            const child = spawn('ping', ['-c', '1', '-W', '2', '8.8.8.8']);
+            let stdout = '';
+
+            child.stdout.on('data', (data) => {
+                stdout += data.toString();
+            });
+
+            child.on('close', (code) => {
+                if (code === 0) {
+                    const match = stdout.match(/time=([0-9.]+)/);
+                    if (match) {
+                        resolve(`${match[1]} ms`);
+                    } else {
+                        resolve('N/A');
+                    }
+                } else {
+                    resolve('N/A');
+                }
+            });
+
+            child.on('error', () => {
+                resolve('N/A');
+            });
+        });
+    }
+
+    async runNetworkDiagnostics() {
+        const tests = [
+            { test: 'Internet Connectivity', command: 'ping -c 2 8.8.8.8' },
+            { test: 'DNS Resolution', command: 'nslookup google.com' },
+            { test: 'Network Interface', command: 'ip addr show' },
+            { test: 'Default Gateway', command: 'ip route | grep default' }
+        ];
+
+        const results = [];
+        
+        for (const { test, command } of tests) {
+            try {
+                const result = await this.executeCommand(command);
+                results.push({
+                    test,
+                    status: result.success ? '✅ PASS' : '❌ FAIL',
+                    details: result.success ? 'Test completed successfully' : result.error
+                });
+            } catch (error) {
+                results.push({
+                    test,
+                    status: '❌ ERROR',
+                    details: error.message
+                });
+            }
+        }
+
+        return { results };
+    }
+
+    async runPing(target) {
+        const { spawn } = require('child_process');
+        
+        // Validate target
+        const validTarget = /^[a-zA-Z0-9.-]+$/.test(target);
+        if (!validTarget) {
+            return {
+                success: false,
+                target,
+                error: 'Invalid target format'
+            };
+        }
+
+        return new Promise((resolve) => {
+            const child = spawn('ping', ['-c', '4', '-W', '3', target]);
+            let stdout = '';
+            let stderr = '';
+
+            child.stdout.on('data', (data) => {
+                stdout += data.toString();
+            });
+
+            child.stderr.on('data', (data) => {
+                stderr += data.toString();
+            });
+
+            child.on('close', (code) => {
+                const lines = stdout.split('\n').filter(line => line.trim());
+                const results = lines.map(line => ({
+                    success: code === 0,
+                    output: line.trim()
+                }));
+
+                resolve({
+                    success: code === 0,
+                    target,
+                    results: results.length > 0 ? results : [{ success: false, error: stderr || 'No response' }],
+                    error: code !== 0 ? (stderr || 'Ping failed') : null
+                });
+            });
+
+            child.on('error', (error) => {
+                resolve({
+                    success: false,
+                    target,
+                    error: error.message,
+                    results: []
+                });
+            });
+        });
+    }
+
+    async getActiveConnections() {
+        const { spawn } = require('child_process');
+        
+        return new Promise((resolve) => {
+            const child = spawn('netstat', ['-tuln']);
+            let stdout = '';
+
+            child.stdout.on('data', (data) => {
+                stdout += data.toString();
+            });
+
+            child.on('close', (code) => {
+                if (code === 0) {
+                    const lines = stdout.split('\n').slice(2); // Skip headers
+                    const connections = [];
+
+                    for (const line of lines) {
+                        const parts = line.trim().split(/\s+/);
+                        if (parts.length >= 6) {
+                            connections.push({
+                                protocol: parts[0],
+                                local_address: parts[3],
+                                remote_address: parts[4] === '0.0.0.0:*' ? 'LISTENING' : parts[4],
+                                state: parts[5] || 'LISTENING'
+                            });
+                        }
+                    }
+
+                    resolve(connections.slice(0, 20)); // Limit to first 20 connections
+                } else {
+                    resolve([]);
+                }
+            });
+
+            child.on('error', () => {
+                resolve([]);
+            });
+        });
+    }
+
+    async getNetworkInterfaces() {
+        const { spawn } = require('child_process');
+        
+        return new Promise((resolve) => {
+            const child = spawn('ip', ['addr', 'show']);
+            let stdout = '';
+
+            child.stdout.on('data', (data) => {
+                stdout += data.toString();
+            });
+
+            child.on('close', (code) => {
+                if (code === 0) {
+                    const interfaces = this.parseNetworkInterfaces(stdout);
+                    resolve(interfaces);
+                } else {
+                    resolve([]);
+                }
+            });
+
+            child.on('error', () => {
+                resolve([]);
+            });
+        });
+    }
+
+    parseNetworkInterfaces(output) {
+        const interfaces = [];
+        const lines = output.split('\n');
+        let currentInterface = null;
+
+        for (const line of lines) {
+            const trimmed = line.trim();
+            
+            // Interface header line (starts with number)
+            if (/^\d+:/.test(trimmed)) {
+                if (currentInterface) {
+                    interfaces.push(currentInterface);
+                }
+                
+                const match = trimmed.match(/^\d+:\s*([^:]+):/);
+                if (match) {
+                    currentInterface = {
+                        name: match[1],
+                        status: trimmed.includes('UP') ? 'up' : 'down',
+                        ip: null,
+                        mac: null,
+                        type: 'ethernet'
+                    };
+                }
+            }
+            // IPv4 address line
+            else if (trimmed.startsWith('inet ') && currentInterface) {
+                const ipMatch = trimmed.match(/inet\s+([^/\s]+)/);
+                if (ipMatch) {
+                    currentInterface.ip = ipMatch[1];
+                }
+            }
+            // MAC address line
+            else if (trimmed.startsWith('link/ether') && currentInterface) {
+                const macMatch = trimmed.match(/link\/ether\s+([^\s]+)/);
+                if (macMatch) {
+                    currentInterface.mac = macMatch[1];
+                }
+            }
+        }
+
+        // Add the last interface
+        if (currentInterface) {
+            interfaces.push(currentInterface);
+        }
+
+        // Filter out loopback and empty interfaces
+        return interfaces.filter(iface => 
+            !iface.name.startsWith('lo') && 
+            (iface.ip || iface.mac)
+        );
+    }
+
+    async getNetworkStats() {
+        const { spawn } = require('child_process');
+        
+        return new Promise((resolve) => {
+            const child = spawn('cat', ['/proc/net/dev']);
+            let stdout = '';
+
+            child.stdout.on('data', (data) => {
+                stdout += data.toString();
+            });
+
+            child.on('close', (code) => {
+                if (code === 0) {
+                    const stats = this.parseNetworkStats(stdout);
+                    resolve(stats);
+                } else {
+                    resolve({
+                        bytes_received: 0,
+                        bytes_sent: 0,
+                        packets_received: 0,
+                        packets_sent: 0
+                    });
+                }
+            });
+
+            child.on('error', () => {
+                resolve({
+                    bytes_received: 0,
+                    bytes_sent: 0,
+                    packets_received: 0,
+                    packets_sent: 0
+                });
+            });
+        });
+    }
+
+    parseNetworkStats(output) {
+        const lines = output.split('\n').slice(2); // Skip header lines
+        let totalBytesRx = 0;
+        let totalBytesTx = 0;
+        let totalPacketsRx = 0;
+        let totalPacketsTx = 0;
+
+        for (const line of lines) {
+            const parts = line.trim().split(/\s+/);
+            if (parts.length >= 17) {
+                const interface_name = parts[0].replace(':', '');
+                
+                // Skip loopback interface
+                if (interface_name === 'lo') continue;
+                
+                totalBytesRx += parseInt(parts[1]) || 0;
+                totalPacketsRx += parseInt(parts[2]) || 0;
+                totalBytesTx += parseInt(parts[9]) || 0;
+                totalPacketsTx += parseInt(parts[10]) || 0;
+            }
+        }
+
+        return {
+            bytes_received: totalBytesRx,
+            bytes_sent: totalBytesTx,
+            packets_received: totalPacketsRx,
+            packets_sent: totalPacketsTx
+        };
+    }
+
+    async executeCommand(command) {
+        const { spawn } = require('child_process');
+        
+        return new Promise((resolve) => {
+            const child = spawn('bash', ['-c', command]);
+            let stdout = '';
+            let stderr = '';
+
+            child.stdout.on('data', (data) => {
+                stdout += data.toString();
+            });
+
+            child.stderr.on('data', (data) => {
+                stderr += data.toString();
+            });
+
+            child.on('close', (code) => {
+                resolve({
+                    success: code === 0,
+                    output: stdout.trim(),
+                    error: stderr.trim()
+                });
+            });
+
+            child.on('error', (error) => {
+                resolve({
+                    success: false,
+                    output: '',
+                    error: error.message
+                });
+            });
+        });
     }
 
     // 🔒 SECURITY: CSV Sanitization to prevent formula injection attacks

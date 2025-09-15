@@ -372,27 +372,27 @@
         "success_rate": 0
       },
       "ifconfig": {
-        "total_executions": 2,
+        "total_executions": 3,
         "successful_executions": 0,
         "failure_patterns": [
           {
             "pattern": "command_not_found",
             "description": "Command does not exist on this platform",
             "suggested_action": "find_alternative",
-            "count": 4,
+            "count": 6,
             "first_seen": "2025-09-15T10:44:12.328Z",
-            "last_seen": "2025-09-15T10:48:27.696Z"
+            "last_seen": "2025-09-15T19:06:30.490Z"
           },
           {
             "pattern": "unknown_error",
             "description": "Unrecognized error pattern",
             "suggested_action": "manual_review",
-            "count": 2,
+            "count": 3,
             "first_seen": "2025-09-15T10:44:12.328Z",
-            "last_seen": "2025-09-15T10:48:27.696Z"
+            "last_seen": "2025-09-15T19:06:30.490Z"
           }
         ],
-        "last_updated": "2025-09-15T10:48:27.696Z",
+        "last_updated": "2025-09-15T19:06:30.490Z",
         "success_rate": 0
       },
       "du": {
@@ -410,19 +410,19 @@
         "success_rate": 100
       },
       "ping": {
-        "total_executions": 1,
+        "total_executions": 2,
         "successful_executions": 0,
         "failure_patterns": [
           {
             "pattern": "command_not_found",
             "description": "Command does not exist on this platform",
             "suggested_action": "find_alternative",
-            "count": 2,
+            "count": 4,
             "first_seen": "2025-09-15T10:47:56.405Z",
-            "last_seen": "2025-09-15T10:47:56.405Z"
+            "last_seen": "2025-09-15T19:05:36.393Z"
           }
         ],
-        "last_updated": "2025-09-15T10:47:56.406Z",
+        "last_updated": "2025-09-15T19:05:36.393Z",
         "success_rate": 0
       },
       "history": {
@@ -465,27 +465,27 @@
         "success_rate": 0
       },
       "systemctl": {
-        "total_executions": 2,
+        "total_executions": 3,
         "successful_executions": 0,
         "failure_patterns": [
           {
             "pattern": "command_not_found",
             "description": "Command does not exist on this platform",
             "suggested_action": "find_alternative",
-            "count": 2,
+            "count": 3,
             "first_seen": "2025-09-15T13:10:29.083Z",
-            "last_seen": "2025-09-15T13:13:12.114Z"
+            "last_seen": "2025-09-15T18:56:35.915Z"
           },
           {
             "pattern": "unknown_error",
             "description": "Unrecognized error pattern",
             "suggested_action": "manual_review",
-            "count": 2,
+            "count": 3,
             "first_seen": "2025-09-15T13:10:29.083Z",
-            "last_seen": "2025-09-15T13:13:12.114Z"
+            "last_seen": "2025-09-15T18:56:35.915Z"
           }
         ],
-        "last_updated": "2025-09-15T13:13:12.114Z",
+        "last_updated": "2025-09-15T18:56:35.915Z",
         "success_rate": 0
       },
       "clear": {
@@ -493,6 +493,13 @@
         "successful_executions": 1,
         "failure_patterns": [],
         "last_updated": "2025-09-15T13:11:57.810Z",
+        "success_rate": 100
+      },
+      "free": {
+        "total_executions": 1,
+        "successful_executions": 1,
+        "failure_patterns": [],
+        "last_updated": "2025-09-15T18:51:47.365Z",
         "success_rate": 100
       }
     }
@@ -768,8 +775,8 @@
         "variations": [
           "ifconfig | head -20"
         ],
-        "confidence": 0.09999999999999998,
-        "last_tested": "2025-09-15T10:48:27.696Z"
+        "confidence": 0,
+        "last_tested": "2025-09-15T19:06:30.490Z"
       },
       "du": {
         "works": true,
@@ -792,8 +799,8 @@
         "variations": [
           "ping -c 4 google.com"
         ],
-        "confidence": 0.19999999999999998,
-        "last_tested": "2025-09-15T10:47:56.406Z"
+        "confidence": 0.09999999999999998,
+        "last_tested": "2025-09-15T19:05:36.393Z"
       },
       "history": {
         "works": false,
@@ -824,8 +831,8 @@
         "variations": [
           "systemctl --type=service --state=running | head -10"
         ],
-        "confidence": 0.09999999999999998,
-        "last_tested": "2025-09-15T13:13:12.114Z"
+        "confidence": 0,
+        "last_tested": "2025-09-15T18:56:35.915Z"
       },
       "clear": {
         "works": true,
@@ -834,6 +841,14 @@
         ],
         "confidence": 0.7999999999999999,
         "last_tested": "2025-09-15T13:11:57.810Z"
+      },
+      "free": {
+        "works": true,
+        "variations": [
+          "free -h"
+        ],
+        "confidence": 0.7999999999999999,
+        "last_tested": "2025-09-15T18:51:47.366Z"
       }
     },
     "darwin": {
@@ -866,7 +881,7 @@
         ],
         "reason": "command_not_found",
         "confidence": 0.8,
-        "created": "2025-09-15T10:48:27.696Z"
+        "created": "2025-09-15T19:06:30.490Z"
       },
       "ping": {
         "alternatives": [
@@ -875,7 +890,7 @@
         ],
         "reason": "command_not_found",
         "confidence": 0.8,
-        "created": "2025-09-15T10:47:56.406Z"
+        "created": "2025-09-15T19:05:36.393Z"
       }
     }
   },
@@ -1100,39 +1115,62 @@
           "avg_execution_time": 7513.5
         },
         "systemctl": {
-          "usage_count": 2,
+          "usage_count": 3,
           "success_rate": 0,
-          "avg_execution_time": 11273.125
+          "avg_execution_time": 13147.0625
         },
         "clear": {
           "usage_count": 1,
           "success_rate": 100,
           "avg_execution_time": 18.5
+        },
+        "free": {
+          "usage_count": 1,
+          "success_rate": 100,
+          "avg_execution_time": 14
+        },
+        "ping": {
+          "usage_count": 1,
+          "success_rate": 0,
+          "avg_execution_time": 17
+        },
+        "ifconfig": {
+          "usage_count": 1,
+          "success_rate": 0,
+          "avg_execution_time": 5013
         }
       },
       "performance_metrics": {},
       "capabilities": {},
-      "last_seen": "2025-09-15T13:13:12.114Z"
+      "last_seen": "2025-09-15T19:06:30.490Z"
     }
   },
   "conversationLearning": {
-    "totalConversations": 26,
+    "totalConversations": 30,
     "uniqueIntents": 1,
     "dijkstraNodes": 2,
     "topIntents": [
       {
         "intent": "command_execution",
-        "count": 26
+        "count": 30
       }
     ],
-    "learningEfficiency": 0.038461538461538464,
+    "learningEfficiency": 0.03333333333333333,
     "dijkstraOptimizationMetrics": {
       "totalNodes": 2,
       "totalConnections": 2,
       "averageWeight": "2.925",
-      "pathUsage": 23,
+      "pathUsage": 27,
       "averageSuccessRate": "0.500",
       "optimizationEfficiency": "1.00"
     }
+  },
+  "learning_stats": {
+    "total_devices": 3,
+    "current_device": "585cf566",
+    "platforms_learned": 1,
+    "total_commands_learned": 36,
+    "avg_success_rate": 33,
+    "fallback_routes": 2
   }
 }

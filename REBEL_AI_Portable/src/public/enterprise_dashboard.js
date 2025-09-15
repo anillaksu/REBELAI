@@ -150,10 +150,12 @@ class EnterpriseDashboard {
                 if (this.isShowingSuggestions && this.currentSuggestion >= 0) {
                     this.applySuggestion();
                 } else {
-                    this.requestAISuggestions(e.target.value);
+                    // Enhanced tab auto-completion
+                    this.handleEnhancedTabCompletion(e.target.value);
                 }
             } else if (e.key === 'Escape') {
                 this.hideSmartSuggestions();
+                this.hideTabCompletions();
             }
         });
 
@@ -521,6 +523,9 @@ class EnterpriseDashboard {
         } else if (moduleId === 'logs') {
             console.log('📋 Audit Logs module activated - initializing');
             this.initializeAuditLogs();
+        } else if (moduleId === 'network') {
+            console.log('🌐 Network module activated - initializing network monitoring');
+            this.initializeNetworkModule();
         }
     }
 
@@ -932,12 +937,18 @@ class EnterpriseDashboard {
 
     // Terminal functionality
     initializeTerminal() {
+        // Initialize enhanced terminal features first
+        this.initializeEnhancedTerminal();
+        
         this.addTerminalMessage('system', '🛡️ Enterprise Terminal Ready - AI Learning Enabled');
         this.addTerminalMessage('system', `Welcome back, ${this.userData.username}! Your session is secure.`);
         
         if (this.userData.role === 'ROOT' || this.userData.role === 'OWNER') {
             this.addTerminalMessage('system', '⚡ Hardware control permissions detected');
         }
+        
+        // Add welcome message about enhanced features
+        this.addTerminalMessage('system', '🎯 Enhanced Terminal Features: Tab completion, AI suggestions, smart history');
     }
 
     async executeCommand() {
@@ -3625,6 +3636,740 @@ If you lose access to your authentication device, you can use these codes to reg
         console.log('📋 Viewing details for log:', logId);
         // Implement detailed log view modal or expand functionality
         this.showNotification('📋 Log details feature coming soon', 'info');
+    }
+
+    // ==========================================
+    // 🌐 NETWORK MODULE METHODS
+    // ==========================================
+
+    initializeNetworkModule() {
+        console.log('🌐 Network module initializing...');
+        this.loadNetworkStatus();
+        this.refreshConnections();
+        this.refreshInterfaceInfo();
+        this.startNetworkStatsInterval();
+    }
+
+    async loadNetworkStatus() {
+        try {
+            // Load basic network info
+            const response = await fetch('/api/network/status', {
+                headers: {
+                    'Authorization': `Bearer ${this.authToken}`,
+                    'Content-Type': 'application/json'
+                },
+                credentials: 'include'
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                this.updateNetworkOverview(data);
+            }
+        } catch (error) {
+            console.error('Network status error:', error);
+            this.updateNetworkOverview({
+                interface: 'Unknown',
+                ip: 'Loading...',
+                latency: 'N/A',
+                connections: 0
+            });
+        }
+    }
+
+    updateNetworkOverview(data) {
+        const networkInterface = document.getElementById('networkInterface');
+        const networkIP = document.getElementById('networkIP');
+        const networkLatency = document.getElementById('networkLatency');
+        const networkConnections = document.getElementById('networkConnections');
+
+        if (networkInterface) networkInterface.textContent = data.interface || 'Unknown';
+        if (networkIP) networkIP.textContent = data.ip || 'Loading...';
+        if (networkLatency) networkLatency.textContent = data.latency || 'N/A';
+        if (networkConnections) networkConnections.textContent = data.connections || '0';
+    }
+
+    async refreshNetworkStatus() {
+        this.showNotification('🔄 Refreshing network status...', 'info');
+        await this.loadNetworkStatus();
+        await this.refreshConnections();
+        await this.refreshInterfaceInfo();
+        this.showNotification('✅ Network status refreshed', 'success');
+    }
+
+    async runNetworkDiagnostics() {
+        this.showNotification('🔍 Running network diagnostics...', 'info');
+        try {
+            const response = await fetch('/api/network/diagnostics', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${this.authToken}`,
+                    'Content-Type': 'application/json'
+                },
+                credentials: 'include'
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                this.showNetworkDiagnosticsResults(data);
+            }
+        } catch (error) {
+            console.error('Network diagnostics error:', error);
+            this.showNotification('❌ Network diagnostics failed', 'error');
+        }
+    }
+
+    showNetworkDiagnosticsResults(data) {
+        const results = data.results || [];
+        let message = '🔍 Network Diagnostics Results:\n\n';
+        
+        results.forEach(result => {
+            message += `• ${result.test}: ${result.status}\n`;
+            if (result.details) {
+                message += `  ${result.details}\n`;
+            }
+        });
+
+        // Show in modal or notification
+        this.showNotification(message, 'info', 10000);
+    }
+
+    async runPing() {
+        const pingTarget = document.getElementById('pingTarget');
+        const pingResults = document.getElementById('pingResults');
+        
+        if (!pingTarget || !pingTarget.value.trim()) {
+            this.showNotification('Please enter a target host', 'error');
+            return;
+        }
+
+        const target = pingTarget.value.trim();
+        
+        // Show loading
+        if (pingResults) {
+            pingResults.innerHTML = '<div class="ping-loading">🏓 Pinging ' + target + '...</div>';
+        }
+
+        try {
+            const response = await fetch('/api/network/ping', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${this.authToken}`,
+                    'Content-Type': 'application/json'
+                },
+                credentials: 'include',
+                body: JSON.stringify({ target })
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                this.displayPingResults(data);
+            }
+        } catch (error) {
+            console.error('Ping error:', error);
+            if (pingResults) {
+                pingResults.innerHTML = '<div class="ping-error">❌ Ping failed: ' + error.message + '</div>';
+            }
+        }
+    }
+
+    displayPingResults(data) {
+        const pingResults = document.getElementById('pingResults');
+        if (!pingResults) return;
+
+        let html = '<div class="ping-results-container">';
+        
+        if (data.success) {
+            html += '<div class="ping-success">✅ ' + data.target + ' is reachable</div>';
+            
+            if (data.results && data.results.length > 0) {
+                html += '<div class="ping-details">';
+                data.results.forEach(result => {
+                    const status = result.success ? '✅' : '❌';
+                    html += `<div class="ping-line">${status} ${result.output || result.error}</div>`;
+                });
+                html += '</div>';
+            }
+        } else {
+            html += '<div class="ping-error">❌ ' + data.target + ' is not reachable</div>';
+            if (data.error) {
+                html += '<div class="ping-error-details">' + data.error + '</div>';
+            }
+        }
+        
+        html += '</div>';
+        pingResults.innerHTML = html;
+    }
+
+    clearPingResults() {
+        const pingResults = document.getElementById('pingResults');
+        if (pingResults) {
+            pingResults.innerHTML = '<div class="ping-placeholder">Enter a host and click Ping to test connectivity</div>';
+        }
+    }
+
+    async refreshConnections() {
+        const connectionsTableBody = document.getElementById('connectionsTableBody');
+        
+        if (connectionsTableBody) {
+            connectionsTableBody.innerHTML = '<tr><td colspan="4" class="loading-row">Loading connections...</td></tr>';
+        }
+
+        try {
+            const response = await fetch('/api/network/connections', {
+                headers: {
+                    'Authorization': `Bearer ${this.authToken}`,
+                    'Content-Type': 'application/json'
+                },
+                credentials: 'include'
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                this.displayConnections(data.connections || []);
+            }
+        } catch (error) {
+            console.error('Connections error:', error);
+            if (connectionsTableBody) {
+                connectionsTableBody.innerHTML = '<tr><td colspan="4" class="error-row">❌ Failed to load connections</td></tr>';
+            }
+        }
+    }
+
+    displayConnections(connections) {
+        const connectionsTableBody = document.getElementById('connectionsTableBody');
+        if (!connectionsTableBody) return;
+
+        if (connections.length === 0) {
+            connectionsTableBody.innerHTML = '<tr><td colspan="4" class="empty-row">No active connections</td></tr>';
+            return;
+        }
+
+        let html = '';
+        connections.forEach(conn => {
+            const stateClass = conn.state === 'ESTABLISHED' ? 'state-connected' : 'state-other';
+            html += `
+                <tr>
+                    <td><span class="protocol-badge">${conn.protocol}</span></td>
+                    <td><code>${conn.local_address}</code></td>
+                    <td><code>${conn.remote_address}</code></td>
+                    <td><span class="state-badge ${stateClass}">${conn.state}</span></td>
+                </tr>
+            `;
+        });
+        
+        connectionsTableBody.innerHTML = html;
+    }
+
+    async refreshInterfaceInfo() {
+        const interfaceInfo = document.getElementById('interfaceInfo');
+        
+        if (interfaceInfo) {
+            interfaceInfo.innerHTML = '<div class="info-loading">Loading interface information...</div>';
+        }
+
+        try {
+            const response = await fetch('/api/network/interfaces', {
+                headers: {
+                    'Authorization': `Bearer ${this.authToken}`,
+                    'Content-Type': 'application/json'
+                },
+                credentials: 'include'
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                this.displayInterfaceInfo(data.interfaces || []);
+            }
+        } catch (error) {
+            console.error('Interface info error:', error);
+            if (interfaceInfo) {
+                interfaceInfo.innerHTML = '<div class="info-error">❌ Failed to load interface information</div>';
+            }
+        }
+    }
+
+    displayInterfaceInfo(interfaces) {
+        const interfaceInfo = document.getElementById('interfaceInfo');
+        if (!interfaceInfo) return;
+
+        if (interfaces.length === 0) {
+            interfaceInfo.innerHTML = '<div class="info-empty">No network interfaces found</div>';
+            return;
+        }
+
+        let html = '<div class="interface-list">';
+        interfaces.forEach(iface => {
+            const statusClass = iface.status === 'up' ? 'status-up' : 'status-down';
+            html += `
+                <div class="interface-item">
+                    <div class="interface-header">
+                        <span class="interface-name">${iface.name}</span>
+                        <span class="interface-status ${statusClass}">${iface.status}</span>
+                    </div>
+                    <div class="interface-details">
+                        <div class="interface-detail">
+                            <span class="detail-label">IP:</span>
+                            <span class="detail-value">${iface.ip || 'N/A'}</span>
+                        </div>
+                        <div class="interface-detail">
+                            <span class="detail-label">MAC:</span>
+                            <span class="detail-value">${iface.mac || 'N/A'}</span>
+                        </div>
+                        <div class="interface-detail">
+                            <span class="detail-label">Type:</span>
+                            <span class="detail-value">${iface.type || 'N/A'}</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+        });
+        html += '</div>';
+        
+        interfaceInfo.innerHTML = html;
+    }
+
+    startNetworkStatsInterval() {
+        // Clear any existing interval
+        if (this.networkStatsInterval) {
+            clearInterval(this.networkStatsInterval);
+        }
+
+        // Update network stats every 5 seconds
+        this.networkStatsInterval = setInterval(() => {
+            this.updateNetworkStats();
+        }, 5000);
+
+        // Initial update
+        this.updateNetworkStats();
+    }
+
+    async updateNetworkStats() {
+        try {
+            const response = await fetch('/api/network/stats', {
+                headers: {
+                    'Authorization': `Bearer ${this.authToken}`,
+                    'Content-Type': 'application/json'
+                },
+                credentials: 'include'
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                this.displayNetworkStats(data);
+            }
+        } catch (error) {
+            console.error('Network stats error:', error);
+        }
+    }
+
+    displayNetworkStats(stats) {
+        const bytesReceived = document.getElementById('bytesReceived');
+        const bytesSent = document.getElementById('bytesSent');
+        const packetsReceived = document.getElementById('packetsReceived');
+        const packetsSent = document.getElementById('packetsSent');
+
+        if (bytesReceived) bytesReceived.textContent = this.formatBytes(stats.bytes_received || 0);
+        if (bytesSent) bytesSent.textContent = this.formatBytes(stats.bytes_sent || 0);
+        if (packetsReceived) packetsReceived.textContent = (stats.packets_received || 0).toLocaleString();
+        if (packetsSent) packetsSent.textContent = (stats.packets_sent || 0).toLocaleString();
+    }
+
+    formatBytes(bytes) {
+        if (bytes === 0) return '0 B';
+        const k = 1024;
+        const sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    }
+
+    // ==========================================
+    // 🔧 ENHANCED TERMINAL METHODS
+    // ==========================================
+
+    handleEnhancedTabCompletion(currentInput) {
+        const input = currentInput.trim().toLowerCase();
+        
+        // Common command templates with auto-completion
+        const commonCommands = {
+            'l': 'ls -la',
+            'ls': 'ls -la',
+            'p': 'pwd',
+            'w': 'whoami',
+            'df': 'df -h',
+            'du': 'du -sh',
+            'ps': 'ps aux',
+            'top': 'top -n 1',
+            'free': 'free -h',
+            'date': 'date',
+            'history': 'history | tail -10',
+            'clear': 'clear',
+            'cat': 'cat ',
+            'grep': 'grep -i ',
+            'find': 'find . -name ',
+            'chmod': 'chmod 755 ',
+            'chown': 'chown -R ',
+            'tar': 'tar -xzf ',
+            'wget': 'wget ',
+            'curl': 'curl -X GET ',
+            'ssh': 'ssh user@',
+            'scp': 'scp -r ',
+            'git': 'git status',
+            'npm': 'npm install ',
+            'pip': 'pip install ',
+            'sudo': 'sudo ',
+            'service': 'service ',
+            'systemctl': 'systemctl status ',
+            'netstat': 'netstat -tuln',
+            'ping': 'ping google.com',
+            'traceroute': 'traceroute google.com',
+            'iptables': 'iptables -L'
+        };
+
+        // Turkish command mappings
+        const turkishCommands = {
+            'dosyalar': 'ls -la',
+            'nerede': 'pwd',
+            'kim': 'whoami', 
+            'saat': 'date',
+            'disk': 'df -h',
+            'hafıza': 'free -h',
+            'işlemler': 'ps aux',
+            'temizle': 'clear',
+            'geçmiş': 'history | tail -10',
+            'ağ': 'netstat -tuln',
+            'bağlantı': 'ping google.com'
+        };
+
+        // Find matches
+        let matches = [];
+        const allCommands = { ...commonCommands, ...turkishCommands };
+        
+        if (input) {
+            // Find exact matches first
+            if (allCommands[input]) {
+                matches.push(allCommands[input]);
+            }
+            
+            // Then find partial matches
+            Object.keys(allCommands).forEach(cmd => {
+                if (cmd.startsWith(input) && cmd !== input) {
+                    matches.push(allCommands[cmd]);
+                }
+            });
+            
+            // Add command history matches
+            this.commandHistory.forEach(historyCmd => {
+                if (historyCmd.toLowerCase().startsWith(input) && !matches.includes(historyCmd)) {
+                    matches.push(historyCmd);
+                }
+            });
+        }
+
+        // Remove duplicates and limit to 5 suggestions
+        matches = [...new Set(matches)].slice(0, 5);
+
+        if (matches.length === 1) {
+            // Single match: auto-complete directly
+            this.applyTabCompletion(matches[0]);
+        } else if (matches.length > 1) {
+            // Multiple matches: show suggestions
+            this.showTabCompletions(matches, input);
+        } else {
+            // No matches: try AI suggestions
+            this.requestAISuggestions(currentInput);
+        }
+    }
+
+    applyTabCompletion(completion) {
+        const commandInput = document.getElementById('commandInput');
+        if (commandInput) {
+            commandInput.value = completion;
+            // Position cursor at end
+            commandInput.setSelectionRange(completion.length, completion.length);
+            commandInput.focus();
+        }
+        this.hideTabCompletions();
+        
+        // Show notification
+        this.showNotification('🔧 Command completed', 'success', 1000);
+    }
+
+    showTabCompletions(matches, inputText) {
+        // Create or update tab completions dropdown
+        let dropdown = document.getElementById('tabCompletionsDropdown');
+        
+        if (!dropdown) {
+            dropdown = document.createElement('div');
+            dropdown.id = 'tabCompletionsDropdown';
+            dropdown.className = 'tab-completions-dropdown';
+            
+            const commandInput = document.getElementById('commandInput');
+            if (commandInput) {
+                commandInput.parentNode.appendChild(dropdown);
+            }
+        }
+
+        let html = '<div class="tab-completions-header">💡 Tab Completions</div>';
+        html += '<div class="tab-completions-list">';
+        
+        matches.forEach((match, index) => {
+            const isExact = match.toLowerCase().startsWith(inputText.toLowerCase());
+            const className = isExact ? 'tab-completion-exact' : 'tab-completion-partial';
+            
+            html += `
+                <div class="tab-completion-item ${className}" data-completion="${match}" data-index="${index}">
+                    <span class="completion-command">${match}</span>
+                    <span class="completion-hint">Tab to apply</span>
+                </div>
+            `;
+        });
+        
+        html += '</div>';
+        html += '<div class="tab-completions-footer">Use Tab to apply • Esc to close</div>';
+        
+        dropdown.innerHTML = html;
+        dropdown.style.display = 'block';
+
+        // Add click handlers
+        dropdown.querySelectorAll('.tab-completion-item').forEach(item => {
+            item.addEventListener('click', () => {
+                const completion = item.dataset.completion;
+                this.applyTabCompletion(completion);
+            });
+        });
+
+        this.isShowingTabCompletions = true;
+        this.tabCompletionMatches = matches;
+        this.selectedTabCompletion = 0;
+        
+        // Highlight first item
+        this.highlightTabCompletion(0);
+    }
+
+    highlightTabCompletion(index) {
+        const items = document.querySelectorAll('.tab-completion-item');
+        items.forEach((item, i) => {
+            item.classList.toggle('selected', i === index);
+        });
+    }
+
+    hideTabCompletions() {
+        const dropdown = document.getElementById('tabCompletionsDropdown');
+        if (dropdown) {
+            dropdown.style.display = 'none';
+        }
+        this.isShowingTabCompletions = false;
+        this.tabCompletionMatches = [];
+        this.selectedTabCompletion = -1;
+    }
+
+    // Enhanced history display with visual improvements
+    navigateHistory(direction) {
+        if (this.commandHistory.length === 0) return;
+
+        const commandInput = document.getElementById('commandInput');
+        if (!commandInput) return;
+
+        if (direction === 'up') {
+            if (this.historyIndex > 0) {
+                this.historyIndex--;
+                commandInput.value = this.commandHistory[this.historyIndex];
+                this.showHistoryHint('up');
+            } else if (this.historyIndex === -1) {
+                this.historyIndex = this.commandHistory.length - 1;
+                commandInput.value = this.commandHistory[this.historyIndex];
+                this.showHistoryHint('up');
+            }
+        } else if (direction === 'down') {
+            if (this.historyIndex < this.commandHistory.length - 1 && this.historyIndex !== -1) {
+                this.historyIndex++;
+                commandInput.value = this.commandHistory[this.historyIndex];
+                this.showHistoryHint('down');
+            } else {
+                this.historyIndex = -1;
+                commandInput.value = '';
+                this.hideHistoryHint();
+            }
+        }
+
+        // Position cursor at end
+        commandInput.setSelectionRange(commandInput.value.length, commandInput.value.length);
+    }
+
+    showHistoryHint(direction) {
+        // Create or update history hint
+        let hint = document.getElementById('historyHint');
+        
+        if (!hint) {
+            hint = document.createElement('div');
+            hint.id = 'historyHint';
+            hint.className = 'history-hint';
+            
+            const commandInput = document.getElementById('commandInput');
+            if (commandInput) {
+                commandInput.parentNode.appendChild(hint);
+            }
+        }
+
+        const currentPos = this.historyIndex + 1;
+        const totalCommands = this.commandHistory.length;
+        const icon = direction === 'up' ? '↑' : '↓';
+        
+        hint.innerHTML = `
+            <span class="history-icon">${icon}</span>
+            <span class="history-text">History ${currentPos}/${totalCommands}</span>
+            <span class="history-keys">Use ↑↓ keys</span>
+        `;
+        
+        hint.style.display = 'block';
+        
+        // Auto-hide after 3 seconds
+        clearTimeout(this.historyHintTimeout);
+        this.historyHintTimeout = setTimeout(() => {
+            this.hideHistoryHint();
+        }, 3000);
+    }
+
+    hideHistoryHint() {
+        const hint = document.getElementById('historyHint');
+        if (hint) {
+            hint.style.display = 'none';
+        }
+        clearTimeout(this.historyHintTimeout);
+    }
+
+    // Initialize enhanced terminal features
+    initializeEnhancedTerminal() {
+        // Initialize properties
+        this.isShowingTabCompletions = false;
+        this.tabCompletionMatches = [];
+        this.selectedTabCompletion = -1;
+        this.historyHintTimeout = null;
+
+        // Add CSS for terminal enhancements
+        this.addTerminalEnhancementStyles();
+    }
+
+    addTerminalEnhancementStyles() {
+        const style = document.createElement('style');
+        style.textContent = `
+        /* Tab Completions Dropdown */
+        .tab-completions-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: var(--bg-card);
+            border: 1px solid var(--border-primary);
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            z-index: 1000;
+            max-height: 300px;
+            overflow-y: auto;
+            margin-top: 5px;
+        }
+
+        .tab-completions-header {
+            padding: 8px 12px;
+            background: var(--bg-glass);
+            border-bottom: 1px solid var(--border-secondary);
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-accent);
+        }
+
+        .tab-completions-list {
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .tab-completion-item {
+            padding: 8px 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            transition: var(--transition-fast);
+            border-bottom: 1px solid var(--border-tertiary);
+        }
+
+        .tab-completion-item:hover,
+        .tab-completion-item.selected {
+            background: var(--bg-glass);
+            border-left: 3px solid var(--cyber-blue);
+        }
+
+        .completion-command {
+            font-family: var(--font-mono);
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        .completion-hint {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            opacity: 0.7;
+        }
+
+        .tab-completions-footer {
+            padding: 6px 12px;
+            background: var(--bg-glass);
+            border-top: 1px solid var(--border-secondary);
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-align: center;
+        }
+
+        /* History Hint */
+        .history-hint {
+            position: absolute;
+            top: -35px;
+            right: 0;
+            background: var(--bg-card);
+            border: 1px solid var(--border-primary);
+            border-radius: 6px;
+            padding: 6px 10px;
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            animation: fadeInDown 0.2s ease-out;
+        }
+
+        .history-icon {
+            color: var(--cyber-blue);
+            font-weight: bold;
+        }
+
+        .history-text {
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+
+        .history-keys {
+            color: var(--text-muted);
+            font-size: 0.7rem;
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Make terminal input container relative for positioning */
+        .terminal-input-container {
+            position: relative;
+        }
+        `;
+        
+        document.head.appendChild(style);
     }
 }
 
