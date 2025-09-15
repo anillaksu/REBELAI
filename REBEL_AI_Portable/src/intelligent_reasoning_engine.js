@@ -79,7 +79,7 @@ Güven seviyesi hesaplama:
             messages: [
                 {
                     role: "system",
-                    content: "Sen kullanıcı niyetlerini analiz eden bir uzmansın. Doğru ve güvenilir analizler yap."
+                    content: "Sen kullanıcı niyetlerini analiz eden bir uzmansın. Doğru ve güvenilir analizler yap. MUTLAKA geçerli JSON formatında cevap ver."
                 },
                 {
                     role: "user",
@@ -90,7 +90,19 @@ Güven seviyesi hesaplama:
             max_completion_tokens: 600
         });
 
-        return JSON.parse(response.choices[0].message.content);
+        const content = response.choices[0].message.content;
+        
+        // JSON parsing güvenliği
+        if (!content || content.trim() === '') {
+            throw new Error('Empty response from AI');
+        }
+        
+        try {
+            return JSON.parse(content);
+        } catch (parseError) {
+            console.log(`JSON Parse Error: ${parseError.message}, Content: ${content}`);
+            throw new Error(`Invalid JSON response: ${parseError.message}`);
+        }
     }
 
     // Netleştirici sorular sor
@@ -133,7 +145,7 @@ GitHub/repo/git durumunda otomatik çeviri yap:
             messages: [
                 {
                     role: "system",
-                    content: "Sen belirsiz durumları netleştiren akıllı bir asistansın."
+                    content: "Sen belirsiz durumları netleştiren akıllı bir asistansın. MUTLAKA geçerli JSON formatında cevap ver."
                 },
                 {
                     role: "user",
@@ -144,7 +156,18 @@ GitHub/repo/git durumunda otomatik çeviri yap:
             max_completion_tokens: 500
         });
 
-        return JSON.parse(response.choices[0].message.content);
+        const content = response.choices[0].message.content;
+        
+        if (!content || content.trim() === '') {
+            throw new Error('Empty response from AI');
+        }
+        
+        try {
+            return JSON.parse(content);
+        } catch (parseError) {
+            console.log(`JSON Parse Error in clarification: ${parseError.message}`);
+            throw new Error(`Invalid JSON in clarification: ${parseError.message}`);
+        }
     }
 
     // Netleştirme ile yeniden analiz
@@ -186,7 +209,7 @@ Güvenlik: Sadece güvenli komutlar öner.
             messages: [
                 {
                     role: "system",
-                    content: "Sen geliştirilmiş analiz yapan bir uzmansın. Yüksek güvenle doğru sonuçlar üret."
+                    content: "Sen geliştirilmiş analiz yapan bir uzmansın. Yüksek güvenle doğru sonuçlar üret. MUTLAKA geçerli JSON formatında cevap ver."
                 },
                 {
                     role: "user",
@@ -197,7 +220,18 @@ Güvenlik: Sadece güvenli komutlar öner.
             max_completion_tokens: 700
         });
 
-        return JSON.parse(response.choices[0].message.content);
+        const content = response.choices[0].message.content;
+        
+        if (!content || content.trim() === '') {
+            throw new Error('Empty response from reanalysis');
+        }
+        
+        try {
+            return JSON.parse(content);
+        } catch (parseError) {
+            console.log(`JSON Parse Error in reanalysis: ${parseError.message}`);
+            throw new Error(`Invalid JSON in reanalysis: ${parseError.message}`);
+        }
     }
 
     // Kendini doğrulama sistemi

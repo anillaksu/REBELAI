@@ -281,6 +281,22 @@
         ],
         "last_updated": "2025-09-15T07:36:33.749Z",
         "success_rate": 0
+      },
+      "Bu": {
+        "total_executions": 1,
+        "successful_executions": 0,
+        "failure_patterns": [
+          {
+            "pattern": "command_not_found",
+            "description": "Command does not exist on this platform",
+            "suggested_action": "find_alternative",
+            "count": 1,
+            "first_seen": "2025-09-15T07:49:21.676Z",
+            "last_seen": "2025-09-15T07:49:21.676Z"
+          }
+        ],
+        "last_updated": "2025-09-15T07:49:21.676Z",
+        "success_rate": 0
       }
     }
   },
@@ -501,6 +517,14 @@
         ],
         "confidence": 0.19999999999999998,
         "last_tested": "2025-09-15T07:36:33.749Z"
+      },
+      "Bu": {
+        "works": false,
+        "variations": [
+          "Bu sistem pille mi çalışıyor?"
+        ],
+        "confidence": 0.19999999999999998,
+        "last_tested": "2025-09-15T07:49:21.676Z"
       }
     },
     "darwin": {
@@ -665,11 +689,16 @@
           "usage_count": 1,
           "success_rate": 0,
           "avg_execution_time": 13
+        },
+        "Bu": {
+          "usage_count": 1,
+          "success_rate": 0,
+          "avg_execution_time": 13.5
         }
       },
       "performance_metrics": {},
       "capabilities": {},
-      "last_seen": "2025-09-15T07:48:44.365Z"
+      "last_seen": "2025-09-15T07:49:21.676Z"
     }
   }
 }

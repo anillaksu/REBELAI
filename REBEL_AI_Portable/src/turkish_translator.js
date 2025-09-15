@@ -116,6 +116,12 @@ class TurkishTranslator {
             'neler yapabilirsin': 'echo "⚡ Türkçe komutları anlayıp sistem komutlarına çevirebilirim: saat, dosyalar, sistem bilgisi, kullanıcı bilgisi ve daha fazlası!"',
             'hangi komutlar': 'echo "📋 Desteklediğim komutlar: saat, ben kimim, dosyalar, konum, sistem, işlemler, disk, ağ, yardım"',
             
+            // Sistem sorguları
+            'bu sistem pille mi çalışıyor': 'echo "🔋 Bu sistem taşınabilir modda çalışır. Pil durumu için sistem bilgisini kontrol edin: \'sistem\' veya \'uname -a\'"',
+            'pille çalışıyor mu': 'echo "🔋 Taşınabilir sistem. Pil bilgisi için: \'cat /proc/acpi/battery/BAT0/info\' veya \'acpi -b\'"',
+            'batarya durumu': 'echo "🔋 Batarya durumu kontrolü: \'acpi -b\' veya \'cat /sys/class/power_supply/BAT0/capacity\'"',
+            'güç durumu': 'echo "⚡ Güç durumu: \'acpi -a\' (AC adapter) veya \'systemctl status\'"',
+            
             // Clear/reset
             'temizle': 'clear',
             'ekranı temizle': 'clear',
