@@ -216,6 +216,8 @@ class AuthManager {
                                     (req.cookies && req.cookies.sessionToken) || 
                                     (req.cookies && req.cookies.rebel_session_token);
 
+                // Clean authorization check - debug removed
+
                 let user = null;
 
                 // Check JWT token

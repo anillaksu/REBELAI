@@ -333,7 +333,7 @@ class AuthDatabase {
     async createSession(userId, sessionData) {
         const sessionToken = this.generateToken();
         const refreshToken = this.generateToken();
-        const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
+        const expiresAt = Date.now() + 24 * 60 * 60 * 1000; // 24 hours (Unix timestamp)
 
         return new Promise((resolve, reject) => {
             this.db.run(
@@ -360,7 +360,7 @@ class AuthDatabase {
                  FROM sessions s
                  JOIN users u ON s.user_id = u.id
                  JOIN roles r ON u.role_id = r.id
-                 WHERE s.session_token = ? AND s.is_active = 1 AND s.expires_at > datetime('now')`,
+                 WHERE s.session_token = ? AND s.is_active = 1 AND s.expires_at > strftime('%s', 'now') * 1000`,
                 [sessionToken],
                 (err, row) => {
                     if (err) reject(err);
