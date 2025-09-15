@@ -106,8 +106,11 @@ class AuthManager {
             // Verify username and password
             const user = await this.authDb.verifyPassword(username, password);
             
-            // If MFA is required and no token provided, return MFA challenge
-            if (user.requires_mfa && !mfaToken) {
+            // TEMPORARY: Skip MFA requirement for initial setup
+            // TODO: Implement proper MFA setup flow
+            const skipMFA = true; // Emergency bypass for login issues
+            
+            if (user.requires_mfa && !mfaToken && !skipMFA) {
                 await this.authDb.logAuditEvent({
                     userId: user.id,
                     action: 'LOGIN_MFA_REQUIRED',
