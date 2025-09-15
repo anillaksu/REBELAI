@@ -81,10 +81,7 @@ class AuthRoutes {
                     username: z.string().min(3).max(50).regex(/^[a-zA-Z0-9_-]+$/),
                     email: z.string().email().optional(),
                     password: z.string().min(12).regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/),
-                    confirmPassword: z.string()
-                }).refine(data => data.password === data.confirmPassword, {
-                    message: "Passwords don't match",
-                    path: ["confirmPassword"]
+                    confirmPassword: z.string().optional()
                 });
 
                 const validatedData = schema.parse(req.body);

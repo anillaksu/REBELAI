@@ -206,7 +206,8 @@ class EnterpriseAuth {
             username: formData.get('username'),
             email: formData.get('email'),
             password: formData.get('password'),
-            roleId: this.selectedRole || 4 // Default to OPERATOR if no role selected
+            confirmPassword: formData.get('confirmPassword'),
+            selectedRole: this.selectedRole || 'OPERATOR' // Default to OPERATOR if no role selected
         };
 
         try {
