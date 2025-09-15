@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🛡️ REBEL AI Enterprise</title>
+    <link rel="stylesheet" href="enterprise_style.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🛡️</text></svg>">
+</head>
+<body>
+    <!-- Animated Background -->
+    <div class="animated-bg">
+        <div class="matrix-rain"></div>
+        <div class="circuit-lines"></div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="loading-overlay" style="display: none;">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">Processing...</div>
+    </div>
+
+    <!-- Main Container -->
+    <div class="main-container">
+        <!-- Header -->
+        <header class="enterprise-header">
+            <div class="logo-container">
+                <div class="logo-icon">🛡️</div>
+                <div class="logo-text">
+                    <div class="company-name">REBEL AI</div>
+                    <div class="product-name">Enterprise Edition</div>
+                </div>
+            </div>
+            <div class="security-badge">
+                <span class="security-icon">🔒</span>
+                <span class="security-text">Secure Access Portal</span>
+            </div>
+        </header>
+
+        <!-- Login/Signup Container -->
+        <main class="auth-container">
+            <!-- Login Form -->
+            <div id="loginForm" class="auth-form active">
+                <div class="form-header">
+                    <h2 class="form-title">🔐 Secure Login</h2>
+                    <p class="form-subtitle">Access your enterprise terminal</p>
+                </div>
+
+                <form class="auth-form-content" id="loginFormElement">
+                    <div class="input-group">
+                        <label for="loginUsername" class="input-label">
+                            <span class="label-icon">👤</span>
+                            Username or Email
+                        </label>
+                        <input type="text" id="loginUsername" name="username" class="auth-input" 
+                               placeholder="Enter your username or email" required>
+                        <div class="input-border"></div>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="loginPassword" class="input-label">
+                            <span class="label-icon">🔑</span>
+                            Password
+                        </label>
+                        <input type="password" id="loginPassword" name="password" class="auth-input" 
+                               placeholder="Enter your secure password" required>
+                        <div class="input-border"></div>
+                        <button type="button" class="password-toggle" id="loginPasswordToggle">👁️</button>
+                    </div>
+
+                    <!-- MFA Token (shown when needed) -->
+                    <div class="input-group" id="mfaTokenGroup" style="display: none;">
+                        <label for="mfaToken" class="input-label">
+                            <span class="label-icon">🔢</span>
+                            Two-Factor Authentication Code
+                        </label>
+                        <input type="text" id="mfaToken" name="mfaToken" class="auth-input" 
+                               placeholder="Enter 6-digit code from your authenticator app" 
+                               maxlength="6" pattern="[0-9]{6}">
+                        <div class="input-border"></div>
+                        <div class="mfa-help">
+                            <span class="help-text">Check your authenticator app for the 6-digit code</span>
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="auth-btn primary" id="loginBtn">
+                            <span class="btn-icon">⚡</span>
+                            <span class="btn-text">Sign In</span>
+                            <div class="btn-loading" style="display: none;">
+                                <div class="btn-spinner"></div>
+                            </div>
+                        </button>
+                    </div>
+
+                    <div class="form-footer">
+                        <a href="#" class="forgot-link" id="forgotPasswordLink">🔄 Forgot Password?</a>
+                        <div class="signup-prompt">
+                            New to REBEL AI Enterprise? 
+                            <a href="#" class="switch-form" data-target="signupForm">Create Account</a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Signup Form -->
+            <div id="signupForm" class="auth-form">
+                <div class="form-header">
+                    <h2 class="form-title">🚀 Create Account</h2>
+                    <p class="form-subtitle">Join the enterprise terminal ecosystem</p>
+                </div>
+
+                <form class="auth-form-content" id="signupFormElement">
+                    <div class="input-group">
+                        <label for="signupUsername" class="input-label">
+                            <span class="label-icon">👤</span>
+                            Username
+                        </label>
+                        <input type="text" id="signupUsername" name="username" class="auth-input" 
+                               placeholder="Choose a unique username" required>
+                        <div class="input-border"></div>
+                        <div class="input-validation" id="usernameValidation"></div>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="signupEmail" class="input-label">
+                            <span class="label-icon">📧</span>
+                            Email Address
+                        </label>
+                        <input type="email" id="signupEmail" name="email" class="auth-input" 
+                               placeholder="Enter your corporate email" required>
+                        <div class="input-border"></div>
+                        <div class="input-validation" id="emailValidation"></div>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="signupPassword" class="input-label">
+                            <span class="label-icon">🔑</span>
+                            Password
+                        </label>
+                        <input type="password" id="signupPassword" name="password" class="auth-input" 
+                               placeholder="Create a strong password" required>
+                        <div class="input-border"></div>
+                        <button type="button" class="password-toggle" id="signupPasswordToggle">👁️</button>
+                        <div class="password-strength" id="passwordStrength">
+                            <div class="strength-bar">
+                                <div class="strength-fill"></div>
+                            </div>
+                            <div class="strength-text">Password strength: <span></span></div>
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="confirmPassword" class="input-label">
+                            <span class="label-icon">🔒</span>
+                            Confirm Password
+                        </label>
+                        <input type="password" id="confirmPassword" name="confirmPassword" class="auth-input" 
+                               placeholder="Confirm your password" required>
+                        <div class="input-border"></div>
+                        <div class="input-validation" id="confirmPasswordValidation"></div>
+                    </div>
+
+                    <!-- Role Selection (for initial setup) -->
+                    <div class="role-selection" id="roleSelection" style="display: none;">
+                        <label class="input-label">
+                            <span class="label-icon">🏆</span>
+                            Account Type
+                        </label>
+                        <div class="role-options">
+                            <div class="role-option" data-role="ROOT">
+                                <div class="role-icon">👑</div>
+                                <div class="role-info">
+                                    <div class="role-name">Root Administrator</div>
+                                    <div class="role-desc">Full system access, user management</div>
+                                </div>
+                            </div>
+                            <div class="role-option" data-role="OWNER">
+                                <div class="role-icon">🔧</div>
+                                <div class="role-info">
+                                    <div class="role-name">System Owner</div>
+                                    <div class="role-desc">Hardware control, system management</div>
+                                </div>
+                            </div>
+                            <div class="role-option" data-role="ADMIN">
+                                <div class="role-icon">⚙️</div>
+                                <div class="role-info">
+                                    <div class="role-name">Administrator</div>
+                                    <div class="role-desc">Command execution, user support</div>
+                                </div>
+                            </div>
+                            <div class="role-option" data-role="OPERATOR">
+                                <div class="role-icon">💼</div>
+                                <div class="role-info">
+                                    <div class="role-name">Operator</div>
+                                    <div class="role-desc">Limited command access</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="auth-btn primary" id="signupBtn">
+                            <span class="btn-icon">🚀</span>
+                            <span class="btn-text">Create Account</span>
+                            <div class="btn-loading" style="display: none;">
+                                <div class="btn-spinner"></div>
+                            </div>
+                        </button>
+                    </div>
+
+                    <div class="form-footer">
+                        <div class="login-prompt">
+                            Already have an account? 
+                            <a href="#" class="switch-form" data-target="loginForm">Sign In</a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <!-- MFA Setup Form (shown after successful registration) -->
+            <div id="mfaSetupForm" class="auth-form">
+                <div class="form-header">
+                    <h2 class="form-title">🔐 Secure Your Account</h2>
+                    <p class="form-subtitle">Set up Two-Factor Authentication</p>
+                </div>
+
+                <div class="mfa-setup-content">
+                    <div class="mfa-step active" id="mfaStep1">
+                        <h3 class="step-title">📱 Step 1: Install Authenticator App</h3>
+                        <p class="step-desc">Install Google Authenticator, Authy, or any TOTP app on your mobile device.</p>
+                        <div class="app-recommendations">
+                            <div class="app-option">
+                                <span class="app-icon">📱</span>
+                                <span class="app-name">Google Authenticator</span>
+                            </div>
+                            <div class="app-option">
+                                <span class="app-icon">🔐</span>
+                                <span class="app-name">Authy</span>
+                            </div>
+                            <div class="app-option">
+                                <span class="app-icon">🛡️</span>
+                                <span class="app-name">Microsoft Authenticator</span>
+                            </div>
+                        </div>
+                        <button class="auth-btn secondary" id="mfaNext1">Next Step →</button>
+                    </div>
+
+                    <div class="mfa-step" id="mfaStep2">
+                        <h3 class="step-title">📷 Step 2: Scan QR Code</h3>
+                        <p class="step-desc">Scan this QR code with your authenticator app:</p>
+                        <div class="qr-container">
+                            <div class="qr-code" id="qrCode">
+                                <div class="qr-placeholder">QR Code will appear here</div>
+                            </div>
+                        </div>
+                        <div class="manual-entry">
+                            <details>
+                                <summary>Can't scan? Enter manually</summary>
+                                <div class="manual-code">
+                                    <span class="code-label">Secret Key:</span>
+                                    <code id="secretKey">Loading...</code>
+                                    <button class="copy-btn" id="copySecret">📋 Copy</button>
+                                </div>
+                            </details>
+                        </div>
+                        <button class="auth-btn secondary" id="mfaNext2">Next Step →</button>
+                    </div>
+
+                    <div class="mfa-step" id="mfaStep3">
+                        <h3 class="step-title">🔢 Step 3: Verify Setup</h3>
+                        <p class="step-desc">Enter the 6-digit code from your authenticator app:</p>
+                        <div class="verification-input">
+                            <input type="text" id="mfaVerificationCode" class="auth-input large-input" 
+                                   placeholder="000000" maxlength="6" pattern="[0-9]{6}">
+                        </div>
+                        <div class="backup-codes" id="backupCodes" style="display: none;">
+                            <h4>🔄 Backup Recovery Codes</h4>
+                            <p class="backup-desc">Save these codes securely. Each can only be used once if you lose access to your authenticator:</p>
+                            <div class="codes-container" id="backupCodesList">
+                                <!-- Backup codes will be inserted here -->
+                            </div>
+                            <div class="backup-actions">
+                                <button class="auth-btn secondary" id="downloadBackupCodes">💾 Download Codes</button>
+                                <button class="auth-btn secondary" id="printBackupCodes">🖨️ Print Codes</button>
+                            </div>
+                        </div>
+                        <button class="auth-btn primary" id="completeMfaSetup">
+                            <span class="btn-icon">✅</span>
+                            Complete Setup
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="enterprise-footer">
+            <div class="footer-content">
+                <div class="footer-left">
+                    <span class="powered-by">Powered by REBEL AI Enterprise</span>
+                    <span class="version">v2.0.0</span>
+                </div>
+                <div class="footer-right">
+                    <span class="security-notice">🔒 End-to-end encrypted</span>
+                    <span class="compliance">SOC2 Compliant</span>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Notification Container -->
+    <div id="notifications" class="notifications"></div>
+
+    <!-- Scripts -->
+    <script src="enterprise_auth.js"></script>
+</body>
+</html>

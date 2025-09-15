@@ -92,6 +92,24 @@ class REBELAIServer {
         this.app.use(express.static(publicPath));
     }
 
+    // 📖 Helper method to read main HTML template
+    readMainHtml() {
+        let htmlContent = fs.readFileSync(path.join(__dirname, 'public', 'index.html'), 'utf8');
+        
+        // Inject session and CSRF tokens into HTML
+        htmlContent = htmlContent.replace(
+            '<head>',
+            `<head>
+            <script>
+                window.REBEL_SESSION_TOKEN = '{{SESSION_TOKEN}}';
+                window.REBEL_CSRF_TOKEN = '{{CSRF_TOKEN}}';
+                window.REBEL_USER_DATA = {{USER_DATA}};
+            </script>`
+        );
+        
+        return htmlContent;
+    }
+
     // Authentication middleware
     requireAuth(req, res, next) {
         const authHeader = req.headers.authorization;
@@ -119,31 +137,60 @@ class REBELAIServer {
         // 🔐 Mount Enterprise Authentication Routes
         this.app.use('/api/auth', this.authRoutes.getRouter());
         
-        // Main terminal page with tokens
+        // 🛡️ Enterprise Authentication Routes
+        this.app.get('/login', (req, res) => {
+            res.sendFile(path.join(__dirname, 'public', 'enterprise_login.html'));
+        });
+
+        this.app.get('/signup', (req, res) => {
+            res.sendFile(path.join(__dirname, 'public', 'enterprise_login.html'));
+        });
+
+        // 🎮 Enterprise Dashboard Route (authenticated users)
+        this.app.get('/dashboard', this.authManager.authorize(['knowledge:read']), (req, res) => {
+            // Inject user data and tokens for authenticated access
+            const html = this.readMainHtml();
+            // 🔒 SECURITY: Only expose safe user data to client
+            const safeUserData = {
+                username: req.user.username,
+                role: req.user.role,
+                permissions: req.user.permissions
+            };
+            
+            const authenticatedHtml = html
+                .replace('{{USER_DATA}}', JSON.stringify(safeUserData))
+                .replace('{{SESSION_TOKEN}}', this.sessionToken)
+                .replace('{{CSRF_TOKEN}}', this.csrfToken);
+            res.send(authenticatedHtml);
+        });
+
+        // 🔐 Secure user info endpoint (authenticated only)
+        this.app.get('/api/me', this.authManager.authorize(['knowledge:read']), (req, res) => {
+            const safeUserData = {
+                username: req.user.username,
+                role: req.user.role,
+                permissions: req.user.permissions
+            };
+            res.json(safeUserData);
+        });
+
+        // Main root route - redirect to login or dashboard based on auth
         this.app.get('/', (req, res) => {
-            let htmlContent = fs.readFileSync(path.join(__dirname, 'public', 'index.html'), 'utf8');
+            // 🔒 SECURITY: Safe cookie checking with fallback
+            const sessionToken = req.cookies ? req.cookies['rebel_session_token'] : null;
+            const authHeader = req.headers.authorization;
             
-            // Inject session and CSRF tokens into HTML
-            htmlContent = htmlContent.replace(
-                '<head>',
-                `<head>
-                <script>
-                    window.REBEL_SESSION_TOKEN = '${this.sessionToken}';
-                    window.REBEL_CSRF_TOKEN = '${this.csrfToken}';
-                </script>`
-            );
-            
-            res.send(htmlContent);
+            if (sessionToken || (authHeader && authHeader.startsWith('Bearer '))) {
+                // Redirect authenticated users to dashboard
+                res.redirect('/dashboard');
+            } else {
+                // Redirect unauthenticated users to login
+                res.redirect('/login');
+            }
         });
         
-        // Auth endpoint to get tokens
-        this.app.get('/api/auth', (req, res) => {
-            res.json({
-                session_token: this.sessionToken,
-                csrf_token: this.csrfToken,
-                expires_on_restart: true
-            });
-        });
+        // 🔒 REMOVED: Legacy token endpoint (security vulnerability)
+        // Enterprise authentication now handles all token management securely
 
         // Execute command - Enterprise auth with role-based permissions
         this.app.post('/api/execute', this.authManager.authorize(['execute']), async (req, res) => {
