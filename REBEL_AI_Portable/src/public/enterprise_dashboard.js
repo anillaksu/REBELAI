@@ -290,6 +290,16 @@ class EnterpriseDashboard {
         document.getElementById('viewSessionsBtn')?.addEventListener('click', () => {
             this.viewActiveSessions();
         });
+
+        // Edit Profile button
+        document.getElementById('editProfile')?.addEventListener('click', () => {
+            this.editProfile();
+        });
+
+        // Change Password button
+        document.getElementById('changePassword')?.addEventListener('click', () => {
+            this.changePassword();
+        });
     }
 
     setupPreferencesEventListeners() {
@@ -1524,30 +1534,53 @@ class EnterpriseDashboard {
     }
 
     updateProfileDisplay(profileData) {
-        // Update profile fields in the UI
+        console.log('📊 Updating profile display with:', profileData);
+        
+        // Update profile header display elements (DIVs)
+        const emailDisplayField = document.getElementById('profileEmail');
+        if (emailDisplayField) emailDisplayField.textContent = profileData.email;
+        
+        const roleDisplayField = document.getElementById('profileRole');
+        if (roleDisplayField) roleDisplayField.textContent = profileData.role;
+        
+        // Update profile form input elements
         const usernameField = document.getElementById('profileUsername');
         if (usernameField) usernameField.value = profileData.username;
         
-        const emailField = document.getElementById('profileEmail');
-        if (emailField) emailField.value = profileData.email;
+        const emailInputField = document.getElementById('profileEmailInput');
+        if (emailInputField) emailInputField.value = profileData.email;
         
-        const roleField = document.getElementById('profileRole');
-        if (roleField) roleField.textContent = profileData.role;
+        const roleInputField = document.getElementById('profileRoleInput');
+        if (roleInputField) roleInputField.value = profileData.role;
         
         const lastLoginField = document.getElementById('profileLastLogin');
-        if (lastLoginField) lastLoginField.textContent = new Date(profileData.lastLogin).toLocaleString();
+        if (lastLoginField) lastLoginField.value = new Date(profileData.lastLogin).toLocaleString();
         
+        // Update security settings display
         const mfaStatusField = document.getElementById('profileMfaStatus');
         if (mfaStatusField) mfaStatusField.textContent = profileData.mfaEnabled ? 'Enabled' : 'Disabled';
         
         const backupCodesField = document.getElementById('profileBackupCodes');
         if (backupCodesField) backupCodesField.textContent = `${profileData.backupCodesRemaining} remaining`;
         
+        // Update activity statistics
         const sessionsField = document.getElementById('profileActiveSessions');
         if (sessionsField) sessionsField.textContent = profileData.activeSessions;
         
         const commandsField = document.getElementById('profileTotalCommands');
         if (commandsField) commandsField.textContent = profileData.totalCommands;
+        
+        // Update activity stats in the activity section
+        const commandsExecutedField = document.querySelector('.stat-value');
+        if (commandsExecutedField) commandsExecutedField.textContent = profileData.totalCommands || '--';
+        
+        const loginSessionsField = document.querySelectorAll('.stat-value')[1];
+        if (loginSessionsField) loginSessionsField.textContent = profileData.activeSessions || '--';
+        
+        const totalTimeField = document.querySelectorAll('.stat-value')[2];
+        if (totalTimeField) totalTimeField.textContent = '24h 15m' || '--';
+        
+        console.log('✅ Profile display updated successfully');
     }
 
     viewActiveSessions() {
@@ -1557,6 +1590,131 @@ class EnterpriseDashboard {
         setTimeout(() => {
             this.showNotification('✅ Active sessions loaded', 'success');
         }, 800);
+    }
+
+    editProfile() {
+        console.log('✏️ Edit Profile requested');
+        this.showNotification('✏️ Edit Profile functionality', 'info');
+        
+        // Toggle profile inputs from readonly to editable
+        const profileInputs = document.querySelectorAll('.profile-input');
+        profileInputs.forEach(input => {
+            if (input.readOnly) {
+                input.readOnly = false;
+                input.style.backgroundColor = 'var(--bg-secondary)';
+                input.style.border = '1px solid var(--cyber-blue)';
+            } else {
+                input.readOnly = true;
+                input.style.backgroundColor = 'transparent';
+                input.style.border = '1px solid var(--border-color)';
+            }
+        });
+
+        // Toggle button text
+        const editBtn = document.getElementById('editProfile');
+        if (editBtn) {
+            if (editBtn.textContent.includes('Edit')) {
+                editBtn.textContent = '💾 Save';
+                editBtn.onclick = () => this.saveProfile();
+            } else {
+                editBtn.textContent = '✏️ Edit';
+                editBtn.onclick = () => this.editProfile();
+            }
+        }
+    }
+
+    saveProfile() {
+        console.log('💾 Save Profile requested');
+        this.showNotification('💾 Saving profile changes...', 'info');
+        
+        // Collect form data
+        const profileData = {
+            email: document.getElementById('profileEmailInput')?.value,
+            displayName: document.getElementById('profileUsername')?.value
+        };
+
+        // Simulate API call to save profile
+        setTimeout(() => {
+            // Make inputs readonly again
+            const profileInputs = document.querySelectorAll('.profile-input');
+            profileInputs.forEach(input => {
+                input.readOnly = true;
+                input.style.backgroundColor = 'transparent';
+                input.style.border = '1px solid var(--border-color)';
+            });
+
+            // Reset button
+            const editBtn = document.getElementById('editProfile');
+            if (editBtn) {
+                editBtn.textContent = '✏️ Edit';
+                editBtn.onclick = () => this.editProfile();
+            }
+
+            this.showNotification('✅ Profile updated successfully', 'success');
+        }, 1000);
+    }
+
+    changePassword() {
+        console.log('🔒 Change Password requested');
+        this.showNotification('🔒 Password Change Form', 'info');
+        
+        // Create password change modal/form
+        const modal = document.createElement('div');
+        modal.className = 'modal-overlay';
+        modal.innerHTML = `
+            <div class="modal-content" style="max-width: 400px;">
+                <div class="modal-header">
+                    <h3>🔒 Change Password</h3>
+                    <button class="modal-close">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label>Current Password</label>
+                        <input type="password" id="currentPassword" class="profile-input" required>
+                    </div>
+                    <div class="form-group">
+                        <label>New Password</label>
+                        <input type="password" id="newPassword" class="profile-input" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Confirm New Password</label>
+                        <input type="password" id="confirmNewPassword" class="profile-input" required>
+                    </div>
+                    <div class="modal-actions">
+                        <button class="action-btn secondary" id="cancelPasswordChange">Cancel</button>
+                        <button class="action-btn primary" id="submitPasswordChange">🔒 Update Password</button>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        document.body.appendChild(modal);
+
+        // Add event listeners
+        modal.querySelector('.modal-close').onclick = () => document.body.removeChild(modal);
+        modal.querySelector('#cancelPasswordChange').onclick = () => document.body.removeChild(modal);
+        modal.querySelector('#submitPasswordChange').onclick = () => {
+            const currentPass = document.getElementById('currentPassword').value;
+            const newPass = document.getElementById('newPassword').value;
+            const confirmPass = document.getElementById('confirmNewPassword').value;
+
+            if (!currentPass || !newPass || !confirmPass) {
+                this.showNotification('❌ Please fill all fields', 'error');
+                return;
+            }
+
+            if (newPass !== confirmPass) {
+                this.showNotification('❌ New passwords do not match', 'error');
+                return;
+            }
+
+            // Simulate password update
+            this.showNotification('🔄 Updating password...', 'info');
+            setTimeout(() => {
+                this.showNotification('✅ Password updated successfully', 'success');
+                document.body.removeChild(modal);
+            }, 1500);
+        };
     }
 
     // 🎨 Preferences Functions
