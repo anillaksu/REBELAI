@@ -102,8 +102,7 @@ Odak noktası: Hata analizi değil, kullanıcının gerçek niyetini anlamak.
                 }
             ],
             response_format: { type: "json_object" },
-            max_completion_tokens: 600,
-            temperature: 0
+            max_completion_tokens: 600
         });
 
         // Güvenli JSON parsing
@@ -175,8 +174,7 @@ Değerlendirme kriterleri:
                 }
             ],
             response_format: { type: "json_object" },
-            max_completion_tokens: 500,
-            temperature: 0
+            max_completion_tokens: 500
         });
 
         // Güvenli JSON parsing
@@ -375,6 +373,11 @@ Değerlendirme kriterleri:
                     this.dijkstraKnowledge = new Map(Object.entries(data.dijkstraKnowledge));
                 }
                 
+                // Path performance'ı Map'e dönüştür (Advanced Dijkstra)
+                if (data.pathPerformance) {
+                    this.pathPerformance = new Map(Object.entries(data.pathPerformance));
+                }
+                
                 console.log(`📚 Loaded ${this.conversationHistory.length} previous conversations`);
             }
         } catch (error) {
@@ -394,6 +397,7 @@ Değerlendirme kriterleri:
                 conversationHistory: this.conversationHistory,
                 intentPatterns: Object.fromEntries(this.intentPatterns),
                 dijkstraKnowledge: Object.fromEntries(this.dijkstraKnowledge),
+                pathPerformance: this.pathPerformance ? Object.fromEntries(this.pathPerformance) : {},
                 lastUpdated: new Date().toISOString()
             };
 
