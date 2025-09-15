@@ -629,6 +629,151 @@ class REBELAIServer {
                 res.status(500).json({ error: 'Failed to reset learning data' });
             }
         });
+
+        // ==========================================
+        // 📈 System Monitor API Endpoints
+        // ==========================================
+
+        // Real-time system metrics endpoint
+        this.app.get('/api/system/metrics', this.authManager.authorize(['system:read']), async (req, res) => {
+            try {
+                const [cpu, mem, fsSize, networkStats] = await Promise.all([
+                    si.currentLoad(),
+                    si.mem(),
+                    si.fsSize(),
+                    si.networkStats()
+                ]);
+
+                const metrics = {
+                    timestamp: new Date().toISOString(),
+                    cpu: {
+                        usage: cpu.currentLoad || 0,
+                        cores: cpu.cpus ? cpu.cpus.length : os.cpus().length,
+                        loadAvg: os.loadavg()
+                    },
+                    memory: {
+                        total: mem.total,
+                        used: mem.used,
+                        free: mem.free,
+                        available: mem.available,
+                        usage_percent: (mem.used / mem.total) * 100
+                    },
+                    disk: fsSize.map(disk => ({
+                        fs: disk.fs,
+                        type: disk.type,
+                        size: disk.size,
+                        used: disk.used,
+                        available: disk.available,
+                        usage_percent: (disk.used / disk.size) * 100
+                    })),
+                    network: networkStats.length > 0 ? {
+                        rx_bytes: networkStats.reduce((sum, iface) => sum + (iface.rx_bytes || 0), 0),
+                        tx_bytes: networkStats.reduce((sum, iface) => sum + (iface.tx_bytes || 0), 0),
+                        rx_sec: networkStats.reduce((sum, iface) => sum + (iface.rx_sec || 0), 0),
+                        tx_sec: networkStats.reduce((sum, iface) => sum + (iface.tx_sec || 0), 0)
+                    } : { rx_bytes: 0, tx_bytes: 0, rx_sec: 0, tx_sec: 0 }
+                };
+
+                res.json(metrics);
+            } catch (error) {
+                console.error('📊 System metrics error:', error);
+                res.status(500).json({ error: 'Failed to get system metrics' });
+            }
+        });
+
+        // System information endpoint
+        this.app.get('/api/system/info', this.authManager.authorize(['system:read']), async (req, res) => {
+            try {
+                const [osInfo, system, cpu] = await Promise.all([
+                    si.osInfo(),
+                    si.system(),
+                    si.cpu()
+                ]);
+
+                const info = {
+                    timestamp: new Date().toISOString(),
+                    platform: os.platform(),
+                    arch: os.arch(),
+                    hostname: os.hostname(),
+                    distro: osInfo.distro || osInfo.platform,
+                    release: osInfo.release,
+                    kernel: osInfo.kernel,
+                    uptime: os.uptime(),
+                    node_version: process.version,
+                    manufacturer: system.manufacturer,
+                    model: system.model,
+                    cpu: {
+                        manufacturer: cpu.manufacturer,
+                        brand: cpu.brand,
+                        family: cpu.family,
+                        model: cpu.model,
+                        cores: cpu.cores,
+                        physicalCores: cpu.physicalCores,
+                        processors: cpu.processors,
+                        speed: cpu.speed
+                    },
+                    memory: {
+                        total: os.totalmem(),
+                        free: os.freemem()
+                    },
+                    currentLoad: await si.currentLoad(),
+                    processes: {
+                        running: os.loadavg()[0],
+                        blocked: os.loadavg()[1],
+                        sleeping: os.loadavg()[2]
+                    }
+                };
+
+                res.json(info);
+            } catch (error) {
+                console.error('ℹ️ System info error:', error);
+                res.status(500).json({ error: 'Failed to get system information' });
+            }
+        });
+
+        // Top processes endpoint
+        this.app.get('/api/system/processes', this.authManager.authorize(['system:read']), async (req, res) => {
+            try {
+                const processes = await si.processes();
+                
+                // Sort by CPU usage and get top 15
+                const topProcesses = processes.list
+                    .sort((a, b) => (b.pcpu || 0) - (a.pcpu || 0))
+                    .slice(0, 15)
+                    .map(proc => ({
+                        pid: proc.pid,
+                        name: proc.name,
+                        command: proc.command,
+                        pcpu: proc.pcpu || 0,
+                        pmem: proc.pmem || 0,
+                        priority: proc.priority,
+                        mem_vsz: proc.mem_vsz,
+                        mem_rss: proc.mem_rss,
+                        nice: proc.nice,
+                        started: proc.started,
+                        state: proc.state,
+                        tty: proc.tty,
+                        user: proc.user,
+                        cpu: proc.cpu,
+                        mem: proc.mem
+                    }));
+
+                const processInfo = {
+                    timestamp: new Date().toISOString(),
+                    total: processes.all || 0,
+                    running: processes.running || 0,
+                    blocked: processes.blocked || 0,
+                    sleeping: processes.sleeping || 0,
+                    unknown: processes.unknown || 0,
+                    processes: topProcesses
+                };
+
+                res.json(processInfo.processes); // Send just the processes array for frontend compatibility
+            } catch (error) {
+                console.error('⚡ Processes error:', error);
+                res.status(500).json({ error: 'Failed to get processes information' });
+            }
+        });
     }
 
     generateBackupCodes() {

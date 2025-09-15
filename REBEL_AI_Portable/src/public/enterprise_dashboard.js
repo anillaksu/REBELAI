@@ -462,11 +462,20 @@ class EnterpriseDashboard {
             breadcrumb.innerHTML = `<span class="breadcrumb-item active">${moduleNames[moduleId] || moduleId}</span>`;
         }
 
+        // Clean up intervals when switching away from monitoring module
+        if (this.currentModule === 'monitoring' && moduleId !== 'monitoring') {
+            console.log('🧹 Cleaning up System Monitor intervals...');
+            this.stopMetricsUpdates();
+        }
+
         // Module-specific initialization and data loading
         if (moduleId === 'terminal') {
             this.focusTerminalInput();
         } else if (moduleId === 'knowledge') {
             this.loadKnowledgeData();
+        } else if (moduleId === 'monitoring') {
+            console.log('📈 System Monitor module activated - initializing metrics');
+            this.initializeSystemMonitor();
         } else if (moduleId === 'mfa') {
             console.log('🛡️ MFA Settings module activated - calling refreshMFAStatus()');
             this.refreshMFAStatus();
@@ -3007,6 +3016,317 @@ If you lose access to your authentication device, you can use these codes to reg
                 this.viewActiveSessions(); // Refresh the list
             }, 1000);
         }
+    }
+
+    // ==========================================
+    // 📈 System Monitor Methods
+    // ==========================================
+
+    initializeSystemMonitor() {
+        console.log('📈 Initializing System Monitor...');
+        
+        // Set up event listeners
+        this.setupMonitoringEventListeners();
+        
+        // Load initial metrics
+        this.loadSystemMetrics();
+        this.loadSystemInfo();
+        this.loadTopProcesses();
+        
+        // Start real-time updates
+        this.startMetricsUpdates();
+        
+        this.showNotification('📈 System Monitor initialized', 'success');
+    }
+
+    setupMonitoringEventListeners() {
+        // Refresh button
+        const refreshBtn = document.getElementById('refreshMetricsBtn');
+        if (refreshBtn) {
+            refreshBtn.addEventListener('click', () => {
+                this.refreshAllMetrics();
+            });
+        }
+
+        // Export button
+        const exportBtn = document.getElementById('exportMetricsBtn');
+        if (exportBtn) {
+            exportBtn.addEventListener('click', () => {
+                this.exportMetricsData();
+            });
+        }
+
+        // Save thresholds button
+        const saveThresholdsBtn = document.getElementById('saveThresholdsBtn');
+        if (saveThresholdsBtn) {
+            saveThresholdsBtn.addEventListener('click', () => {
+                this.saveAlertThresholds();
+            });
+        }
+    }
+
+    async loadSystemMetrics() {
+        try {
+            console.log('📊 Loading system metrics...');
+            const response = await fetch('/api/system/metrics', {
+                headers: {
+                    'Authorization': `Bearer ${this.authToken}`
+                }
+            });
+
+            if (response.ok) {
+                const metrics = await response.json();
+                this.updateMetricsDisplay(metrics);
+            } else {
+                throw new Error(`Failed to load metrics: ${response.status}`);
+            }
+        } catch (error) {
+            console.error('📊 Error loading system metrics:', error);
+            this.showNotification('❌ Failed to load system metrics', 'error');
+        }
+    }
+
+    async loadSystemInfo() {
+        try {
+            console.log('ℹ️ Loading system information...');
+            const response = await fetch('/api/system/info', {
+                headers: {
+                    'Authorization': `Bearer ${this.authToken}`
+                }
+            });
+
+            if (response.ok) {
+                const info = await response.json();
+                this.updateSystemInfoDisplay(info);
+            } else {
+                throw new Error(`Failed to load system info: ${response.status}`);
+            }
+        } catch (error) {
+            console.error('ℹ️ Error loading system info:', error);
+            this.showNotification('❌ Failed to load system information', 'error');
+        }
+    }
+
+    async loadTopProcesses() {
+        try {
+            console.log('⚡ Loading top processes...');
+            const response = await fetch('/api/system/processes', {
+                headers: {
+                    'Authorization': `Bearer ${this.authToken}`
+                }
+            });
+
+            if (response.ok) {
+                const processes = await response.json();
+                this.updateProcessesDisplay(processes);
+            } else {
+                throw new Error(`Failed to load processes: ${response.status}`);
+            }
+        } catch (error) {
+            console.error('⚡ Error loading processes:', error);
+            this.showNotification('❌ Failed to load processes', 'error');
+        }
+    }
+
+    updateMetricsDisplay(metrics) {
+        console.log('📊 Updating metrics display:', metrics);
+
+        // Update CPU
+        const cpuValue = document.getElementById('cpuValue');
+        const cpuStatus = document.getElementById('cpuStatus');
+        if (cpuValue && metrics.cpu) {
+            cpuValue.textContent = `${Math.round(metrics.cpu.usage)}%`;
+            this.updateMetricStatus(cpuStatus, metrics.cpu.usage, 80);
+        }
+
+        // Update Memory
+        const memoryValue = document.getElementById('memoryValue');
+        const memoryStatus = document.getElementById('memoryStatus');
+        if (memoryValue && metrics.memory) {
+            const memUsage = (metrics.memory.used / metrics.memory.total) * 100;
+            memoryValue.textContent = `${Math.round(memUsage)}%`;
+            this.updateMetricStatus(memoryStatus, memUsage, 90);
+        }
+
+        // Update Disk
+        const diskValue = document.getElementById('diskValue');
+        const diskStatus = document.getElementById('diskStatus');
+        if (diskValue && metrics.disk && metrics.disk[0]) {
+            const diskUsage = (metrics.disk[0].used / metrics.disk[0].size) * 100;
+            diskValue.textContent = `${Math.round(diskUsage)}%`;
+            this.updateMetricStatus(diskStatus, diskUsage, 85);
+        }
+
+        // Update Network
+        const networkValue = document.getElementById('networkValue');
+        const networkStatus = document.getElementById('networkStatus');
+        if (networkValue && metrics.network) {
+            const totalBytes = (metrics.network.rx_bytes || 0) + (metrics.network.tx_bytes || 0);
+            const kbps = totalBytes / 1024;
+            networkValue.textContent = `${Math.round(kbps)} KB/s`;
+            this.updateMetricStatus(networkStatus, kbps, 1000);
+        }
+    }
+
+    updateMetricStatus(statusElement, value, threshold) {
+        if (!statusElement) return;
+
+        if (value >= threshold) {
+            statusElement.textContent = 'Warning';
+            statusElement.className = 'metric-status warning';
+        } else if (value >= threshold * 0.8) {
+            statusElement.textContent = 'Caution';
+            statusElement.className = 'metric-status';
+        } else {
+            statusElement.textContent = 'Normal';
+            statusElement.className = 'metric-status';
+        }
+    }
+
+    updateSystemInfoDisplay(info) {
+        console.log('ℹ️ Updating system info display:', info);
+
+        const updates = {
+            'systemOS': `${info.platform} ${info.distro || ''}`,
+            'systemArch': info.arch,
+            'systemHostname': info.hostname,
+            'systemUptime': this.formatUptime(info.uptime),
+            'systemLoad': info.currentLoad ? `${Math.round(info.currentLoad.currentLoad)}%` : 'N/A',
+            'systemMemTotal': this.formatBytes(info.memory?.total || 0)
+        };
+
+        Object.entries(updates).forEach(([elementId, value]) => {
+            const element = document.getElementById(elementId);
+            if (element) {
+                element.textContent = value;
+            }
+        });
+    }
+
+    updateProcessesDisplay(processes) {
+        console.log('⚡ Updating processes display:', processes);
+
+        const processesTable = document.getElementById('processesTable');
+        if (!processesTable) return;
+
+        if (processes && processes.length > 0) {
+            processesTable.innerHTML = processes.slice(0, 10).map(process => `
+                <div class="table-row">
+                    <div class="table-col">${process.pid}</div>
+                    <div class="table-col">${process.name}</div>
+                    <div class="table-col">${Math.round(process.pcpu)}%</div>
+                    <div class="table-col">${Math.round(process.pmem)}%</div>
+                </div>
+            `).join('');
+        } else {
+            processesTable.innerHTML = '<div class="loading-row">No processes data available</div>';
+        }
+    }
+
+    startMetricsUpdates() {
+        // Update metrics every 5 seconds
+        this.metricsInterval = setInterval(() => {
+            if (this.currentModule === 'monitoring') {
+                this.loadSystemMetrics();
+            }
+        }, 5000);
+
+        console.log('📈 Started metrics auto-update (5s interval)');
+    }
+
+    stopMetricsUpdates() {
+        if (this.metricsInterval) {
+            clearInterval(this.metricsInterval);
+            this.metricsInterval = null;
+            console.log('📈 Stopped metrics auto-update');
+        }
+    }
+
+    refreshAllMetrics() {
+        console.log('🔄 Refreshing all metrics...');
+        this.showNotification('🔄 Refreshing system metrics...', 'info');
+        
+        Promise.all([
+            this.loadSystemMetrics(),
+            this.loadSystemInfo(),
+            this.loadTopProcesses()
+        ]).then(() => {
+            this.showNotification('✅ Metrics refreshed successfully', 'success');
+        }).catch(error => {
+            console.error('🔄 Error refreshing metrics:', error);
+            this.showNotification('❌ Failed to refresh metrics', 'error');
+        });
+    }
+
+    exportMetricsData() {
+        console.log('📊 Exporting metrics data...');
+        this.showNotification('📊 Preparing metrics export...', 'info');
+        
+        // Create export data
+        const exportData = {
+            timestamp: new Date().toISOString(),
+            system: {
+                hostname: document.getElementById('systemHostname')?.textContent,
+                os: document.getElementById('systemOS')?.textContent,
+                uptime: document.getElementById('systemUptime')?.textContent
+            },
+            metrics: {
+                cpu: document.getElementById('cpuValue')?.textContent,
+                memory: document.getElementById('memoryValue')?.textContent,
+                disk: document.getElementById('diskValue')?.textContent,
+                network: document.getElementById('networkValue')?.textContent
+            }
+        };
+
+        // Download as JSON
+        const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `system_metrics_${Date.now()}.json`;
+        a.click();
+        URL.revokeObjectURL(url);
+
+        this.showNotification('📊 Metrics exported successfully', 'success');
+    }
+
+    saveAlertThresholds() {
+        console.log('💾 Saving alert thresholds...');
+        
+        const thresholds = {
+            cpu: parseInt(document.getElementById('cpuThreshold')?.value) || 80,
+            memory: parseInt(document.getElementById('memoryThreshold')?.value) || 90,
+            disk: parseInt(document.getElementById('diskThreshold')?.value) || 85
+        };
+
+        localStorage.setItem('systemMonitorThresholds', JSON.stringify(thresholds));
+        this.showNotification('💾 Alert thresholds saved successfully', 'success');
+    }
+
+    formatUptime(seconds) {
+        if (!seconds) return 'Unknown';
+        
+        const days = Math.floor(seconds / 86400);
+        const hours = Math.floor((seconds % 86400) / 3600);
+        const minutes = Math.floor((seconds % 3600) / 60);
+        
+        if (days > 0) {
+            return `${days}d ${hours}h ${minutes}m`;
+        } else if (hours > 0) {
+            return `${hours}h ${minutes}m`;
+        } else {
+            return `${minutes}m`;
+        }
+    }
+
+    formatBytes(bytes) {
+        if (!bytes) return '0 B';
+        
+        const k = 1024;
+        const sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
     }
 }
 

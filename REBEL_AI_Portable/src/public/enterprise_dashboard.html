@@ -979,6 +979,137 @@ Secure | Optimized | Intelligent
                     </div>
                 </div>
             </div>
+
+            <!-- System Monitor Module -->
+            <div class="content-module" id="monitoringModule">
+                <div class="module-header">
+                    <h1 class="module-title">📈 System Monitor</h1>
+                    <div class="module-actions">
+                        <button class="action-btn secondary" id="exportMetricsBtn">📊 Export Data</button>
+                        <button class="action-btn primary" id="refreshMetricsBtn">🔄 Refresh</button>
+                    </div>
+                </div>
+                
+                <div class="module-content">
+                    <!-- System Overview Cards -->
+                    <div class="metrics-overview">
+                        <div class="metric-card">
+                            <div class="metric-header">
+                                <div class="metric-title">🖥️ CPU Usage</div>
+                                <div class="metric-status" id="cpuStatus">Normal</div>
+                            </div>
+                            <div class="metric-value" id="cpuValue">0%</div>
+                            <div class="metric-chart" id="cpuChart">
+                                <div class="chart-placeholder">Loading...</div>
+                            </div>
+                        </div>
+
+                        <div class="metric-card">
+                            <div class="metric-header">
+                                <div class="metric-title">💾 Memory Usage</div>
+                                <div class="metric-status" id="memoryStatus">Normal</div>
+                            </div>
+                            <div class="metric-value" id="memoryValue">0%</div>
+                            <div class="metric-chart" id="memoryChart">
+                                <div class="chart-placeholder">Loading...</div>
+                            </div>
+                        </div>
+
+                        <div class="metric-card">
+                            <div class="metric-header">
+                                <div class="metric-title">💿 Disk Usage</div>
+                                <div class="metric-status" id="diskStatus">Normal</div>
+                            </div>
+                            <div class="metric-value" id="diskValue">0%</div>
+                            <div class="metric-chart" id="diskChart">
+                                <div class="chart-placeholder">Loading...</div>
+                            </div>
+                        </div>
+
+                        <div class="metric-card">
+                            <div class="metric-header">
+                                <div class="metric-title">🌐 Network I/O</div>
+                                <div class="metric-status" id="networkStatus">Normal</div>
+                            </div>
+                            <div class="metric-value" id="networkValue">0 KB/s</div>
+                            <div class="metric-chart" id="networkChart">
+                                <div class="chart-placeholder">Loading...</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- System Information Panel -->
+                    <div class="system-info-panel">
+                        <div class="info-section">
+                            <h3 class="section-title">ℹ️ System Information</h3>
+                            <div class="info-grid">
+                                <div class="info-item">
+                                    <span class="info-label">OS:</span>
+                                    <span class="info-value" id="systemOS">Loading...</span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="info-label">Architecture:</span>
+                                    <span class="info-value" id="systemArch">Loading...</span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="info-label">Hostname:</span>
+                                    <span class="info-value" id="systemHostname">Loading...</span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="info-label">Uptime:</span>
+                                    <span class="info-value" id="systemUptime">Loading...</span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="info-label">Load Average:</span>
+                                    <span class="info-value" id="systemLoad">Loading...</span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="info-label">Total Memory:</span>
+                                    <span class="info-value" id="systemMemTotal">Loading...</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Active Processes -->
+                        <div class="processes-section">
+                            <h3 class="section-title">⚡ Top Processes</h3>
+                            <div class="processes-table">
+                                <div class="table-header">
+                                    <div class="table-col">PID</div>
+                                    <div class="table-col">Name</div>
+                                    <div class="table-col">CPU%</div>
+                                    <div class="table-col">Memory%</div>
+                                </div>
+                                <div class="table-body" id="processesTable">
+                                    <div class="loading-row">Loading processes...</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Alert Thresholds Configuration -->
+                    <div class="alert-config-panel">
+                        <h3 class="section-title">⚠️ Alert Thresholds</h3>
+                        <div class="threshold-grid">
+                            <div class="threshold-item">
+                                <label>CPU Warning (%)</label>
+                                <input type="number" class="threshold-input" id="cpuThreshold" value="80" min="1" max="100">
+                            </div>
+                            <div class="threshold-item">
+                                <label>Memory Warning (%)</label>
+                                <input type="number" class="threshold-input" id="memoryThreshold" value="90" min="1" max="100">
+                            </div>
+                            <div class="threshold-item">
+                                <label>Disk Warning (%)</label>
+                                <input type="number" class="threshold-input" id="diskThreshold" value="85" min="1" max="100">
+                            </div>
+                            <div class="threshold-item">
+                                <button class="action-btn primary" id="saveThresholdsBtn">💾 Save Thresholds</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </main>
     </div>
 
