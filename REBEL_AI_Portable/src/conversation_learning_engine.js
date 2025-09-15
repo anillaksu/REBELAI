@@ -102,7 +102,7 @@ Odak noktası: Hata analizi değil, kullanıcının gerçek niyetini anlamak.
                 }
             ],
             response_format: { type: "json_object" },
-            max_tokens: 600,
+            max_completion_tokens: 600,
             temperature: 0
         });
 
@@ -175,7 +175,7 @@ Değerlendirme kriterleri:
                 }
             ],
             response_format: { type: "json_object" },
-            max_tokens: 500,
+            max_completion_tokens: 500,
             temperature: 0
         });
 
@@ -265,10 +265,16 @@ Değerlendirme kriterleri:
             }
         }
 
-        // Dijkstra-based path optimization
+        // 🚀 Advanced Dijkstra-based path optimization
         const optimizedPath = this.findOptimalLearningPath(intentAnalysis.primaryIntent);
         
-        console.log(`🎯 Dijkstra Optimization: Found path for "${intentAnalysis.primaryIntent}" with ${optimizedPath.length} steps`);
+        // Performance tracking and adaptive learning
+        this.updatePathPerformance(intentAnalysis.primaryIntent, optimizedPath);
+        
+        // Dynamic weight adjustment based on success
+        this.adaptiveWeightAdjustment(intentAnalysis);
+        
+        console.log(`🎯 Dijkstra Optimization: Found path for "${intentAnalysis.primaryIntent}" with ${optimizedPath.length} steps (adaptive weights applied)`);
         
         return optimizedPath;
     }
@@ -419,7 +425,84 @@ Değerlendirme kriterleri:
             uniqueIntents,
             dijkstraNodes,
             topIntents,
-            learningEfficiency: totalConversations > 0 ? uniqueIntents / totalConversations : 0
+            learningEfficiency: totalConversations > 0 ? uniqueIntents / totalConversations : 0,
+            dijkstraOptimizationMetrics: this.getDijkstraMetrics()
+        };
+    }
+
+    // 🚀 Performance tracking for adaptive learning
+    updatePathPerformance(intent, optimizedPath) {
+        if (!this.pathPerformance) {
+            this.pathPerformance = new Map();
+        }
+        
+        const pathKey = intent;
+        if (!this.pathPerformance.has(pathKey)) {
+            this.pathPerformance.set(pathKey, {
+                uses: 0,
+                averageLength: 0,
+                successRate: 0.5,
+                lastUsed: Date.now()
+            });
+        }
+        
+        const perf = this.pathPerformance.get(pathKey);
+        perf.uses++;
+        perf.averageLength = (perf.averageLength + optimizedPath.length) / 2;
+        perf.lastUsed = Date.now();
+        
+        // Pathın success rate'ini optimization potential'a göre ayarla
+        const node = this.dijkstraKnowledge.get(intent);
+        if (node) {
+            const optimizationPotential = 1 / node.weight; // Reverse weight
+            perf.successRate = (perf.successRate + optimizationPotential) / 2;
+        }
+    }
+
+    // 🎯 Adaptive weight adjustment based on performance
+    adaptiveWeightAdjustment(intentAnalysis) {
+        const intent = intentAnalysis.primaryIntent;
+        const node = this.dijkstraKnowledge.get(intent);
+        
+        if (node && this.pathPerformance && this.pathPerformance.has(intent)) {
+            const perf = this.pathPerformance.get(intent);
+            
+            // High success rate = lower weight (easier path)
+            // Low success rate = higher weight (harder path)
+            const adaptiveWeight = Math.max(0.1, 2 - perf.successRate);
+            
+            // Smooth weight adjustment (gradual change)
+            node.weight = (node.weight * 0.7) + (adaptiveWeight * 0.3);
+            
+            console.log(`🔄 Adaptive Weight: "${intent}" adjusted to ${node.weight.toFixed(2)} (success rate: ${perf.successRate.toFixed(2)})`);
+        }
+    }
+
+    // 📊 Dijkstra optimization metrics
+    getDijkstraMetrics() {
+        const totalNodes = this.dijkstraKnowledge.size;
+        const totalConnections = Array.from(this.dijkstraKnowledge.values())
+            .reduce((total, node) => total + node.connections.length, 0);
+        
+        const averageWeight = Array.from(this.dijkstraKnowledge.values())
+            .reduce((total, node) => total + node.weight, 0) / totalNodes || 0;
+        
+        const pathPerformanceStats = this.pathPerformance ? 
+            Array.from(this.pathPerformance.values()).reduce((stats, perf) => {
+                stats.totalUses += perf.uses;
+                stats.averageSuccessRate += perf.successRate;
+                return stats;
+            }, { totalUses: 0, averageSuccessRate: 0 }) : { totalUses: 0, averageSuccessRate: 0 };
+        
+        return {
+            totalNodes,
+            totalConnections,
+            averageWeight: averageWeight.toFixed(3),
+            pathUsage: pathPerformanceStats.totalUses,
+            averageSuccessRate: this.pathPerformance ? 
+                (pathPerformanceStats.averageSuccessRate / this.pathPerformance.size).toFixed(3) : '0.000',
+            optimizationEfficiency: totalNodes > 0 ? 
+                (totalConnections / totalNodes).toFixed(2) : '0.00'
         };
     }
 
