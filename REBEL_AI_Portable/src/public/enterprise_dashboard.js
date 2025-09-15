@@ -253,6 +253,38 @@ class EnterpriseDashboard {
         });
     }
 
+    setupAuditLogEventListeners() {
+        // Audit logs refresh button
+        document.getElementById('refreshAuditLogs')?.addEventListener('click', () => {
+            this.refreshAuditLogs();
+        });
+
+        // Export audit logs button
+        document.getElementById('exportAuditLogs')?.addEventListener('click', () => {
+            this.exportAuditLogs();
+        });
+
+        // Clear audit logs button
+        document.getElementById('clearAuditLogs')?.addEventListener('click', () => {
+            this.clearAuditLogs();
+        });
+
+        // Filter controls
+        document.getElementById('auditLogFilter')?.addEventListener('change', () => {
+            this.filterAuditLogs();
+        });
+
+        // Search audit logs
+        document.getElementById('searchAuditLogs')?.addEventListener('input', (e) => {
+            this.searchAuditLogs(e.target.value);
+        });
+
+        // Auto-refresh toggle
+        document.getElementById('enableAuditLogging')?.addEventListener('change', (e) => {
+            this.toggleAuditLogging(e.target.checked);
+        });
+    }
+
     setupMFAEventListeners() {
         // MFA Refresh button
         document.getElementById('mfaRefreshBtn')?.addEventListener('click', () => {
@@ -3518,6 +3550,74 @@ If you lose access to your authentication device, you can use these codes to reg
         } catch (error) {
             console.error('Error clearing audit logs:', error);
             this.showNotification('Error clearing audit logs', 'error');
+        }
+    }
+
+    async refreshAuditLogs() {
+        console.log('📋 Refreshing audit logs...');
+        this.showNotification('🔄 Refreshing audit logs...', 'info');
+        
+        try {
+            await this.loadAuditLogs();
+            this.showNotification('✅ Audit logs refreshed successfully', 'success');
+        } catch (error) {
+            console.error('Error refreshing audit logs:', error);
+            this.showNotification('❌ Failed to refresh audit logs', 'error');
+        }
+    }
+
+    async searchAuditLogs(searchTerm) {
+        console.log('🔍 Searching audit logs for:', searchTerm);
+        
+        if (!searchTerm.trim()) {
+            // If search is empty, reload all logs
+            await this.loadAuditLogs();
+            return;
+        }
+        
+        try {
+            const response = await fetch(`/api/audit-logs/search?q=${encodeURIComponent(searchTerm)}`, {
+                headers: {
+                    'Authorization': `Bearer ${this.authToken}`,
+                    'Content-Type': 'application/json'
+                },
+                credentials: 'include'
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                this.updateAuditLogsTable(data.logs || []);
+                this.showNotification(`🔍 Found ${data.logs?.length || 0} matching logs`, 'info');
+            }
+        } catch (error) {
+            console.error('Error searching audit logs:', error);
+            this.showNotification('❌ Error searching audit logs', 'error');
+        }
+    }
+
+    async toggleAuditLogging(enabled) {
+        console.log('🔧 Toggling audit logging:', enabled ? 'ON' : 'OFF');
+        
+        try {
+            const response = await fetch('/api/audit-logs/settings', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${this.authToken}`,
+                    'Content-Type': 'application/json'
+                },
+                credentials: 'include',
+                body: JSON.stringify({ enabled })
+            });
+
+            if (response.ok) {
+                const message = enabled ? 
+                    '✅ Audit logging enabled' : 
+                    '⚠️ Audit logging disabled';
+                this.showNotification(message, enabled ? 'success' : 'warning');
+            }
+        } catch (error) {
+            console.error('Error toggling audit logging:', error);
+            this.showNotification('❌ Failed to update audit logging settings', 'error');
         }
     }
 

@@ -1,7 +1,7 @@
 modules = ["python-3.11", "nodejs-20", "postgresql-16"]
 [agent]
 expertMode = true
-integrations = ["python_openai:1.0.0", "javascript_openai:1.0.0"]
+integrations = ["python_openai:1.0.0", "javascript_openai:1.0.0", "javascript_database:1.0.0"]
 
 [nix]
 channel = "stable-25_05"
@@ -36,7 +36,7 @@ localPort = 5000
 externalPort = 80
 
 [[ports]]
-localPort = 45169
+localPort = 33229
 externalPort = 3000
 
 [deployment]

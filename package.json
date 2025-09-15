@@ -10,8 +10,11 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@neondatabase/serverless": "^1.0.1",
     "argon2": "^0.44.0",
     "cookie-parser": "^1.4.7",
+    "drizzle-kit": "^0.31.4",
+    "drizzle-orm": "^0.44.5",
     "express-rate-limit": "^8.1.0",
     "helmet": "^8.1.0",
     "jsonwebtoken": "^9.0.2",

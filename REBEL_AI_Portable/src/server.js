@@ -872,11 +872,19 @@ class REBELAIServer {
                 }
 
                 if (format === 'csv') {
-                    // Generate CSV content
+                    // 🔒 SECURITY: Generate secure CSV content with proper sanitization to prevent formula injection
                     const csvHeader = 'Timestamp,User,Action,Severity,IP Address,Details\n';
-                    const csvRows = mockLogs.map(log => 
-                        `"${log.timestamp}","${log.user}","${log.action}","${log.severity}","${log.ip_address || 'N/A'}","${log.details || ''}"`
-                    ).join('\n');
+                    const csvRows = mockLogs.map(log => {
+                        // 🛡️ CRITICAL: Sanitize each field to prevent CSV injection attacks
+                        const timestamp = this.sanitizeCSVField(log.timestamp);
+                        const user = this.sanitizeCSVField(log.user);
+                        const action = this.sanitizeCSVField(log.action);
+                        const severity = this.sanitizeCSVField(log.severity);
+                        const ipAddress = this.sanitizeCSVField(log.ip_address || 'N/A');
+                        const details = this.sanitizeCSVField(log.details || '');
+                        
+                        return `${timestamp},${user},${action},${severity},${ipAddress},${details}`;
+                    }).join('\n');
                     
                     const csvContent = csvHeader + csvRows;
                     
@@ -958,6 +966,32 @@ class REBELAIServer {
                 new Date(log.timestamp) > new Date(Date.now() - 24 * 60 * 60 * 1000)
             ).length
         };
+    }
+
+    // 🔒 SECURITY: CSV Sanitization to prevent formula injection attacks
+    sanitizeCSVField(field) {
+        if (field === null || field === undefined) {
+            return '';
+        }
+        
+        // Convert to string
+        let sanitized = String(field);
+        
+        // 🛡️ CRITICAL: Escape leading special characters that could be interpreted as formulas
+        // This prevents CSV injection attacks where =, +, -, @ at the start can execute formulas
+        if (sanitized.length > 0 && /^[=+\-@]/.test(sanitized)) {
+            sanitized = "'" + sanitized;
+        }
+        
+        // 🛡️ CRITICAL: Escape internal quotes by doubling them
+        sanitized = sanitized.replace(/"/g, '""');
+        
+        // 🛡️ CRITICAL: Quote fields that contain commas, quotes, or newlines
+        if (sanitized.includes(',') || sanitized.includes('"') || sanitized.includes('\n') || sanitized.includes('\r')) {
+            sanitized = '"' + sanitized + '"';
+        }
+        
+        return sanitized;
     }
 
     generateBackupCodes() {
