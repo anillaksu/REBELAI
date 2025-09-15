@@ -166,6 +166,9 @@ class EnterpriseDashboard {
             this.executeCommand();
         });
 
+        // Audit Logs event listeners setup
+        this.setupAuditLogEventListeners();
+
         // Quick actions
         document.querySelectorAll('.quick-btn').forEach(btn => {
             btn.addEventListener('click', () => {
@@ -483,6 +486,9 @@ class EnterpriseDashboard {
             this.loadProfileData();
         } else if (moduleId === 'preferences') {
             this.loadPreferences();
+        } else if (moduleId === 'logs') {
+            console.log('📋 Audit Logs module activated - initializing');
+            this.initializeAuditLogs();
         }
     }
 
@@ -3328,6 +3334,198 @@ If you lose access to your authentication device, you can use these codes to reg
         
         return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
     }
+
+    // ==========================================
+    // 📋 Audit Logs Module Methods
+    // ==========================================
+
+    async loadAuditLogs() {
+        console.log('📋 Loading audit logs...');
+        
+        try {
+            const response = await fetch('/api/audit-logs', {
+                headers: {
+                    'Authorization': `Bearer ${this.authToken}`,
+                    'Content-Type': 'application/json'
+                },
+                credentials: 'include'
+            });
+
+            if (response.ok) {
+                const logs = await response.json();
+                this.updateAuditLogsTable(logs);
+            } else {
+                console.error('Failed to load audit logs:', response.status);
+                this.showNotification('Failed to load audit logs', 'error');
+            }
+        } catch (error) {
+            console.error('Error loading audit logs:', error);
+            this.showNotification('Error loading audit logs', 'error');
+        }
+    }
+
+    updateAuditLogsTable(logs) {
+        const tbody = document.getElementById('auditLogsBody');
+        if (!tbody) return;
+
+        tbody.innerHTML = '';
+
+        if (!logs || logs.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="6" class="no-data">No audit logs available</td></tr>';
+            return;
+        }
+
+        logs.forEach(log => {
+            const row = document.createElement('tr');
+            row.className = 'audit-log-row';
+            
+            const timestamp = new Date(log.timestamp).toLocaleString();
+            const severityClass = this.getSeverityClass(log.severity);
+            
+            row.innerHTML = `
+                <td>
+                    <div class="timestamp-cell">
+                        <span class="timestamp">${timestamp}</span>
+                    </div>
+                </td>
+                <td>
+                    <div class="user-cell">
+                        <span class="username">${log.username || 'System'}</span>
+                        <span class="user-role">${log.user_role || 'N/A'}</span>
+                    </div>
+                </td>
+                <td>
+                    <div class="action-cell">
+                        <span class="action-type">${log.action}</span>
+                        <span class="resource">${log.resource || ''}</span>
+                    </div>
+                </td>
+                <td>
+                    <span class="severity-badge ${severityClass}">${log.severity}</span>
+                </td>
+                <td>
+                    <span class="ip-address">${log.ip_address || 'N/A'}</span>
+                </td>
+                <td>
+                    <div class="details-cell">
+                        <span class="details">${log.details || 'No details'}</span>
+                        ${log.additional_data ? `<button class="view-details-btn" onclick="dashboard.viewLogDetails('${log.id}')">View More</button>` : ''}
+                    </div>
+                </td>
+            `;
+            
+            tbody.appendChild(row);
+        });
+    }
+
+    getSeverityClass(severity) {
+        switch(severity?.toLowerCase()) {
+            case 'critical': return 'severity-critical';
+            case 'high': return 'severity-high';
+            case 'medium': return 'severity-medium';
+            case 'low': return 'severity-low';
+            case 'info': return 'severity-info';
+            default: return 'severity-unknown';
+        }
+    }
+
+    async filterAuditLogs() {
+        const filters = {
+            startDate: document.getElementById('startDate')?.value,
+            endDate: document.getElementById('endDate')?.value,
+            user: document.getElementById('userFilter')?.value,
+            action: document.getElementById('actionFilter')?.value,
+            severity: document.getElementById('severityFilter')?.value
+        };
+
+        console.log('📋 Filtering audit logs with:', filters);
+        
+        try {
+            const queryParams = new URLSearchParams();
+            Object.entries(filters).forEach(([key, value]) => {
+                if (value) queryParams.append(key, value);
+            });
+
+            const response = await fetch(`/api/audit-logs?${queryParams}`, {
+                headers: {
+                    'Authorization': `Bearer ${this.authToken}`,
+                    'Content-Type': 'application/json'
+                },
+                credentials: 'include'
+            });
+
+            if (response.ok) {
+                const logs = await response.json();
+                this.updateAuditLogsTable(logs);
+                this.showNotification('📋 Audit logs filtered successfully', 'success');
+            }
+        } catch (error) {
+            console.error('Error filtering audit logs:', error);
+            this.showNotification('Error filtering audit logs', 'error');
+        }
+    }
+
+    async exportAuditLogs() {
+        console.log('📋 Exporting audit logs...');
+        
+        try {
+            const response = await fetch('/api/audit-logs/export', {
+                headers: {
+                    'Authorization': `Bearer ${this.authToken}`,
+                    'Content-Type': 'application/json'
+                },
+                credentials: 'include'
+            });
+
+            if (response.ok) {
+                const blob = await response.blob();
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `audit_logs_${Date.now()}.csv`;
+                a.click();
+                URL.revokeObjectURL(url);
+                
+                this.showNotification('📋 Audit logs exported successfully', 'success');
+            }
+        } catch (error) {
+            console.error('Error exporting audit logs:', error);
+            this.showNotification('Error exporting audit logs', 'error');
+        }
+    }
+
+    async clearAuditLogs() {
+        if (!confirm('Are you sure you want to clear all audit logs? This action cannot be undone.')) {
+            return;
+        }
+
+        console.log('📋 Clearing audit logs...');
+        
+        try {
+            const response = await fetch('/api/audit-logs', {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${this.authToken}`,
+                    'Content-Type': 'application/json'
+                },
+                credentials: 'include'
+            });
+
+            if (response.ok) {
+                this.loadAuditLogs();
+                this.showNotification('📋 Audit logs cleared successfully', 'success');
+            }
+        } catch (error) {
+            console.error('Error clearing audit logs:', error);
+            this.showNotification('Error clearing audit logs', 'error');
+        }
+    }
+
+    viewLogDetails(logId) {
+        console.log('📋 Viewing details for log:', logId);
+        // Implement detailed log view modal or expand functionality
+        this.showNotification('📋 Log details feature coming soon', 'info');
+    }
 }
 
 // Initialize dashboard when DOM is ready
@@ -3335,51 +3533,3 @@ document.addEventListener('DOMContentLoaded', () => {
     console.log('🛡️ REBEL AI Enterprise Dashboard Loading...');
     window.dashboard = new EnterpriseDashboard();
 });
-
-// Add notification close button styles
-const notificationStyles = document.createElement('style');
-notificationStyles.textContent = `
-.notification-content {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    gap: 1rem;
-}
-
-.notification-message {
-    flex: 1;
-    font-size: 0.9rem;
-    line-height: 1.4;
-}
-
-.notification-close {
-    background: none;
-    border: none;
-    color: var(--text-muted);
-    cursor: pointer;
-    font-size: 1.2rem;
-    line-height: 1;
-    padding: 0;
-    width: 20px;
-    height: 20px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 50%;
-    transition: var(--transition-fast);
-    flex-shrink: 0;
-}
-
-.notification-close:hover {
-    background: var(--bg-secondary);
-    color: var(--text-primary);
-}
-
-.terminal-message {
-    margin-bottom: 0.5rem;
-    font-family: var(--font-primary);
-    white-space: pre-wrap;
-    word-wrap: break-word;
-}
-`;
-document.head.appendChild(notificationStyles);

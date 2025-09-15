@@ -774,6 +774,190 @@ class REBELAIServer {
                 res.status(500).json({ error: 'Failed to get processes information' });
             }
         });
+
+        // ==========================================
+        // 📋 Audit Logs API Endpoints
+        // ==========================================
+
+        // Fetch audit logs with filtering and pagination
+        this.app.get('/api/audit/logs', this.authManager.authorize(['system:read']), async (req, res) => {
+            try {
+                const { q, user, action, severity, start, end, page = 1, limit = 50 } = req.query;
+                
+                // Generate mock audit logs data for now
+                const mockLogs = this.generateMockAuditLogs();
+                
+                // Apply basic filtering
+                let filteredLogs = mockLogs;
+                
+                if (q) {
+                    filteredLogs = filteredLogs.filter(log => 
+                        log.action.toLowerCase().includes(q.toLowerCase()) ||
+                        log.user.toLowerCase().includes(q.toLowerCase()) ||
+                        (log.details && log.details.toLowerCase().includes(q.toLowerCase()))
+                    );
+                }
+                
+                if (user) {
+                    filteredLogs = filteredLogs.filter(log => log.user === user);
+                }
+                
+                if (action) {
+                    filteredLogs = filteredLogs.filter(log => log.action === action);
+                }
+                
+                if (severity) {
+                    filteredLogs = filteredLogs.filter(log => log.severity === severity);
+                }
+                
+                if (start) {
+                    filteredLogs = filteredLogs.filter(log => new Date(log.timestamp) >= new Date(start));
+                }
+                
+                if (end) {
+                    filteredLogs = filteredLogs.filter(log => new Date(log.timestamp) <= new Date(end));
+                }
+
+                // Pagination
+                const pageNum = parseInt(page);
+                const limitNum = parseInt(limit);
+                const startIndex = (pageNum - 1) * limitNum;
+                const endIndex = startIndex + limitNum;
+                const paginatedLogs = filteredLogs.slice(startIndex, endIndex);
+
+                const response = {
+                    logs: paginatedLogs,
+                    pagination: {
+                        page: pageNum,
+                        limit: limitNum,
+                        total: filteredLogs.length,
+                        totalPages: Math.ceil(filteredLogs.length / limitNum)
+                    },
+                    stats: this.calculateAuditLogStats(filteredLogs)
+                };
+
+                res.json(response);
+            } catch (error) {
+                console.error('📋 Audit logs error:', error);
+                res.status(500).json({ error: 'Failed to fetch audit logs' });
+            }
+        });
+
+        // Get audit log statistics
+        this.app.get('/api/audit/stats', this.authManager.authorize(['system:read']), async (req, res) => {
+            try {
+                const mockLogs = this.generateMockAuditLogs();
+                const stats = this.calculateAuditLogStats(mockLogs);
+                res.json(stats);
+            } catch (error) {
+                console.error('📊 Audit stats error:', error);
+                res.status(500).json({ error: 'Failed to get audit statistics' });
+            }
+        });
+
+        // Export audit logs
+        this.app.get('/api/audit/export', this.authManager.authorize(['system:read']), async (req, res) => {
+            try {
+                const { q, user, action, severity, start, end, format = 'csv' } = req.query;
+                
+                // Get filtered logs (same filtering logic as above)
+                let mockLogs = this.generateMockAuditLogs();
+                
+                // Apply filters (simplified for export)
+                if (q) {
+                    mockLogs = mockLogs.filter(log => 
+                        log.action.toLowerCase().includes(q.toLowerCase()) ||
+                        log.user.toLowerCase().includes(q.toLowerCase())
+                    );
+                }
+
+                if (format === 'csv') {
+                    // Generate CSV content
+                    const csvHeader = 'Timestamp,User,Action,Severity,IP Address,Details\n';
+                    const csvRows = mockLogs.map(log => 
+                        `"${log.timestamp}","${log.user}","${log.action}","${log.severity}","${log.ip_address || 'N/A'}","${log.details || ''}"`
+                    ).join('\n');
+                    
+                    const csvContent = csvHeader + csvRows;
+                    
+                    res.setHeader('Content-Type', 'text/csv');
+                    res.setHeader('Content-Disposition', `attachment; filename="audit_logs_${Date.now()}.csv"`);
+                    res.send(csvContent);
+                } else {
+                    // JSON export
+                    res.setHeader('Content-Type', 'application/json');
+                    res.setHeader('Content-Disposition', `attachment; filename="audit_logs_${Date.now()}.json"`);
+                    res.json({
+                        exported_at: new Date().toISOString(),
+                        total_records: mockLogs.length,
+                        logs: mockLogs
+                    });
+                }
+            } catch (error) {
+                console.error('📤 Export error:', error);
+                res.status(500).json({ error: 'Failed to export audit logs' });
+            }
+        });
+    }
+
+    // Helper method to generate mock audit logs
+    generateMockAuditLogs() {
+        const actions = ['login', 'logout', 'command', 'settings', 'mfa', 'security'];
+        const users = ['rebellion', 'admin', 'operator'];
+        const severities = ['low', 'medium', 'high', 'critical'];
+        const ips = ['127.0.0.1', '10.81.0.49', '10.81.2.22', '192.168.1.100'];
+        
+        const logs = [];
+        const now = new Date();
+        
+        // Generate 100 mock log entries
+        for (let i = 0; i < 100; i++) {
+            const timestamp = new Date(now.getTime() - (Math.random() * 7 * 24 * 60 * 60 * 1000)); // Last 7 days
+            const action = actions[Math.floor(Math.random() * actions.length)];
+            const user = users[Math.floor(Math.random() * users.length)];
+            const severity = severities[Math.floor(Math.random() * severities.length)];
+            const ip = ips[Math.floor(Math.random() * ips.length)];
+            
+            logs.push({
+                id: `log_${i + 1}`,
+                timestamp: timestamp.toISOString(),
+                user,
+                action,
+                severity,
+                ip_address: ip,
+                details: `${action} action performed by ${user}`,
+                metadata: {
+                    session_id: `session_${Math.random().toString(36).substr(2, 9)}`,
+                    user_agent: 'REBEL AI Dashboard v1.0'
+                }
+            });
+        }
+        
+        // Sort by timestamp (newest first)
+        return logs.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+    }
+
+    // Helper method to calculate audit log statistics
+    calculateAuditLogStats(logs) {
+        return {
+            total: logs.length,
+            security: logs.filter(log => ['login', 'logout', 'mfa', 'security'].includes(log.action)).length,
+            commands: logs.filter(log => log.action === 'command').length,
+            warnings: logs.filter(log => ['high', 'critical'].includes(log.severity)).length,
+            by_severity: {
+                low: logs.filter(log => log.severity === 'low').length,
+                medium: logs.filter(log => log.severity === 'medium').length,
+                high: logs.filter(log => log.severity === 'high').length,
+                critical: logs.filter(log => log.severity === 'critical').length
+            },
+            by_action: logs.reduce((acc, log) => {
+                acc[log.action] = (acc[log.action] || 0) + 1;
+                return acc;
+            }, {}),
+            latest_24h: logs.filter(log => 
+                new Date(log.timestamp) > new Date(Date.now() - 24 * 60 * 60 * 1000)
+            ).length
+        };
     }
 
     generateBackupCodes() {

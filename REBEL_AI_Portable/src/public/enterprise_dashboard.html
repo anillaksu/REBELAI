@@ -1110,6 +1110,172 @@ Secure | Optimized | Intelligent
                     </div>
                 </div>
             </div>
+
+            <!-- Audit Logs Module -->
+            <div class="content-module" id="auditLogsModule">
+                <div class="module-header">
+                    <h1 class="module-title">📋 Audit Logs</h1>
+                    <div class="module-actions">
+                        <button class="action-btn secondary" id="exportLogsBtn">📤 Export</button>
+                        <button class="action-btn secondary" id="clearFiltersBtn">🧹 Clear Filters</button>
+                        <button class="action-btn primary" id="refreshLogsBtn">🔄 Refresh</button>
+                    </div>
+                </div>
+                
+                <div class="module-content">
+                    <!-- Search and Filters -->
+                    <div class="audit-controls">
+                        <div class="search-section">
+                            <div class="search-input-wrapper">
+                                <input type="text" id="logSearchInput" placeholder="🔍 Search logs by action, user, or keyword..." class="search-input">
+                                <button class="search-btn" id="searchLogsBtn">Search</button>
+                            </div>
+                        </div>
+                        
+                        <div class="filter-section">
+                            <div class="filter-group">
+                                <label class="filter-label">📅 Date Range</label>
+                                <div class="date-inputs">
+                                    <input type="date" id="startDateFilter" class="date-input">
+                                    <span class="date-separator">to</span>
+                                    <input type="date" id="endDateFilter" class="date-input">
+                                </div>
+                            </div>
+                            
+                            <div class="filter-group">
+                                <label class="filter-label">👤 User</label>
+                                <select id="userFilter" class="filter-select">
+                                    <option value="">All Users</option>
+                                    <option value="rebellion">rebellion</option>
+                                    <option value="admin">admin</option>
+                                    <option value="operator">operator</option>
+                                </select>
+                            </div>
+                            
+                            <div class="filter-group">
+                                <label class="filter-label">📝 Action Type</label>
+                                <select id="actionFilter" class="filter-select">
+                                    <option value="">All Actions</option>
+                                    <option value="login">Login</option>
+                                    <option value="logout">Logout</option>
+                                    <option value="command">Command Execution</option>
+                                    <option value="settings">Settings Change</option>
+                                    <option value="mfa">MFA Event</option>
+                                    <option value="security">Security Event</option>
+                                </select>
+                            </div>
+                            
+                            <div class="filter-group">
+                                <label class="filter-label">🎯 Severity</label>
+                                <select id="severityFilter" class="filter-select">
+                                    <option value="">All Severities</option>
+                                    <option value="low">🟢 Low</option>
+                                    <option value="medium">🟡 Medium</option>
+                                    <option value="high">🟠 High</option>
+                                    <option value="critical">🔴 Critical</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Log Statistics Overview -->
+                    <div class="log-stats-overview">
+                        <div class="stat-card">
+                            <div class="stat-icon">📊</div>
+                            <div class="stat-content">
+                                <div class="stat-title">Total Events</div>
+                                <div class="stat-value" id="totalEventsCount">0</div>
+                                <div class="stat-subtitle">Last 24 hours</div>
+                            </div>
+                        </div>
+                        
+                        <div class="stat-card">
+                            <div class="stat-icon">🔐</div>
+                            <div class="stat-content">
+                                <div class="stat-title">Security Events</div>
+                                <div class="stat-value" id="securityEventsCount">0</div>
+                                <div class="stat-subtitle">Authentication & Access</div>
+                            </div>
+                        </div>
+                        
+                        <div class="stat-card">
+                            <div class="stat-icon">⚡</div>
+                            <div class="stat-content">
+                                <div class="stat-title">Commands</div>
+                                <div class="stat-value" id="commandEventsCount">0</div>
+                                <div class="stat-subtitle">System Commands</div>
+                            </div>
+                        </div>
+                        
+                        <div class="stat-card">
+                            <div class="stat-icon">⚠️</div>
+                            <div class="stat-content">
+                                <div class="stat-title">Warnings</div>
+                                <div class="stat-value" id="warningEventsCount">0</div>
+                                <div class="stat-subtitle">Failed Attempts</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Audit Logs Table -->
+                    <div class="audit-logs-table">
+                        <div class="table-container">
+                            <div class="table-header">
+                                <div class="table-col timestamp">📅 Timestamp</div>
+                                <div class="table-col user">👤 User</div>
+                                <div class="table-col action">📝 Action</div>
+                                <div class="table-col severity">🎯 Severity</div>
+                                <div class="table-col ip">🌐 IP Address</div>
+                                <div class="table-col details">📋 Details</div>
+                            </div>
+                            <div class="table-body" id="auditLogsTableBody">
+                                <div class="loading-row">
+                                    <div class="loading-spinner"></div>
+                                    <span>Loading audit logs...</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Pagination -->
+                        <div class="pagination-controls">
+                            <div class="pagination-info">
+                                <span id="paginationInfo">Showing 0-0 of 0 results</span>
+                            </div>
+                            <div class="pagination-buttons">
+                                <button class="pagination-btn" id="firstPageBtn" disabled>⏮️ First</button>
+                                <button class="pagination-btn" id="prevPageBtn" disabled>◀️ Previous</button>
+                                <span class="pagination-current">Page <span id="currentPage">1</span> of <span id="totalPages">1</span></span>
+                                <button class="pagination-btn" id="nextPageBtn" disabled>Next ▶️</button>
+                                <button class="pagination-btn" id="lastPageBtn" disabled>Last ⏭️</button>
+                            </div>
+                            <div class="pagination-size">
+                                <label>Show</label>
+                                <select id="pageSizeSelect" class="page-size-select">
+                                    <option value="25">25</option>
+                                    <option value="50" selected>50</option>
+                                    <option value="100">100</option>
+                                    <option value="250">250</option>
+                                </select>
+                                <label>per page</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Log Details Modal -->
+                    <div class="log-details-modal" id="logDetailsModal" style="display: none;">
+                        <div class="modal-overlay" id="modalOverlay"></div>
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h3 class="modal-title">📋 Log Entry Details</h3>
+                                <button class="modal-close" id="closeLogDetailsBtn">×</button>
+                            </div>
+                            <div class="modal-body" id="logDetailsContent">
+                                <!-- Log details will be populated here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </main>
     </div>
 
