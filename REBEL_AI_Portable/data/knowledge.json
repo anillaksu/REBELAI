@@ -424,6 +424,22 @@
         ],
         "last_updated": "2025-09-15T10:47:56.406Z",
         "success_rate": 0
+      },
+      "history": {
+        "total_executions": 1,
+        "successful_executions": 0,
+        "failure_patterns": [
+          {
+            "pattern": "unknown_error",
+            "description": "Unrecognized error pattern",
+            "suggested_action": "manual_review",
+            "count": 1,
+            "first_seen": "2025-09-15T11:21:11.383Z",
+            "last_seen": "2025-09-15T11:21:11.383Z"
+          }
+        ],
+        "last_updated": "2025-09-15T11:21:11.383Z",
+        "success_rate": 0
       }
     }
   },
@@ -724,6 +740,14 @@
         ],
         "confidence": 0.19999999999999998,
         "last_tested": "2025-09-15T10:47:56.406Z"
+      },
+      "history": {
+        "works": false,
+        "variations": [
+          "history | tail -10"
+        ],
+        "confidence": 0.19999999999999998,
+        "last_tested": "2025-09-15T11:21:11.383Z"
       }
     },
     "darwin": {
@@ -962,29 +986,34 @@
           "usage_count": 1,
           "success_rate": 0,
           "avg_execution_time": 11
+        },
+        "history": {
+          "usage_count": 1,
+          "success_rate": 0,
+          "avg_execution_time": 7510.75
         }
       },
       "performance_metrics": {},
       "capabilities": {},
-      "last_seen": "2025-09-15T10:48:27.696Z"
+      "last_seen": "2025-09-15T11:21:11.383Z"
     }
   },
   "conversationLearning": {
-    "totalConversations": 18,
+    "totalConversations": 20,
     "uniqueIntents": 1,
     "dijkstraNodes": 2,
     "topIntents": [
       {
         "intent": "command_execution",
-        "count": 18
+        "count": 20
       }
     ],
-    "learningEfficiency": 0.05555555555555555,
+    "learningEfficiency": 0.05,
     "dijkstraOptimizationMetrics": {
       "totalNodes": 2,
       "totalConnections": 2,
       "averageWeight": "2.925",
-      "pathUsage": 15,
+      "pathUsage": 17,
       "averageSuccessRate": "0.500",
       "optimizationEfficiency": "1.00"
     }
