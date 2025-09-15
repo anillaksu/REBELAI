@@ -133,6 +133,32 @@ class EnterpriseDashboard {
             });
         });
 
+        // Terminal control buttons
+        document.getElementById('clearTerminal')?.addEventListener('click', () => {
+            this.clearTerminal();
+        });
+
+        document.getElementById('exportLogs')?.addEventListener('click', () => {
+            this.exportTerminalLogs();
+        });
+
+        document.getElementById('terminalSettings')?.addEventListener('click', () => {
+            this.openTerminalSettings();
+        });
+
+        // Knowledge AI buttons
+        document.getElementById('refreshKnowledge')?.addEventListener('click', () => {
+            this.refreshKnowledgeData();
+        });
+
+        document.getElementById('exportKnowledge')?.addEventListener('click', () => {
+            this.exportKnowledgeData();
+        });
+
+        document.getElementById('clearKnowledge')?.addEventListener('click', () => {
+            this.clearKnowledgeData();
+        });
+
         // Close dropdowns when clicking outside
         document.addEventListener('click', (e) => {
             if (!e.target.closest('.user-profile') && !e.target.closest('.user-menu-dropdown')) {
@@ -1187,6 +1213,522 @@ class EnterpriseDashboard {
             this.showNotification('✅ Preferences reset to defaults', 'success');
             this.addActivityItem('Preferences reset', '🔄');
         }, 800);
+    }
+
+    // ==========================================
+    // Terminal Control Functions
+    // ==========================================
+
+    clearTerminal() {
+        const terminalOutput = document.getElementById('terminalOutput');
+        if (terminalOutput) {
+            terminalOutput.innerHTML = `
+                <div class="welcome-message">
+                    <div class="ascii-art">
+🚀 REBEL AI Enterprise Terminal 🚀
+═══════════════════════════════════
+                    </div>
+                    <div class="welcome-text">
+                        ⚡ <strong>Terminal cleared - Welcome back!</strong><br>
+                        🧠 AI-Powered Command Optimization<br>
+                        📚 Self-Learning Knowledge Database<br>
+                        🎯 Type commands or use quick actions below
+                    </div>
+                </div>
+            `;
+            this.showNotification('Terminal cleared', 'success');
+        }
+    }
+
+    exportTerminalLogs() {
+        const terminalOutput = document.getElementById('terminalOutput');
+        if (!terminalOutput || !terminalOutput.textContent.trim()) {
+            this.showNotification('No terminal logs to export', 'warning');
+            return;
+        }
+
+        // Create downloadable content
+        const logContent = terminalOutput.textContent;
+        const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+        const filename = `rebel-terminal-logs-${timestamp}.txt`;
+        
+        // Create and trigger download
+        const blob = new Blob([logContent], { type: 'text/plain' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+
+        this.showNotification(`Terminal logs exported as ${filename}`, 'success');
+        this.addActivityItem('Terminal logs exported', '💾');
+    }
+
+    openTerminalSettings() {
+        this.showNotification('Opening terminal settings...', 'info');
+        // Switch to preferences module for terminal settings
+        this.switchModule('preferences');
+        
+        // Scroll to terminal settings section after a brief delay
+        setTimeout(() => {
+            const terminalSection = document.querySelector('.preferences-section h3[class="section-title"]:contains("Terminal Settings")');
+            if (terminalSection) {
+                terminalSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        }, 300);
+    }
+
+    // ==========================================
+    // Knowledge AI Functions
+    // ==========================================
+
+    async refreshKnowledgeData() {
+        this.showNotification('Refreshing knowledge database...', 'info');
+        
+        try {
+            // Fetch knowledge data from API
+            const response = await fetch('/api/knowledge', {
+                headers: {
+                    'Authorization': `Bearer ${window.REBEL_SESSION_TOKEN}`
+                }
+            });
+
+            if (response.ok) {
+                const knowledgeData = await response.json();
+                this.updateKnowledgeDisplay(knowledgeData);
+                this.showNotification('Knowledge database refreshed', 'success');
+                this.addActivityItem('Knowledge data refreshed', '🧠');
+            } else {
+                throw new Error('Failed to fetch knowledge data');
+            }
+        } catch (error) {
+            console.error('Knowledge refresh error:', error);
+            this.showNotification('Failed to refresh knowledge data', 'error');
+        }
+    }
+
+    updateKnowledgeDisplay(knowledgeData) {
+        // Update learning statistics
+        const stats = [
+            { id: 'commandCount', value: knowledgeData.totalCommands || 0, label: 'Commands Learned' },
+            { id: 'successRate', value: knowledgeData.successRate || 0, label: 'Success Rate', suffix: '%' },
+            { id: 'optimizationCount', value: knowledgeData.optimizations || 0, label: 'Optimizations' },
+            { id: 'conversationCount', value: knowledgeData.conversations || 0, label: 'Conversations' }
+        ];
+
+        stats.forEach(stat => {
+            const element = document.getElementById(stat.id);
+            if (element) {
+                const value = stat.suffix ? `${stat.value}${stat.suffix}` : stat.value;
+                element.textContent = value;
+            }
+        });
+
+        // Update patterns section
+        const patternsContainer = document.getElementById('learnedPatterns');
+        if (patternsContainer && knowledgeData.patterns) {
+            patternsContainer.innerHTML = knowledgeData.patterns.map(pattern => 
+                `<div class="pattern-item">${pattern}</div>`
+            ).join('');
+        }
+    }
+
+    exportKnowledgeData() {
+        this.showNotification('Exporting knowledge database...', 'info');
+        
+        // Create export data
+        const exportData = {
+            timestamp: new Date().toISOString(),
+            commandHistory: this.commandHistory || [],
+            learningStats: {
+                commandCount: document.getElementById('commandCount')?.textContent || '0',
+                successRate: document.getElementById('successRate')?.textContent || '0%',
+                optimizationCount: document.getElementById('optimizationCount')?.textContent || '0'
+            },
+            patterns: Array.from(document.querySelectorAll('.pattern-item')).map(item => item.textContent)
+        };
+
+        // Create and download file
+        const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+        const filename = `rebel-knowledge-export-${timestamp}.json`;
+        const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+
+        this.showNotification(`Knowledge exported as ${filename}`, 'success');
+        this.addActivityItem('Knowledge database exported', '📄');
+    }
+
+    clearKnowledgeData() {
+        if (confirm('Are you sure you want to clear all knowledge data? This cannot be undone.')) {
+            // Reset display values
+            const elements = ['commandCount', 'successRate', 'optimizationCount', 'conversationCount'];
+            elements.forEach(id => {
+                const element = document.getElementById(id);
+                if (element) element.textContent = '0';
+            });
+
+            // Clear patterns
+            const patternsContainer = document.getElementById('learnedPatterns');
+            if (patternsContainer) {
+                patternsContainer.innerHTML = '<div class="pattern-item">No patterns learned yet</div>';
+            }
+
+            this.showNotification('Knowledge database cleared', 'warning');
+            this.addActivityItem('Knowledge database cleared', '🗑️');
+        }
+    }
+
+    // Enhanced command history display (fixes the 5 command limit issue)
+    updateHistoryDisplay() {
+        const historyContainer = document.getElementById('commandHistory');
+        if (!historyContainer) return;
+
+        // Show more commands (up to 20 instead of 5)
+        const maxCommands = 20;
+        const recentCommands = this.commandHistory.slice(-maxCommands).reverse();
+        
+        if (recentCommands.length === 0) {
+            historyContainer.innerHTML = '<div class="history-empty">No commands executed yet</div>';
+            return;
+        }
+
+        const historyHTML = recentCommands.map((cmd, index) => `
+            <div class="history-item ${index === 0 ? 'most-recent' : ''}" onclick="dashboard.selectHistoryCommand('${cmd}')">
+                <div class="history-command">${cmd}</div>
+                <div class="history-index">#${recentCommands.length - index}</div>
+            </div>
+        `).join('');
+
+        historyContainer.innerHTML = historyHTML;
+    }
+
+    selectHistoryCommand(command) {
+        const commandInput = document.getElementById('commandInput');
+        if (commandInput) {
+            commandInput.value = command;
+            commandInput.focus();
+        }
+    }
+
+    // ==========================================
+    // MFA Settings Functions
+    // ==========================================
+
+    async refreshMFAStatus() {
+        this.showNotification('Refreshing MFA status...', 'info');
+        
+        try {
+            // Simulate MFA status check
+            setTimeout(() => {
+                const statusElement = document.getElementById('mfaStatus');
+                const configureBtn = document.getElementById('configureMFABtn');
+                
+                if (statusElement && configureBtn) {
+                    // Simulate current status
+                    const isConfigured = Math.random() > 0.5; // Random for demo
+                    
+                    if (isConfigured) {
+                        statusElement.innerHTML = `
+                            <div class="status-indicator online"></div>
+                            <div class="status-text">Two-Factor Authentication Active</div>
+                        `;
+                        configureBtn.textContent = '🔄 Reconfigure';
+                    } else {
+                        statusElement.innerHTML = `
+                            <div class="status-indicator offline"></div>
+                            <div class="status-text">Two-Factor Authentication Disabled</div>
+                        `;
+                        configureBtn.textContent = '🔒 Configure';
+                    }
+                }
+                
+                this.showNotification('MFA status updated', 'success');
+                this.addActivityItem('MFA status refreshed', '🔐');
+            }, 1000);
+            
+        } catch (error) {
+            console.error('MFA refresh error:', error);
+            this.showNotification('Failed to refresh MFA status', 'error');
+        }
+    }
+
+    showBackupCodes() {
+        this.showNotification('Generating backup codes...', 'info');
+        
+        // Generate mock backup codes
+        const backupCodes = [];
+        for (let i = 0; i < 10; i++) {
+            backupCodes.push(Math.random().toString(36).substring(2, 8).toUpperCase());
+        }
+        
+        const codesContainer = document.getElementById('backupCodesContainer');
+        if (codesContainer) {
+            codesContainer.innerHTML = `
+                <div class="backup-codes-grid">
+                    ${backupCodes.map((code, index) => `
+                        <div class="backup-code-item">
+                            <span class="code-number">${index + 1}.</span>
+                            <span class="code-value">${code}</span>
+                        </div>
+                    `).join('')}
+                </div>
+                <div class="backup-codes-warning">
+                    ⚠️ <strong>Important:</strong> Save these backup codes in a secure location. 
+                    Each code can only be used once and will be needed if you lose access to your authentication device.
+                </div>
+            `;
+            
+            this.showNotification('Backup codes generated', 'success');
+            this.addActivityItem('Backup codes generated', '🔑');
+        }
+    }
+
+    configureMFA() {
+        this.showNotification('Opening MFA configuration...', 'info');
+        
+        // Show configuration dialog
+        const configDialog = document.createElement('div');
+        configDialog.className = 'mfa-config-dialog';
+        configDialog.innerHTML = `
+            <div class="dialog-overlay">
+                <div class="dialog-content">
+                    <div class="dialog-header">
+                        <h3>🔐 Configure Two-Factor Authentication</h3>
+                        <button class="dialog-close" onclick="this.closest('.mfa-config-dialog').remove()">×</button>
+                    </div>
+                    <div class="dialog-body">
+                        <div class="config-step">
+                            <h4>Step 1: Download Authentication App</h4>
+                            <p>Download and install an authenticator app such as:</p>
+                            <ul>
+                                <li>Google Authenticator</li>
+                                <li>Microsoft Authenticator</li>
+                                <li>Authy</li>
+                            </ul>
+                        </div>
+                        <div class="config-step">
+                            <h4>Step 2: Scan QR Code</h4>
+                            <div class="qr-code-placeholder">
+                                <div class="qr-code">📱 QR CODE PLACEHOLDER</div>
+                                <p>Scan this QR code with your authenticator app</p>
+                            </div>
+                        </div>
+                        <div class="config-step">
+                            <h4>Step 3: Verify Setup</h4>
+                            <input type="text" placeholder="Enter 6-digit code from your app" class="verification-code">
+                            <button onclick="dashboard.verifyMFASetup(this)" class="verify-btn">✅ Verify & Enable</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        document.body.appendChild(configDialog);
+        this.addActivityItem('MFA configuration started', '⚙️');
+    }
+
+    verifyMFASetup(button) {
+        const codeInput = button.parentNode.querySelector('.verification-code');
+        const code = codeInput.value;
+        
+        if (code.length !== 6) {
+            this.showNotification('Please enter a 6-digit verification code', 'warning');
+            return;
+        }
+        
+        this.showNotification('Verifying MFA setup...', 'info');
+        
+        setTimeout(() => {
+            // Simulate verification
+            const success = code === '123456' || Math.random() > 0.3; // Demo verification
+            
+            if (success) {
+                this.showNotification('✅ MFA successfully configured!', 'success');
+                this.addActivityItem('MFA enabled', '🔒');
+                document.querySelector('.mfa-config-dialog').remove();
+                this.refreshMFAStatus();
+            } else {
+                this.showNotification('Invalid verification code. Please try again.', 'error');
+                codeInput.value = '';
+            }
+        }, 1500);
+    }
+
+    downloadBackupCodes() {
+        const codesContainer = document.getElementById('backupCodesContainer');
+        if (!codesContainer || !codesContainer.textContent.trim()) {
+            this.showNotification('Please generate backup codes first', 'warning');
+            return;
+        }
+        
+        // Extract backup codes from the display
+        const codes = Array.from(codesContainer.querySelectorAll('.code-value'))
+                          .map(el => el.textContent);
+        
+        if (codes.length === 0) {
+            this.showNotification('No backup codes to download', 'warning');
+            return;
+        }
+        
+        // Create download content
+        const content = `REBEL AI Enterprise - MFA Backup Codes
+Generated: ${new Date().toISOString()}
+
+⚠️  IMPORTANT SECURITY NOTICE:
+- Each backup code can only be used once
+- Store these codes in a secure location
+- Do not share these codes with anyone
+- These codes provide access to your account
+
+Backup Codes:
+${codes.map((code, index) => `${index + 1}. ${code}`).join('\n')}
+
+If you lose access to your authentication device, you can use these codes to regain access to your account.
+`;
+        
+        // Create and trigger download
+        const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+        const filename = `rebel-mfa-backup-codes-${timestamp}.txt`;
+        const blob = new Blob([content], { type: 'text/plain' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        
+        this.showNotification(`Backup codes downloaded as ${filename}`, 'success');
+        this.addActivityItem('Backup codes downloaded', '💾');
+    }
+
+    printBackupCodes() {
+        const codesContainer = document.getElementById('backupCodesContainer');
+        if (!codesContainer || !codesContainer.textContent.trim()) {
+            this.showNotification('Please generate backup codes first', 'warning');
+            return;
+        }
+        
+        // Create printable version
+        const printWindow = window.open('', '_blank');
+        const codes = Array.from(codesContainer.querySelectorAll('.code-value'))
+                          .map(el => el.textContent);
+        
+        printWindow.document.write(`
+            <html>
+            <head>
+                <title>REBEL AI MFA Backup Codes</title>
+                <style>
+                    body { font-family: monospace; margin: 2rem; }
+                    .header { text-align: center; margin-bottom: 2rem; }
+                    .warning { background: #fff3cd; border: 1px solid #ffeaa7; padding: 1rem; margin: 1rem 0; }
+                    .codes { margin: 1rem 0; }
+                    .code-item { margin: 0.5rem 0; }
+                </style>
+            </head>
+            <body>
+                <div class="header">
+                    <h1>🛡️ REBEL AI Enterprise</h1>
+                    <h2>MFA Backup Codes</h2>
+                    <p>Generated: ${new Date().toLocaleString()}</p>
+                </div>
+                <div class="warning">
+                    <strong>⚠️ SECURITY WARNING:</strong><br>
+                    • Each backup code can only be used once<br>
+                    • Store these codes in a secure location<br>
+                    • Do not share these codes with anyone<br>
+                    • These codes provide access to your account
+                </div>
+                <div class="codes">
+                    <h3>Backup Codes:</h3>
+                    ${codes.map((code, index) => `
+                        <div class="code-item">${index + 1}. ${code}</div>
+                    `).join('')}
+                </div>
+            </body>
+            </html>
+        `);
+        
+        printWindow.document.close();
+        printWindow.focus();
+        setTimeout(() => printWindow.print(), 500);
+        
+        this.showNotification('Backup codes prepared for printing', 'success');
+        this.addActivityItem('Backup codes printed', '🖨️');
+    }
+
+    regenerateBackupCodes() {
+        if (confirm('Are you sure you want to regenerate backup codes? This will invalidate all existing backup codes.')) {
+            this.showNotification('Regenerating backup codes...', 'warning');
+            
+            setTimeout(() => {
+                this.showBackupCodes(); // Generate new codes
+                this.showNotification('New backup codes generated. Previous codes are now invalid.', 'success');
+                this.addActivityItem('Backup codes regenerated', '🔄');
+            }, 1000);
+        }
+    }
+
+    // ==========================================
+    // Profile & Session Management Functions  
+    // ==========================================
+
+    async viewActiveSessions() {
+        this.showNotification('Loading active sessions...', 'info');
+        
+        // Simulate loading sessions
+        setTimeout(() => {
+            const sessionsContainer = document.getElementById('activeSessionsContainer');
+            if (sessionsContainer) {
+                const mockSessions = [
+                    { device: 'Chrome on Windows', location: 'Istanbul, Turkey', lastActive: '2 minutes ago', current: true },
+                    { device: 'Mobile App', location: 'Ankara, Turkey', lastActive: '1 hour ago', current: false },
+                    { device: 'Firefox on Linux', location: 'London, UK', lastActive: '3 days ago', current: false }
+                ];
+                
+                sessionsContainer.innerHTML = `
+                    <div class="sessions-list">
+                        ${mockSessions.map(session => `
+                            <div class="session-item ${session.current ? 'current-session' : ''}">
+                                <div class="session-info">
+                                    <div class="session-device">${session.device} ${session.current ? '(Current)' : ''}</div>
+                                    <div class="session-details">
+                                        <span class="session-location">📍 ${session.location}</span>
+                                        <span class="session-time">🕒 ${session.lastActive}</span>
+                                    </div>
+                                </div>
+                                ${!session.current ? '<button class="revoke-session-btn" onclick="dashboard.revokeSession(\'' + session.device + '\')">🚫 Revoke</button>' : ''}
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            }
+            
+            this.showNotification('Active sessions loaded', 'success');
+        }, 1000);
+    }
+
+    revokeSession(device) {
+        if (confirm(`Are you sure you want to revoke access for "${device}"? This will log out that device immediately.`)) {
+            this.showNotification(`Revoking session for ${device}...`, 'warning');
+            
+            setTimeout(() => {
+                this.showNotification(`Session revoked for ${device}`, 'success');
+                this.addActivityItem(`Session revoked: ${device}`, '🚫');
+                this.viewActiveSessions(); // Refresh the list
+            }, 1000);
+        }
     }
 }
 

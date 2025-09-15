@@ -191,34 +191,34 @@
       "intent": "command_execution",
       "emotionalContext": "neutral",
       "learningValue": "improve_command_understanding"
+    },
+    {
+      "timestamp": "2025-09-15T13:10:53.065Z",
+      "userInput": "systemctl --type=service --state=running | head -10",
+      "systemResponse": "{\"commandExecuted\":true,\"wasSuccessful\":false,\"hasTranslation\":true,\"commandCount\":2,\"timestamp\":\"2025-09-15T13:10:29.084Z\",\"processingType\":\"terminal_command\"}",
+      "intent": "command_execution",
+      "emotionalContext": "neutral",
+      "learningValue": "improve_command_understanding"
+    },
+    {
+      "timestamp": "2025-09-15T13:12:26.399Z",
+      "userInput": "clear",
+      "systemResponse": "{\"commandExecuted\":true,\"wasSuccessful\":false,\"hasTranslation\":true,\"commandCount\":1,\"timestamp\":\"2025-09-15T13:11:57.813Z\",\"processingType\":\"terminal_command\"}",
+      "intent": "command_execution",
+      "emotionalContext": "neutral",
+      "learningValue": "improve_command_understanding"
+    },
+    {
+      "timestamp": "2025-09-15T13:13:45.072Z",
+      "userInput": "systemctl --type=service --state=running | head -10",
+      "systemResponse": "{\"commandExecuted\":true,\"wasSuccessful\":false,\"hasTranslation\":true,\"commandCount\":2,\"timestamp\":\"2025-09-15T13:13:12.115Z\",\"processingType\":\"terminal_command\"}",
+      "intent": "command_execution",
+      "emotionalContext": "neutral",
+      "learningValue": "improve_command_understanding"
     }
   ],
   "intentPatterns": {
     "command_execution": [
-      {
-        "intent": "command_execution",
-        "context": "neutral",
-        "skill": "intermediate",
-        "quality": 0.5,
-        "timestamp": "2025-09-15T10:44:36.405Z",
-        "learningValue": "system_interaction"
-      },
-      {
-        "intent": "command_execution",
-        "context": "neutral",
-        "skill": "intermediate",
-        "quality": 0.5,
-        "timestamp": "2025-09-15T10:46:09.888Z",
-        "learningValue": "system_interaction"
-      },
-      {
-        "intent": "command_execution",
-        "context": "neutral",
-        "skill": "intermediate",
-        "quality": 0.5,
-        "timestamp": "2025-09-15T10:47:18.364Z",
-        "learningValue": "system_interaction"
-      },
       {
         "intent": "command_execution",
         "context": "neutral",
@@ -274,6 +274,30 @@
         "quality": 0.5,
         "timestamp": "2025-09-15T13:07:11.027Z",
         "learningValue": "system_interaction"
+      },
+      {
+        "intent": "command_execution",
+        "context": "neutral",
+        "skill": "intermediate",
+        "quality": 0.5,
+        "timestamp": "2025-09-15T13:10:53.065Z",
+        "learningValue": "system_interaction"
+      },
+      {
+        "intent": "command_execution",
+        "context": "neutral",
+        "skill": "intermediate",
+        "quality": 0.5,
+        "timestamp": "2025-09-15T13:12:26.399Z",
+        "learningValue": "system_interaction"
+      },
+      {
+        "intent": "command_execution",
+        "context": "neutral",
+        "skill": "intermediate",
+        "quality": 0.5,
+        "timestamp": "2025-09-15T13:13:45.072Z",
+        "learningValue": "system_interaction"
       }
     ]
   },
@@ -285,7 +309,7 @@
         "system_interaction"
       ],
       "learningOpportunity": "improve_command_understanding",
-      "timestamp": 1757941631027
+      "timestamp": 1757942025072
     },
     "system_interaction": {
       "intent": "system_interaction",
@@ -299,11 +323,11 @@
   },
   "pathPerformance": {
     "command_execution": {
-      "uses": 21,
-      "averageLength": 1.9999990463256836,
+      "uses": 24,
+      "averageLength": 1.9999998807907104,
       "successRate": 0.5,
-      "lastUsed": 1757941631027
+      "lastUsed": 1757942025072
     }
   },
-  "lastUpdated": "2025-09-15T13:07:11.028Z"
+  "lastUpdated": "2025-09-15T13:13:45.072Z"
 }

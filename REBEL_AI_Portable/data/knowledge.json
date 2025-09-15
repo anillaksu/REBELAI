@@ -463,6 +463,37 @@
         ],
         "last_updated": "2025-09-15T13:06:52.988Z",
         "success_rate": 0
+      },
+      "systemctl": {
+        "total_executions": 2,
+        "successful_executions": 0,
+        "failure_patterns": [
+          {
+            "pattern": "command_not_found",
+            "description": "Command does not exist on this platform",
+            "suggested_action": "find_alternative",
+            "count": 2,
+            "first_seen": "2025-09-15T13:10:29.083Z",
+            "last_seen": "2025-09-15T13:13:12.114Z"
+          },
+          {
+            "pattern": "unknown_error",
+            "description": "Unrecognized error pattern",
+            "suggested_action": "manual_review",
+            "count": 2,
+            "first_seen": "2025-09-15T13:10:29.083Z",
+            "last_seen": "2025-09-15T13:13:12.114Z"
+          }
+        ],
+        "last_updated": "2025-09-15T13:13:12.114Z",
+        "success_rate": 0
+      },
+      "clear": {
+        "total_executions": 1,
+        "successful_executions": 1,
+        "failure_patterns": [],
+        "last_updated": "2025-09-15T13:11:57.810Z",
+        "success_rate": 100
       }
     }
   },
@@ -787,6 +818,22 @@
         ],
         "confidence": 0.19999999999999998,
         "last_tested": "2025-09-15T13:06:52.988Z"
+      },
+      "systemctl": {
+        "works": false,
+        "variations": [
+          "systemctl --type=service --state=running | head -10"
+        ],
+        "confidence": 0.09999999999999998,
+        "last_tested": "2025-09-15T13:13:12.114Z"
+      },
+      "clear": {
+        "works": true,
+        "variations": [
+          "clear"
+        ],
+        "confidence": 0.7999999999999999,
+        "last_tested": "2025-09-15T13:11:57.810Z"
       }
     },
     "darwin": {
@@ -1051,29 +1098,39 @@
           "usage_count": 1,
           "success_rate": 0,
           "avg_execution_time": 7513.5
+        },
+        "systemctl": {
+          "usage_count": 2,
+          "success_rate": 0,
+          "avg_execution_time": 11273.125
+        },
+        "clear": {
+          "usage_count": 1,
+          "success_rate": 100,
+          "avg_execution_time": 18.5
         }
       },
       "performance_metrics": {},
       "capabilities": {},
-      "last_seen": "2025-09-15T13:06:52.988Z"
+      "last_seen": "2025-09-15T13:13:12.114Z"
     }
   },
   "conversationLearning": {
-    "totalConversations": 23,
+    "totalConversations": 26,
     "uniqueIntents": 1,
     "dijkstraNodes": 2,
     "topIntents": [
       {
         "intent": "command_execution",
-        "count": 23
+        "count": 26
       }
     ],
-    "learningEfficiency": 0.043478260869565216,
+    "learningEfficiency": 0.038461538461538464,
     "dijkstraOptimizationMetrics": {
       "totalNodes": 2,
       "totalConnections": 2,
       "averageWeight": "2.925",
-      "pathUsage": 20,
+      "pathUsage": 23,
       "averageSuccessRate": "0.500",
       "optimizationEfficiency": "1.00"
     }
