@@ -455,16 +455,518 @@ Secure | Optimized | Intelligent
             <div class="content-module" id="knowledgeModule">
                 <div class="module-header">
                     <h1 class="module-title">🧠 Knowledge AI</h1>
+                    <div class="module-actions">
+                        <button class="action-btn" id="refreshKnowledge">🔄 Refresh</button>
+                        <button class="action-btn" id="exportKnowledge">📄 Export</button>
+                        <button class="action-btn" id="clearKnowledge">🗑️ Clear</button>
+                    </div>
                 </div>
                 <div class="module-content">
-                    <div class="coming-soon">
-                        <div class="coming-soon-icon">🚧</div>
-                        <div class="coming-soon-text">Knowledge AI interface coming soon...</div>
+                    <!-- Learning Statistics -->
+                    <div class="knowledge-section">
+                        <div class="section-header">
+                            <h3 class="section-title">📊 Learning Statistics</h3>
+                            <div class="section-status">
+                                <span class="status-indicator active"></span>
+                                <span class="status-text">Active Learning</span>
+                            </div>
+                        </div>
+                        <div class="stats-grid">
+                            <div class="stat-card">
+                                <div class="stat-icon">🎯</div>
+                                <div class="stat-info">
+                                    <div class="stat-value" id="totalCommandsLearned">--</div>
+                                    <div class="stat-label">Commands Learned</div>
+                                </div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-icon">📈</div>
+                                <div class="stat-info">
+                                    <div class="stat-value" id="avgSuccessRate">--</div>
+                                    <div class="stat-label">Avg Success Rate</div>
+                                </div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-icon">🌐</div>
+                                <div class="stat-info">
+                                    <div class="stat-value" id="platformsLearned">--</div>
+                                    <div class="stat-label">Platforms</div>
+                                </div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-icon">🔄</div>
+                                <div class="stat-info">
+                                    <div class="stat-value" id="fallbackRoutes">--</div>
+                                    <div class="stat-label">Fallback Routes</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Command Knowledge -->
+                    <div class="knowledge-section">
+                        <div class="section-header">
+                            <h3 class="section-title">⚡ Command Knowledge</h3>
+                            <div class="section-controls">
+                                <select class="filter-select" id="platformFilter">
+                                    <option value="all">All Platforms</option>
+                                    <option value="linux">Linux</option>
+                                    <option value="win32">Windows</option>
+                                    <option value="darwin">macOS</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="knowledge-table-container">
+                            <table class="knowledge-table" id="commandKnowledgeTable">
+                                <thead>
+                                    <tr>
+                                        <th>Command</th>
+                                        <th>Success Rate</th>
+                                        <th>Executions</th>
+                                        <th>Confidence</th>
+                                        <th>Last Updated</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="commandKnowledgeBody">
+                                    <tr>
+                                        <td colspan="6" class="no-data">Loading command knowledge...</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Device Profiles -->
+                    <div class="knowledge-section">
+                        <div class="section-header">
+                            <h3 class="section-title">💻 Device Profiles</h3>
+                        </div>
+                        <div class="device-profiles" id="deviceProfiles">
+                            <div class="device-card current-device">
+                                <div class="device-header">
+                                    <div class="device-icon">🖥️</div>
+                                    <div class="device-info">
+                                        <div class="device-name" id="currentDeviceName">Current Device</div>
+                                        <div class="device-id" id="currentDeviceId">Loading...</div>
+                                    </div>
+                                    <div class="device-status">
+                                        <span class="status-badge current">Current</span>
+                                    </div>
+                                </div>
+                                <div class="device-stats">
+                                    <div class="device-stat">
+                                        <span class="stat-label">Platform:</span>
+                                        <span class="stat-value" id="devicePlatform">--</span>
+                                    </div>
+                                    <div class="device-stat">
+                                        <span class="stat-label">Architecture:</span>
+                                        <span class="stat-value" id="deviceArch">--</span>
+                                    </div>
+                                    <div class="device-stat">
+                                        <span class="stat-label">Commands Used:</span>
+                                        <span class="stat-value" id="deviceCommands">--</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Recommendations -->
+                    <div class="knowledge-section">
+                        <div class="section-header">
+                            <h3 class="section-title">💡 AI Recommendations</h3>
+                        </div>
+                        <div class="recommendations-list" id="recommendationsList">
+                            <div class="recommendation-item">
+                                <div class="rec-icon">🔄</div>
+                                <div class="rec-content">
+                                    <div class="rec-title">Loading recommendations...</div>
+                                    <div class="rec-description">AI is analyzing your usage patterns</div>
+                                </div>
+                                <div class="rec-confidence">
+                                    <div class="confidence-bar">
+                                        <div class="confidence-fill" style="width: 0%"></div>
+                                    </div>
+                                    <div class="confidence-label">--%</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Knowledge Export/Import -->
+                    <div class="knowledge-section">
+                        <div class="section-header">
+                            <h3 class="section-title">📁 Knowledge Management</h3>
+                        </div>
+                        <div class="knowledge-actions">
+                            <div class="action-group">
+                                <button class="knowledge-btn export" id="exportFullKnowledge">
+                                    <span class="btn-icon">💾</span>
+                                    <span class="btn-text">Export All Knowledge</span>
+                                </button>
+                                <button class="knowledge-btn backup" id="backupKnowledge">
+                                    <span class="btn-icon">💽</span>
+                                    <span class="btn-text">Create Backup</span>
+                                </button>
+                            </div>
+                            <div class="action-group">
+                                <input type="file" id="importKnowledgeFile" accept=".json" style="display: none;">
+                                <button class="knowledge-btn import" id="importKnowledge">
+                                    <span class="btn-icon">📂</span>
+                                    <span class="btn-text">Import Knowledge</span>
+                                </button>
+                                <button class="knowledge-btn reset" id="resetKnowledge">
+                                    <span class="btn-icon">🗑️</span>
+                                    <span class="btn-text">Reset All</span>
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
 
             <!-- Placeholder modules for other content -->
+            <!-- MFA Settings Module -->
+            <div class="content-module" id="mfaModule">
+                <div class="module-header">
+                    <h1 class="module-title">🔐 MFA Settings</h1>
+                    <div class="module-actions">
+                        <button class="action-btn" id="refreshMfa">🔄 Refresh</button>
+                        <button class="action-btn" id="backupCodes">📋 Backup Codes</button>
+                    </div>
+                </div>
+                <div class="module-content">
+                    <!-- MFA Status -->
+                    <div class="mfa-section">
+                        <div class="section-header">
+                            <h3 class="section-title">🛡️ Authentication Status</h3>
+                            <div class="mfa-status">
+                                <span class="status-indicator" id="mfaStatusIndicator"></span>
+                                <span class="status-text" id="mfaStatusText">Loading...</span>
+                            </div>
+                        </div>
+                        <div class="mfa-overview">
+                            <div class="mfa-card">
+                                <div class="mfa-icon">📱</div>
+                                <div class="mfa-info">
+                                    <div class="mfa-title">Two-Factor Authentication</div>
+                                    <div class="mfa-description" id="mfaDescription">Secure your account with TOTP</div>
+                                </div>
+                                <div class="mfa-action">
+                                    <button class="mfa-toggle-btn" id="toggleMfa">Configure</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- MFA Setup -->
+                    <div class="mfa-section" id="mfaSetupSection" style="display: none;">
+                        <div class="section-header">
+                            <h3 class="section-title">⚙️ Setup Two-Factor Authentication</h3>
+                        </div>
+                        <div class="mfa-setup-steps">
+                            <div class="setup-step active" id="step1">
+                                <div class="step-number">1</div>
+                                <div class="step-content">
+                                    <h4>Install Authenticator App</h4>
+                                    <p>Install an authenticator app like Google Authenticator, Authy, or Microsoft Authenticator</p>
+                                    <div class="app-suggestions">
+                                        <div class="app-item">📱 Google Authenticator</div>
+                                        <div class="app-item">🔐 Authy</div>
+                                        <div class="app-item">Ⓜ️ Microsoft Authenticator</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="setup-step" id="step2">
+                                <div class="step-number">2</div>
+                                <div class="step-content">
+                                    <h4>Scan QR Code</h4>
+                                    <div class="qr-container">
+                                        <div class="qr-code" id="qrCode">
+                                            <div class="qr-placeholder">🔄 Generating QR Code...</div>
+                                        </div>
+                                        <div class="manual-code">
+                                            <strong>Manual Entry:</strong>
+                                            <code id="manualCode">Loading...</code>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="setup-step" id="step3">
+                                <div class="step-number">3</div>
+                                <div class="step-content">
+                                    <h4>Verify Setup</h4>
+                                    <p>Enter the 6-digit code from your authenticator app:</p>
+                                    <div class="verification-input">
+                                        <input type="text" id="verificationCode" placeholder="000000" maxlength="6" class="code-input">
+                                        <button class="verify-btn" id="verifyCode">Verify</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="setup-actions">
+                            <button class="cancel-btn" id="cancelMfaSetup">Cancel</button>
+                            <button class="next-btn" id="nextStep">Next Step</button>
+                        </div>
+                    </div>
+
+                    <!-- Backup Codes -->
+                    <div class="mfa-section" id="backupCodesSection">
+                        <div class="section-header">
+                            <h3 class="section-title">🔑 Backup Codes</h3>
+                        </div>
+                        <div class="backup-codes-container">
+                            <div class="backup-warning">
+                                <div class="warning-icon">⚠️</div>
+                                <div class="warning-text">
+                                    Save these backup codes in a safe place. Each code can only be used once.
+                                </div>
+                            </div>
+                            <div class="backup-codes-grid" id="backupCodesGrid">
+                                <div class="loading-codes">🔄 Loading backup codes...</div>
+                            </div>
+                            <div class="backup-actions">
+                                <button class="backup-btn download" id="downloadCodes">💾 Download</button>
+                                <button class="backup-btn print" id="printCodes">🖨️ Print</button>
+                                <button class="backup-btn regenerate" id="regenerateCodes">🔄 Regenerate</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Profile Module -->
+            <div class="content-module" id="profileModule">
+                <div class="module-header">
+                    <h1 class="module-title">👤 Profile</h1>
+                    <div class="module-actions">
+                        <button class="action-btn" id="editProfile">✏️ Edit</button>
+                        <button class="action-btn" id="changePassword">🔒 Password</button>
+                    </div>
+                </div>
+                <div class="module-content">
+                    <div class="profile-section">
+                        <div class="profile-header">
+                            <div class="profile-avatar">
+                                <div class="avatar-circle" id="profileAvatar">R</div>
+                                <button class="avatar-change" id="changeAvatar">📷</button>
+                            </div>
+                            <div class="profile-info">
+                                <h2 class="profile-name" id="profileName">Loading...</h2>
+                                <div class="profile-role" id="profileRole">Loading...</div>
+                                <div class="profile-email" id="profileEmail">Loading...</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="profile-section">
+                        <h3 class="section-title">📊 Account Information</h3>
+                        <div class="info-grid">
+                            <div class="info-item">
+                                <label>Username</label>
+                                <input type="text" id="profileUsername" class="profile-input" readonly>
+                            </div>
+                            <div class="info-item">
+                                <label>Email</label>
+                                <input type="email" id="profileEmailInput" class="profile-input" readonly>
+                            </div>
+                            <div class="info-item">
+                                <label>Role</label>
+                                <input type="text" id="profileRoleInput" class="profile-input" readonly>
+                            </div>
+                            <div class="info-item">
+                                <label>Last Login</label>
+                                <input type="text" id="profileLastLogin" class="profile-input" readonly>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="profile-section">
+                        <h3 class="section-title">🔐 Security Settings</h3>
+                        <div class="security-options">
+                            <div class="security-item">
+                                <div class="security-info">
+                                    <div class="security-title">Two-Factor Authentication</div>
+                                    <div class="security-description">Add an extra layer of security</div>
+                                </div>
+                                <div class="security-toggle">
+                                    <button class="toggle-btn" id="profileMfaToggle">Configure</button>
+                                </div>
+                            </div>
+                            <div class="security-item">
+                                <div class="security-info">
+                                    <div class="security-title">Session Management</div>
+                                    <div class="security-description">Manage active sessions</div>
+                                </div>
+                                <div class="security-toggle">
+                                    <button class="action-btn" id="manageSessions">🔍 View</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="profile-section">
+                        <h3 class="section-title">📈 Activity Statistics</h3>
+                        <div class="stats-grid">
+                            <div class="stat-card">
+                                <div class="stat-icon">⚡</div>
+                                <div class="stat-info">
+                                    <div class="stat-value" id="userCommandCount">--</div>
+                                    <div class="stat-label">Commands Executed</div>
+                                </div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-icon">📅</div>
+                                <div class="stat-info">
+                                    <div class="stat-value" id="userLoginCount">--</div>
+                                    <div class="stat-label">Login Sessions</div>
+                                </div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-icon">🕐</div>
+                                <div class="stat-info">
+                                    <div class="stat-value" id="userTotalTime">--</div>
+                                    <div class="stat-label">Total Time</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Preferences Module -->
+            <div class="content-module" id="preferencesModule">
+                <div class="module-header">
+                    <h1 class="module-title">🎨 Preferences</h1>
+                    <div class="module-actions">
+                        <button class="action-btn" id="savePreferences">💾 Save</button>
+                        <button class="action-btn" id="resetPreferences">🔄 Reset</button>
+                    </div>
+                </div>
+                <div class="module-content">
+                    <div class="preferences-section">
+                        <h3 class="section-title">🎨 Appearance</h3>
+                        <div class="preference-group">
+                            <div class="preference-item">
+                                <label>Theme</label>
+                                <select class="preference-select" id="themeSelect">
+                                    <option value="dark">Dark (Default)</option>
+                                    <option value="light">Light</option>
+                                    <option value="auto">Auto (System)</option>
+                                </select>
+                            </div>
+                            <div class="preference-item">
+                                <label>Terminal Font Size</label>
+                                <select class="preference-select" id="terminalFontSize">
+                                    <option value="12">12px</option>
+                                    <option value="14" selected>14px (Default)</option>
+                                    <option value="16">16px</option>
+                                    <option value="18">18px</option>
+                                </select>
+                            </div>
+                            <div class="preference-item">
+                                <label>Animation Speed</label>
+                                <select class="preference-select" id="animationSpeed">
+                                    <option value="fast">Fast</option>
+                                    <option value="normal" selected>Normal</option>
+                                    <option value="slow">Slow</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="preferences-section">
+                        <h3 class="section-title">⚡ Terminal Settings</h3>
+                        <div class="preference-group">
+                            <div class="preference-item">
+                                <div class="preference-toggle">
+                                    <input type="checkbox" id="enableTurkishTranslation" checked>
+                                    <label for="enableTurkishTranslation">Enable Turkish Translation</label>
+                                </div>
+                                <div class="preference-description">Automatically translate Turkish commands to English</div>
+                            </div>
+                            <div class="preference-item">
+                                <div class="preference-toggle">
+                                    <input type="checkbox" id="enableDijkstraOptimization" checked>
+                                    <label for="enableDijkstraOptimization">Enable Dijkstra Optimization</label>
+                                </div>
+                                <div class="preference-description">Use AI to optimize command execution paths</div>
+                            </div>
+                            <div class="preference-item">
+                                <div class="preference-toggle">
+                                    <input type="checkbox" id="enableAILearning" checked>
+                                    <label for="enableAILearning">Enable AI Learning</label>
+                                </div>
+                                <div class="preference-description">Allow the system to learn from your command patterns</div>
+                            </div>
+                            <div class="preference-item">
+                                <div class="preference-toggle">
+                                    <input type="checkbox" id="showPerformanceMetrics" checked>
+                                    <label for="showPerformanceMetrics">Show Performance Metrics</label>
+                                </div>
+                                <div class="preference-description">Display execution time and optimization details</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="preferences-section">
+                        <h3 class="section-title">🔔 Notifications</h3>
+                        <div class="preference-group">
+                            <div class="preference-item">
+                                <div class="preference-toggle">
+                                    <input type="checkbox" id="enableNotifications" checked>
+                                    <label for="enableNotifications">Enable Notifications</label>
+                                </div>
+                            </div>
+                            <div class="preference-item">
+                                <div class="preference-toggle">
+                                    <input type="checkbox" id="enableSoundAlerts">
+                                    <label for="enableSoundAlerts">Sound Alerts</label>
+                                </div>
+                            </div>
+                            <div class="preference-item">
+                                <label>Notification Duration</label>
+                                <select class="preference-select" id="notificationDuration">
+                                    <option value="3">3 seconds</option>
+                                    <option value="5" selected>5 seconds</option>
+                                    <option value="10">10 seconds</option>
+                                    <option value="0">Until dismissed</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="preferences-section">
+                        <h3 class="section-title">🔒 Privacy & Security</h3>
+                        <div class="preference-group">
+                            <div class="preference-item">
+                                <div class="preference-toggle">
+                                    <input type="checkbox" id="enableAuditLogging" checked>
+                                    <label for="enableAuditLogging">Enable Audit Logging</label>
+                                </div>
+                                <div class="preference-description">Log all commands and system interactions</div>
+                            </div>
+                            <div class="preference-item">
+                                <label>Session Timeout</label>
+                                <select class="preference-select" id="sessionTimeout">
+                                    <option value="30">30 minutes</option>
+                                    <option value="60" selected>1 hour</option>
+                                    <option value="240">4 hours</option>
+                                    <option value="480">8 hours</option>
+                                </select>
+                            </div>
+                            <div class="preference-item">
+                                <div class="preference-toggle">
+                                    <input type="checkbox" id="enableAutoLock" checked>
+                                    <label for="enableAutoLock">Auto-lock on inactivity</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <div class="content-module" id="hardwareModule">
                 <div class="module-header">
                     <h1 class="module-title">💻 Hardware Control</h1>

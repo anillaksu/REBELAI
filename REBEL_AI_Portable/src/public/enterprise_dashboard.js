@@ -273,6 +273,8 @@ class EnterpriseDashboard {
         // Module-specific initialization
         if (moduleId === 'terminal') {
             this.focusTerminalInput();
+        } else if (moduleId === 'knowledge') {
+            this.loadKnowledgeData();
         }
     }
 
@@ -305,6 +307,155 @@ class EnterpriseDashboard {
         } catch (error) {
             console.warn('Failed to load system stats:', error);
         }
+    }
+
+    async loadKnowledgeData() {
+        try {
+            const response = await fetch('/api/knowledge', {
+                headers: {
+                    'X-Auth-Token': window.REBEL_SESSION_TOKEN
+                }
+            });
+
+            if (response.ok) {
+                const knowledgeData = await response.json();
+                this.updateKnowledgeInterface(knowledgeData);
+            }
+        } catch (error) {
+            console.error('Failed to load knowledge data:', error);
+        }
+    }
+
+    updateKnowledgeInterface(data) {
+        // Update learning statistics
+        if (data.learning_stats) {
+            const stats = data.learning_stats;
+            document.getElementById('totalCommandsLearned').textContent = stats.total_commands_learned || 0;
+            document.getElementById('avgSuccessRate').textContent = `${stats.avg_success_rate || 0}%`;
+            document.getElementById('platformsLearned').textContent = stats.platforms_learned || 0;
+            document.getElementById('fallbackRoutes').textContent = stats.fallback_routes || 0;
+        }
+
+        // Update device profile
+        if (data.device_profile) {
+            const device = data.device_profile;
+            document.getElementById('currentDeviceName').textContent = device.hostname || 'Unknown Device';
+            document.getElementById('currentDeviceId').textContent = data.device_id || 'N/A';
+            document.getElementById('devicePlatform').textContent = device.platform || 'Unknown';
+            document.getElementById('deviceArch').textContent = device.architecture || 'Unknown';
+            
+            const commandCount = device.command_preferences ? Object.keys(device.command_preferences).length : 0;
+            document.getElementById('deviceCommands').textContent = commandCount;
+        }
+
+        // Update command knowledge table
+        this.updateCommandKnowledgeTable(data.command_success_rates);
+
+        // Update recommendations
+        this.updateRecommendations(data.recommendations);
+    }
+
+    updateCommandKnowledgeTable(commandRates) {
+        const tbody = document.getElementById('commandKnowledgeBody');
+        tbody.innerHTML = '';
+
+        if (!commandRates || Object.keys(commandRates).length === 0) {
+            tbody.innerHTML = '<tr><td colspan="6" class="no-data">No command knowledge available yet</td></tr>';
+            return;
+        }
+
+        for (const [platform, commands] of Object.entries(commandRates)) {
+            for (const [command, stats] of Object.entries(commands)) {
+                const row = document.createElement('tr');
+                row.className = 'command-row';
+                
+                const successRate = Math.round(stats.success_rate || 0);
+                const confidence = Math.round((stats.confidence || 0.5) * 100);
+                const lastUpdated = new Date(stats.last_updated).toLocaleDateString();
+
+                row.innerHTML = `
+                    <td>
+                        <div class="command-cell">
+                            <span class="command-name">${command}</span>
+                            <span class="platform-badge">${platform}</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="success-rate">
+                            <div class="rate-bar">
+                                <div class="rate-fill" style="width: ${successRate}%"></div>
+                            </div>
+                            <span class="rate-text">${successRate}%</span>
+                        </div>
+                    </td>
+                    <td><span class="execution-count">${stats.total_executions || 0}</span></td>
+                    <td>
+                        <div class="confidence-indicator ${confidence > 70 ? 'high' : confidence > 40 ? 'medium' : 'low'}">
+                            ${confidence}%
+                        </div>
+                    </td>
+                    <td><span class="last-updated">${lastUpdated}</span></td>
+                    <td>
+                        <button class="table-action-btn" onclick="dashboard.viewCommandDetails('${command}', '${platform}')">
+                            <span class="action-icon">👁️</span>
+                        </button>
+                    </td>
+                `;
+                
+                tbody.appendChild(row);
+            }
+        }
+    }
+
+    updateRecommendations(recommendations) {
+        const container = document.getElementById('recommendationsList');
+        container.innerHTML = '';
+
+        if (!recommendations || recommendations.length === 0) {
+            container.innerHTML = `
+                <div class="recommendation-item">
+                    <div class="rec-icon">💭</div>
+                    <div class="rec-content">
+                        <div class="rec-title">No recommendations yet</div>
+                        <div class="rec-description">Execute more commands to get AI recommendations</div>
+                    </div>
+                    <div class="rec-confidence">
+                        <div class="confidence-bar">
+                            <div class="confidence-fill" style="width: 0%"></div>
+                        </div>
+                        <div class="confidence-label">0%</div>
+                    </div>
+                </div>
+            `;
+            return;
+        }
+
+        recommendations.slice(0, 5).forEach(rec => {
+            const confidence = Math.round(rec.confidence * 100);
+            const item = document.createElement('div');
+            item.className = 'recommendation-item';
+            
+            item.innerHTML = `
+                <div class="rec-icon">💡</div>
+                <div class="rec-content">
+                    <div class="rec-title">Try "${rec.command}" command</div>
+                    <div class="rec-description">Success rate: ${Math.round(rec.success_rate)}% - Tested recently</div>
+                </div>
+                <div class="rec-confidence">
+                    <div class="confidence-bar">
+                        <div class="confidence-fill" style="width: ${confidence}%"></div>
+                    </div>
+                    <div class="confidence-label">${confidence}%</div>
+                </div>
+            `;
+            
+            container.appendChild(item);
+        });
+    }
+
+    viewCommandDetails(command, platform) {
+        // Show detailed modal for command statistics
+        alert(`Command Details:\nCommand: ${command}\nPlatform: ${platform}\n\nDetailed analysis coming soon...`);
     }
 
     updateSystemOverview(data) {
