@@ -4,6 +4,8 @@
 // Portable AI Terminal Server
 
 const express = require('express');
+const http = require('http');
+const socketIo = require('socket.io');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const path = require('path');
@@ -24,9 +26,25 @@ const AuthRoutes = require('./auth_routes');
 class REBELAIServer {
     constructor() {
         this.app = express();
+        this.server = http.createServer(this.app);
+        this.io = socketIo(this.server, {
+            cors: {
+                origin: "*",
+                methods: ["GET", "POST"]
+            }
+        });
         this.port = process.env.PORT || 5000;
         this.host = '0.0.0.0'; // Allow all hosts for deployment
         this.isPortable = process.argv.includes('--portable');
+        
+        // Real-time monitoring data
+        this.connectedUsers = new Map();
+        this.systemMetrics = {
+            cpu: 0,
+            memory: 0,
+            disk: 0,
+            network: { rx: 0, tx: 0 }
+        };
         
         // Generate random session token for this boot
         this.sessionToken = crypto.randomBytes(32).toString('hex');
@@ -52,6 +70,8 @@ class REBELAIServer {
         this.setupMiddleware();
         this.setupRoutes();
         this.setupStaticFiles();
+        this.setupWebSocket();
+        this.startMetricsCollection();
     }
 
     setupMiddleware() {
@@ -521,6 +541,145 @@ class REBELAIServer {
         return codes;
     }
 
+    // 🌐 WebSocket Real-Time Infrastructure
+    setupWebSocket() {
+        this.io.on('connection', (socket) => {
+            console.log(`🌐 User connected: ${socket.id}`);
+            
+            // Store connected user
+            this.connectedUsers.set(socket.id, {
+                id: socket.id,
+                connectedAt: new Date(),
+                username: null,
+                lastActivity: new Date()
+            });
+
+            // Send current system metrics immediately
+            socket.emit('system_metrics', this.systemMetrics);
+            
+            // Handle user authentication
+            socket.on('authenticate', (data) => {
+                const user = this.connectedUsers.get(socket.id);
+                if (user) {
+                    user.username = data.username;
+                    user.authenticated = true;
+                    this.connectedUsers.set(socket.id, user);
+                    
+                    // Join user to their personal room
+                    socket.join(`user_${data.username}`);
+                    
+                    // Notify other admins about new connection
+                    socket.broadcast.emit('user_connected', {
+                        username: data.username,
+                        connectedAt: user.connectedAt
+                    });
+                }
+            });
+
+            // Handle real-time command execution
+            socket.on('execute_command', async (data) => {
+                try {
+                    const user = this.connectedUsers.get(socket.id);
+                    if (user && user.authenticated) {
+                        // Broadcast command to all authenticated users
+                        this.io.emit('command_executed', {
+                            username: user.username,
+                            command: data.command,
+                            timestamp: new Date(),
+                            output: data.output || 'Executing...'
+                        });
+                    }
+                } catch (error) {
+                    socket.emit('error', { message: 'Command execution failed' });
+                }
+            });
+
+            // Handle chat messages
+            socket.on('chat_message', (data) => {
+                const user = this.connectedUsers.get(socket.id);
+                if (user && user.authenticated) {
+                    this.io.emit('chat_message', {
+                        username: user.username,
+                        message: data.message,
+                        timestamp: new Date(),
+                        avatar: data.avatar || '👤'
+                    });
+                }
+            });
+
+            // Handle terminal sharing
+            socket.on('share_terminal', (data) => {
+                const user = this.connectedUsers.get(socket.id);
+                if (user && user.authenticated) {
+                    socket.broadcast.emit('terminal_shared', {
+                        username: user.username,
+                        terminalData: data.terminalData,
+                        timestamp: new Date()
+                    });
+                }
+            });
+
+            // Handle disconnection
+            socket.on('disconnect', () => {
+                const user = this.connectedUsers.get(socket.id);
+                if (user) {
+                    console.log(`🌐 User disconnected: ${user.username || socket.id}`);
+                    
+                    // Notify other users
+                    if (user.username) {
+                        socket.broadcast.emit('user_disconnected', {
+                            username: user.username,
+                            disconnectedAt: new Date()
+                        });
+                    }
+                    
+                    this.connectedUsers.delete(socket.id);
+                }
+            });
+        });
+    }
+
+    // 📊 Real-Time System Metrics Collection
+    startMetricsCollection() {
+        // Collect system metrics every 5 seconds
+        setInterval(async () => {
+            try {
+                const [cpu, mem, disk, network] = await Promise.all([
+                    si.currentLoad(),
+                    si.mem(),
+                    si.fsSize(),
+                    si.networkStats()
+                ]);
+
+                this.systemMetrics = {
+                    cpu: Math.round(cpu.currentload || 0),
+                    memory: Math.round((mem.used / mem.total) * 100 || 0),
+                    disk: disk.length > 0 ? Math.round((disk[0].used / disk[0].size) * 100 || 0) : 0,
+                    network: {
+                        rx: network[0]?.rx_bytes || 0,
+                        tx: network[0]?.tx_bytes || 0
+                    },
+                    timestamp: new Date()
+                };
+
+                // Broadcast to all connected clients
+                this.io.emit('system_metrics', this.systemMetrics);
+
+            } catch (error) {
+                console.error('📊 Metrics collection error:', error);
+            }
+        }, 5000);
+
+        // Heartbeat - send connected users count every 10 seconds
+        setInterval(() => {
+            this.io.emit('heartbeat', {
+                connectedUsers: this.connectedUsers.size,
+                authenticatedUsers: Array.from(this.connectedUsers.values()).filter(u => u.authenticated).length,
+                timestamp: new Date()
+            });
+        }, 10000);
+    }
+
     mapActionToCommand(action) {
         const platform = os.platform();
         
@@ -585,7 +744,7 @@ class REBELAIServer {
     }
 
     start() {
-        this.app.listen(this.port, this.host, () => {
+        this.server.listen(this.port, this.host, () => {
             console.log('🚀==========================================🚀');
             console.log('🚀     REBEL AI - Dijkstra Edition        🚀');
             console.log('🚀==========================================🚀');

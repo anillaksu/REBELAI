@@ -10,6 +10,13 @@ class EnterpriseDashboard {
         this.userData = null;
         this.systemStats = {};
         
+        // 🌐 Real-Time WebSocket Connection
+        this.socket = null;
+        this.isConnected = false;
+        this.reconnectAttempts = 0;
+        this.maxReconnectAttempts = 5;
+        this.realTimeMetrics = {};
+        
         // Terminal integration
         this.terminalSession = null;
         this.commandHistory = [];
@@ -51,6 +58,9 @@ class EnterpriseDashboard {
             if (this.userData) {
                 this.initializeTerminal();
             }
+            
+            // 🌐 Initialize WebSocket connection
+            await this.initializeWebSocket();
             
             // Hide loading and show dashboard
             this.hideLoading();
@@ -1479,6 +1489,217 @@ class EnterpriseDashboard {
                 terminalSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
             }
         }, 300);
+    }
+
+    // ==========================================
+    // 🌐 Real-Time WebSocket Functions
+    // ==========================================
+
+    async initializeWebSocket() {
+        try {
+            this.showNotification('🌐 Connecting to real-time server...', 'info');
+            
+            // Initialize Socket.IO connection
+            this.socket = io({
+                transports: ['websocket', 'polling'],
+                forceNew: true,
+                reconnection: true,
+                reconnectionDelay: 1000,
+                reconnectionDelayMax: 5000,
+                maxReconnectionAttempts: this.maxReconnectAttempts
+            });
+
+            // Connection event handlers
+            this.socket.on('connect', () => {
+                this.isConnected = true;
+                this.reconnectAttempts = 0;
+                console.log('🌐 WebSocket connected');
+                this.showNotification('🌐 Real-time connection established', 'success');
+                
+                // Authenticate with server
+                this.socket.emit('authenticate', {
+                    username: this.userData?.username || 'anonymous',
+                    token: this.authToken
+                });
+
+                // Update connection status in UI
+                this.updateConnectionStatus(true);
+            });
+
+            this.socket.on('disconnect', () => {
+                this.isConnected = false;
+                console.log('🌐 WebSocket disconnected');
+                this.showNotification('🌐 Real-time connection lost', 'warning');
+                this.updateConnectionStatus(false);
+            });
+
+            this.socket.on('reconnect', () => {
+                this.showNotification('🌐 Real-time connection restored', 'success');
+                this.updateConnectionStatus(true);
+            });
+
+            this.socket.on('reconnect_error', () => {
+                this.reconnectAttempts++;
+                if (this.reconnectAttempts >= this.maxReconnectAttempts) {
+                    this.showNotification('🌐 Unable to establish real-time connection', 'error');
+                }
+            });
+
+            // Real-time data handlers
+            this.socket.on('system_metrics', (metrics) => {
+                this.updateRealTimeMetrics(metrics);
+            });
+
+            this.socket.on('heartbeat', (data) => {
+                this.updateHeartbeat(data);
+            });
+
+            this.socket.on('user_connected', (data) => {
+                this.showNotification(`👥 ${data.username} connected`, 'info');
+                this.addActivityItem(`User ${data.username} connected`, '👥');
+            });
+
+            this.socket.on('user_disconnected', (data) => {
+                this.showNotification(`👥 ${data.username} disconnected`, 'info');
+                this.addActivityItem(`User ${data.username} disconnected`, '👋');
+            });
+
+            this.socket.on('command_executed', (data) => {
+                this.addRealTimeCommand(data);
+            });
+
+            this.socket.on('chat_message', (data) => {
+                this.addChatMessage(data);
+            });
+
+            this.socket.on('terminal_shared', (data) => {
+                this.handleSharedTerminal(data);
+            });
+
+        } catch (error) {
+            console.error('🌐 WebSocket initialization error:', error);
+            this.showNotification('🌐 Real-time features unavailable', 'error');
+        }
+    }
+
+    updateRealTimeMetrics(metrics) {
+        this.realTimeMetrics = metrics;
+        
+        // Update dashboard metrics displays
+        const cpuElement = document.getElementById('cpuUsage');
+        if (cpuElement) cpuElement.textContent = `${metrics.cpu}%`;
+        
+        const memoryElement = document.getElementById('memoryUsage');
+        if (memoryElement) memoryElement.textContent = `${metrics.memory}%`;
+        
+        const diskElement = document.getElementById('diskUsage');
+        if (diskElement) diskElement.textContent = `${metrics.disk}%`;
+        
+        // Update system status color based on metrics
+        const maxUsage = Math.max(metrics.cpu, metrics.memory, metrics.disk);
+        const statusIndicator = document.querySelector('.status-indicator');
+        if (statusIndicator) {
+            statusIndicator.className = 'status-indicator';
+            if (maxUsage > 90) {
+                statusIndicator.classList.add('critical');
+            } else if (maxUsage > 70) {
+                statusIndicator.classList.add('warning');
+            } else {
+                statusIndicator.classList.add('online');
+            }
+        }
+    }
+
+    updateHeartbeat(data) {
+        // Update connected users count
+        const connectedUsersElement = document.getElementById('connectedUsers');
+        if (connectedUsersElement) {
+            connectedUsersElement.textContent = data.authenticatedUsers;
+        }
+    }
+
+    updateConnectionStatus(connected) {
+        const systemStatus = document.getElementById('systemStatus');
+        if (systemStatus) {
+            const statusText = systemStatus.querySelector('.status-text');
+            const statusIndicator = systemStatus.querySelector('.status-indicator');
+            
+            if (connected) {
+                statusText.textContent = 'Real-Time Active';
+                statusIndicator.classList.add('online');
+                statusIndicator.classList.remove('offline');
+            } else {
+                statusText.textContent = 'Connection Lost';
+                statusIndicator.classList.add('offline');
+                statusIndicator.classList.remove('online');
+            }
+        }
+    }
+
+    addRealTimeCommand(data) {
+        // Add command to real-time activity feed
+        this.addActivityItem(`${data.username}: ${data.command}`, '⚡');
+        
+        // If we're in terminal view, show the command
+        if (this.currentModule === 'terminal') {
+            const terminalOutput = document.getElementById('terminalOutput');
+            if (terminalOutput) {
+                const commandElement = document.createElement('div');
+                commandElement.className = 'terminal-line shared-command';
+                commandElement.innerHTML = `
+                    <span class="terminal-prompt">[${data.username}@${data.timestamp.slice(11, 19)}]$</span>
+                    <span class="terminal-command">${data.command}</span>
+                `;
+                terminalOutput.appendChild(commandElement);
+                terminalOutput.scrollTop = terminalOutput.scrollHeight;
+            }
+        }
+    }
+
+    addChatMessage(data) {
+        // Add chat message to activity or dedicated chat area
+        this.addActivityItem(`💬 ${data.username}: ${data.message}`, data.avatar);
+    }
+
+    handleSharedTerminal(data) {
+        this.showNotification(`📺 ${data.username} shared their terminal`, 'info');
+        this.addActivityItem(`Terminal shared by ${data.username}`, '📺');
+    }
+
+    // Send real-time command execution
+    broadcastCommand(command, output) {
+        if (this.socket && this.isConnected) {
+            this.socket.emit('execute_command', {
+                command: command,
+                output: output
+            });
+        }
+    }
+
+    // Send chat message
+    sendChatMessage(message) {
+        if (this.socket && this.isConnected) {
+            this.socket.emit('chat_message', {
+                message: message,
+                avatar: '🛡️'
+            });
+        }
+    }
+
+    // Share terminal session
+    shareTerminal() {
+        if (this.socket && this.isConnected) {
+            const terminalData = {
+                history: this.commandHistory,
+                currentSession: this.terminalSession
+            };
+            
+            this.socket.emit('share_terminal', {
+                terminalData: terminalData
+            });
+            
+            this.showNotification('📺 Terminal session shared', 'success');
+        }
     }
 
     // ==========================================
