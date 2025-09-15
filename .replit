@@ -34,7 +34,11 @@ outputType = "webview"
 [[ports]]
 localPort = 5000
 externalPort = 80
-exposeLocalhost = true
+
+[[ports]]
+localPort = 36413
+externalPort = 3000
 
 [deployment]
-deploymentTarget = "cloudrun"
+deploymentTarget = "autoscale"
+run = ["bash", "-c", "cd REBEL_AI_Portable && node src/server.js --portable"]

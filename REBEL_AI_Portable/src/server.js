@@ -24,8 +24,8 @@ const AuthRoutes = require('./auth_routes');
 class REBELAIServer {
     constructor() {
         this.app = express();
-        this.port = 5000;
-        this.host = '127.0.0.1'; // Localhost only for security
+        this.port = process.env.PORT || 5000;
+        this.host = '0.0.0.0'; // Allow all hosts for deployment
         this.isPortable = process.argv.includes('--portable');
         
         // Generate random session token for this boot
@@ -58,9 +58,9 @@ class REBELAIServer {
         // Enable trust proxy for rate limiting (specific to Replit proxy)
         this.app.set('trust proxy', 1);
         
-        // Restrict CORS to localhost only
+        // Allow CORS for deployment environments
         this.app.use(cors({
-            origin: ['http://localhost:5000', 'http://127.0.0.1:5000'],
+            origin: this.isPortable ? true : ['http://localhost:5000', 'http://127.0.0.1:5000'],
             credentials: true,
             methods: ['GET', 'POST'],
             allowedHeaders: ['Content-Type', 'Authorization', 'X-CSRF-Token']
@@ -183,6 +183,15 @@ class REBELAIServer {
                 permissions: req.user.permissions
             };
             res.json(safeUserData);
+        });
+
+        // Health check endpoint for deployment
+        this.app.get('/health', (req, res) => {
+            res.status(200).json({ 
+                status: 'healthy', 
+                timestamp: new Date().toISOString(),
+                server: 'REBEL AI Dijkstra Edition'
+            });
         });
 
         // Main root route - redirect to login or dashboard based on auth
@@ -451,7 +460,7 @@ class REBELAIServer {
     }
 
     start() {
-        this.app.listen(this.port, '127.0.0.1', () => {
+        this.app.listen(this.port, this.host, () => {
             console.log('🚀==========================================🚀');
             console.log('🚀     REBEL AI - Dijkstra Edition        🚀');
             console.log('🚀==========================================🚀');
