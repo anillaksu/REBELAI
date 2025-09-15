@@ -2,10 +2,10 @@
   "command_success_rates": {
     "linux": {
       "ls": {
-        "total_executions": 6,
-        "successful_executions": 6,
+        "total_executions": 8,
+        "successful_executions": 8,
         "failure_patterns": [],
-        "last_updated": "2025-09-15T07:33:43.335Z",
+        "last_updated": "2025-09-15T10:22:52.669Z",
         "success_rate": 100
       },
       "whoami": {
@@ -16,10 +16,10 @@
         "success_rate": 100
       },
       "date": {
-        "total_executions": 5,
-        "successful_executions": 5,
+        "total_executions": 6,
+        "successful_executions": 6,
         "failure_patterns": [],
-        "last_updated": "2025-09-15T07:09:35.112Z",
+        "last_updated": "2025-09-15T10:21:55.647Z",
         "success_rate": 100
       },
       "saat": {
@@ -159,10 +159,10 @@
         "success_rate": 0
       },
       "pwd": {
-        "total_executions": 1,
-        "successful_executions": 1,
+        "total_executions": 2,
+        "successful_executions": 2,
         "failure_patterns": [],
-        "last_updated": "2025-09-15T02:55:42.242Z",
+        "last_updated": "2025-09-15T10:24:04.548Z",
         "success_rate": 100
       },
       "df": {
@@ -189,10 +189,10 @@
         "success_rate": 0
       },
       "echo": {
-        "total_executions": 13,
-        "successful_executions": 13,
+        "total_executions": 14,
+        "successful_executions": 14,
         "failure_patterns": [],
-        "last_updated": "2025-09-15T08:28:43.462Z",
+        "last_updated": "2025-09-15T10:21:46.302Z",
         "success_rate": 100
       },
       "ne": {
@@ -396,10 +396,11 @@
       "ls": {
         "works": true,
         "variations": [
-          "ls -la"
+          "ls -la",
+          "ls"
         ],
         "confidence": 1,
-        "last_tested": "2025-09-15T07:33:43.335Z"
+        "last_tested": "2025-09-15T10:22:52.669Z"
       },
       "whoami": {
         "works": true,
@@ -415,7 +416,7 @@
           "date"
         ],
         "confidence": 1,
-        "last_tested": "2025-09-15T07:09:35.112Z"
+        "last_tested": "2025-09-15T10:21:55.647Z"
       },
       "saat": {
         "works": false,
@@ -487,8 +488,8 @@
         "variations": [
           "pwd"
         ],
-        "confidence": 0.7999999999999999,
-        "last_tested": "2025-09-15T02:55:42.242Z"
+        "confidence": 0.8999999999999999,
+        "last_tested": "2025-09-15T10:24:04.548Z"
       },
       "df": {
         "works": true,
@@ -518,7 +519,7 @@
           "echo \"🔋 Taşınabilir sistem. Pil bilgisi için: 'cat /proc/acpi/battery/BAT0/info' veya 'acpi -b'\""
         ],
         "confidence": 1,
-        "last_tested": "2025-09-15T08:28:43.462Z"
+        "last_tested": "2025-09-15T10:21:46.302Z"
       },
       "ne": {
         "works": false,
@@ -733,14 +734,14 @@
       "first_seen": "2025-09-15T07:09:24.054Z",
       "command_preferences": {
         "echo": {
-          "usage_count": 12,
+          "usage_count": 13,
           "success_rate": 100,
-          "avg_execution_time": 24.940673828125
+          "avg_execution_time": 41.4703369140625
         },
         "date": {
-          "usage_count": 1,
+          "usage_count": 2,
           "success_rate": 100,
-          "avg_execution_time": 12
+          "avg_execution_time": 27.5
         },
         "Ne": {
           "usage_count": 1,
@@ -758,9 +759,9 @@
           "avg_execution_time": 29.95833333333333
         },
         "ls": {
-          "usage_count": 1,
+          "usage_count": 3,
           "success_rate": 100,
-          "avg_execution_time": 13.5
+          "avg_execution_time": 34.875
         },
         "Github": {
           "usage_count": 1,
@@ -786,30 +787,35 @@
           "usage_count": 1,
           "success_rate": 0,
           "avg_execution_time": 15
+        },
+        "pwd": {
+          "usage_count": 1,
+          "success_rate": 100,
+          "avg_execution_time": 13.5
         }
       },
       "performance_metrics": {},
       "capabilities": {},
-      "last_seen": "2025-09-15T10:21:21.134Z"
+      "last_seen": "2025-09-15T10:24:04.548Z"
     }
   },
   "conversationLearning": {
-    "totalConversations": 3,
+    "totalConversations": 8,
     "uniqueIntents": 1,
     "dijkstraNodes": 2,
     "topIntents": [
       {
         "intent": "command_execution",
-        "count": 3
+        "count": 8
       }
     ],
-    "learningEfficiency": 0.3333333333333333,
+    "learningEfficiency": 0.125,
     "dijkstraOptimizationMetrics": {
       "totalNodes": 2,
       "totalConnections": 2,
       "averageWeight": "2.925",
-      "pathUsage": 0,
-      "averageSuccessRate": "0.000",
+      "pathUsage": 5,
+      "averageSuccessRate": "0.500",
       "optimizationEfficiency": "1.00"
     }
   }

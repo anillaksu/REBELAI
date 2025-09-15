@@ -364,6 +364,44 @@ class EnterpriseDashboard {
         }
     }
 
+    // Update command statistics for dashboard analytics
+    updateCommandStats(success) {
+        if (!this.commandStats) {
+            this.commandStats = {
+                totalCommands: 0,
+                successfulCommands: 0,
+                failedCommands: 0
+            };
+        }
+
+        this.commandStats.totalCommands++;
+        
+        if (success) {
+            this.commandStats.successfulCommands++;
+        } else {
+            this.commandStats.failedCommands++;
+        }
+
+        // Calculate success rate
+        const successRate = this.commandStats.totalCommands > 0 
+            ? (this.commandStats.successfulCommands / this.commandStats.totalCommands) * 100 
+            : 0;
+
+        // Update analytics display immediately
+        const data = {
+            command_count: this.commandStats.totalCommands,
+            success_rate: successRate
+        };
+        
+        this.updateAIAnalytics(data);
+
+        // Also update activity panel
+        this.addActivityItem(
+            success ? 'Command executed successfully' : 'Command failed', 
+            success ? '✅' : '❌'
+        );
+    }
+
     // Terminal functionality
     initializeTerminal() {
         this.addTerminalMessage('system', '🛡️ Enterprise Terminal Ready - AI Learning Enabled');
