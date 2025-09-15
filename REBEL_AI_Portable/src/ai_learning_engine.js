@@ -57,7 +57,7 @@ Güvenlik: Sadece güvenli sistem komutları öner (rm, sudo, chmod gibi tehlike
                     }
                 ],
                 response_format: { type: "json_object" },
-                max_tokens: 500
+                max_completion_tokens: 500
             });
 
             const result = JSON.parse(response.choices[0].message.content);
@@ -125,7 +125,7 @@ Optimizasyon kuralları:
                     }
                 ],
                 response_format: { type: "json_object" },
-                max_tokens: 600
+                max_completion_tokens: 600
             });
 
             const result = JSON.parse(response.choices[0].message.content);
@@ -184,7 +184,7 @@ Bu hatayı analiz et ve çözüm öner. JSON formatında:
                     }
                 ],
                 response_format: { type: "json_object" },
-                max_tokens: 400
+                max_completion_tokens: 400
             });
 
             return JSON.parse(response.choices[0].message.content);

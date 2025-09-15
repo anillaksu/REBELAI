@@ -2,10 +2,10 @@
   "command_success_rates": {
     "linux": {
       "ls": {
-        "total_executions": 5,
-        "successful_executions": 5,
+        "total_executions": 6,
+        "successful_executions": 6,
         "failure_patterns": [],
-        "last_updated": "2025-09-15T03:08:27.486Z",
+        "last_updated": "2025-09-15T07:33:43.335Z",
         "success_rate": 100
       },
       "whoami": {
@@ -189,10 +189,10 @@
         "success_rate": 0
       },
       "echo": {
-        "total_executions": 5,
-        "successful_executions": 5,
+        "total_executions": 7,
+        "successful_executions": 7,
         "failure_patterns": [],
-        "last_updated": "2025-09-15T07:22:42.235Z",
+        "last_updated": "2025-09-15T07:33:29.323Z",
         "success_rate": 100
       },
       "ne": {
@@ -249,6 +249,38 @@
         ],
         "last_updated": "2025-09-15T07:22:27.030Z",
         "success_rate": 0
+      },
+      "man": {
+        "total_executions": 1,
+        "successful_executions": 0,
+        "failure_patterns": [
+          {
+            "pattern": "unknown_error",
+            "description": "Unrecognized error pattern",
+            "suggested_action": "manual_review",
+            "count": 2,
+            "first_seen": "2025-09-15T07:32:39.127Z",
+            "last_seen": "2025-09-15T07:32:39.127Z"
+          }
+        ],
+        "last_updated": "2025-09-15T07:32:39.127Z",
+        "success_rate": 0
+      },
+      "Github": {
+        "total_executions": 1,
+        "successful_executions": 0,
+        "failure_patterns": [
+          {
+            "pattern": "command_not_found",
+            "description": "Command does not exist on this platform",
+            "suggested_action": "find_alternative",
+            "count": 1,
+            "first_seen": "2025-09-15T07:36:33.749Z",
+            "last_seen": "2025-09-15T07:36:33.749Z"
+          }
+        ],
+        "last_updated": "2025-09-15T07:36:33.749Z",
+        "success_rate": 0
       }
     }
   },
@@ -303,7 +335,7 @@
           "ls -la"
         ],
         "confidence": 1,
-        "last_tested": "2025-09-15T03:08:27.486Z"
+        "last_tested": "2025-09-15T07:33:43.335Z"
       },
       "whoami": {
         "works": true,
@@ -419,7 +451,7 @@
           "echo \"💼 Ben REBEL AI Terminal asistanıyım! Türkçe komutlarınızı sistem komutlarına çeviriyorum. Örnek: 'saat', 'dosyalar', 'sistem' yazabilirsiniz.\""
         ],
         "confidence": 1,
-        "last_tested": "2025-09-15T07:22:42.235Z"
+        "last_tested": "2025-09-15T07:33:29.323Z"
       },
       "ne": {
         "works": false,
@@ -452,6 +484,22 @@
         ],
         "confidence": 0.19999999999999998,
         "last_tested": "2025-09-15T07:22:27.030Z"
+      },
+      "man": {
+        "works": false,
+        "variations": [
+          "man sistem durumu 2>/dev/null || sistem durumu --help 2>/dev/null || echo \"sistem durumu hakkında bilgi bulunamadı\""
+        ],
+        "confidence": 0.19999999999999998,
+        "last_tested": "2025-09-15T07:32:39.127Z"
+      },
+      "Github": {
+        "works": false,
+        "variations": [
+          "Github da bir hesabım var oraya giriş yapıp yeni bir rpo oluşturup kaynak kodlarını oraya aktarmak ve snlık olarak istediğim cihazda portable çalıştırmak için hazır bekletmek istiyorum"
+        ],
+        "confidence": 0.19999999999999998,
+        "last_tested": "2025-09-15T07:36:33.749Z"
       }
     },
     "darwin": {
@@ -583,9 +631,9 @@
       "first_seen": "2025-09-15T07:09:24.054Z",
       "command_preferences": {
         "echo": {
-          "usage_count": 4,
+          "usage_count": 6,
           "success_rate": 100,
-          "avg_execution_time": 28.8125
+          "avg_execution_time": 23.203125
         },
         "date": {
           "usage_count": 1,
@@ -601,11 +649,26 @@
           "usage_count": 1,
           "success_rate": 0,
           "avg_execution_time": 12
+        },
+        "man": {
+          "usage_count": 1,
+          "success_rate": 0,
+          "avg_execution_time": 21.5
+        },
+        "ls": {
+          "usage_count": 1,
+          "success_rate": 100,
+          "avg_execution_time": 13.5
+        },
+        "Github": {
+          "usage_count": 1,
+          "success_rate": 0,
+          "avg_execution_time": 13
         }
       },
       "performance_metrics": {},
       "capabilities": {},
-      "last_seen": "2025-09-15T07:22:42.235Z"
+      "last_seen": "2025-09-15T07:36:33.749Z"
     }
   }
 }

@@ -11,6 +11,7 @@ class TurkishTranslator {
         
         // AI Learning Engine'i dinamik olarak yükle
         this.aiLearning = null;
+        this.intelligentReasoning = null;
         this.loadAILearning();
     }
 
@@ -18,8 +19,13 @@ class TurkishTranslator {
         try {
             if (process.env.OPENAI_API_KEY) {
                 const AILearningEngine = require('./ai_learning_engine');
+                const IntelligentReasoningEngine = require('./intelligent_reasoning_engine');
+                
                 this.aiLearning = new AILearningEngine();
+                this.intelligentReasoning = new IntelligentReasoningEngine();
+                
                 console.log('🧠 AI Learning Engine loaded');
+                console.log('🎯 Intelligent Reasoning Engine loaded');
             }
         } catch (error) {
             console.log('⚠️  AI Learning Engine not available:', error.message);
@@ -221,27 +227,60 @@ class TurkishTranslator {
             };
         }
 
-        // 🧠 AI Learning: Bilinmeyen Türkçe komut için AI'dan yardım al
-        if (this.aiLearning && this.containsTurkishCharacters(cleaned)) {
+        // 🎯 Intelligent Reasoning: Akıllı analiz ve %80+ güven doğrulaması
+        if (this.intelligentReasoning && this.containsTurkishCharacters(cleaned)) {
             try {
-                console.log(`🧠 AI Learning: Analyzing unknown Turkish command: "${turkishCommand}"`);
-                const aiSuggestion = await this.aiLearning.analyzeFailedTurkishCommand(turkishCommand);
+                console.log(`🎯 Intelligent Reasoning: Analyzing command: "${turkishCommand}"`);
+                const reasoning = await this.intelligentReasoning.intelligentReason(turkishCommand);
                 
-                if (aiSuggestion.isValidTranslation && aiSuggestion.confidence > 0.5) {
-                    // Yeni komutu öğren
-                    await this.aiLearning.learnNewCommand(cleaned, aiSuggestion);
-                    
+                if (reasoning.confidence >= 0.8 && reasoning.suggestedCommands && reasoning.suggestedCommands.length > 0) {
+                    // Yüksek güvenle çeviri bulundu
                     return {
-                        translatedCommand: aiSuggestion.translatedCommand,
+                        translatedCommand: reasoning.suggestedCommands[0],
                         originalCommand: turkishCommand,
-                        translationType: 'ai_learning',
-                        confidence: aiSuggestion.confidence,
-                        suggestion: `AI önerisi: ${aiSuggestion.explanation}`,
-                        aiGenerated: true
+                        translationType: 'intelligent_reasoning',
+                        confidence: reasoning.confidence,
+                        suggestion: `🎯 AI Analizi: ${reasoning.reasoning}`,
+                        aiGenerated: true,
+                        fullReasoning: reasoning
                     };
+                } else if (reasoning.confidence >= 0.5) {
+                    // Orta güven, daha fazla analiz gerekiyor
+                    console.log(`🧠 AI Learning: Secondary analysis needed for: "${turkishCommand}"`);
+                    const aiSuggestion = await this.aiLearning.analyzeFailedTurkishCommand(turkishCommand);
+                    
+                    if (aiSuggestion.isValidTranslation && aiSuggestion.confidence > 0.5) {
+                        return {
+                            translatedCommand: aiSuggestion.translatedCommand,
+                            originalCommand: turkishCommand,
+                            translationType: 'ai_learning_secondary',
+                            confidence: Math.max(reasoning.confidence, aiSuggestion.confidence),
+                            suggestion: `🔄 Çifte AI Analizi: ${reasoning.reasoning} | ${aiSuggestion.explanation}`,
+                            aiGenerated: true
+                        };
+                    }
                 }
             } catch (error) {
-                console.log(`🚨 AI Translation Error: ${error.message}`);
+                console.log(`🚨 Intelligent Reasoning Error: ${error.message}`);
+                
+                // Fallback to basic AI learning
+                try {
+                    console.log(`🧠 AI Learning Fallback: Analyzing: "${turkishCommand}"`);
+                    const aiSuggestion = await this.aiLearning.analyzeFailedTurkishCommand(turkishCommand);
+                    
+                    if (aiSuggestion.isValidTranslation && aiSuggestion.confidence > 0.5) {
+                        return {
+                            translatedCommand: aiSuggestion.translatedCommand,
+                            originalCommand: turkishCommand,
+                            translationType: 'ai_learning_fallback',
+                            confidence: aiSuggestion.confidence,
+                            suggestion: `🔧 Fallback AI: ${aiSuggestion.explanation}`,
+                            aiGenerated: true
+                        };
+                    }
+                } catch (fallbackError) {
+                    console.log(`🚨 AI Fallback Error: ${fallbackError.message}`);
+                }
             }
         }
 
