@@ -148,8 +148,9 @@ class REBELAIServer {
 
         // 🎮 Enterprise Dashboard Route (authenticated users)
         this.app.get('/dashboard', this.authManager.authorize(['knowledge:read']), (req, res) => {
-            // Inject user data and tokens for authenticated access
-            const html = this.readMainHtml();
+            // Serve the new enterprise dashboard
+            let htmlContent = fs.readFileSync(path.join(__dirname, 'public', 'enterprise_dashboard.html'), 'utf8');
+            
             // 🔒 SECURITY: Only expose safe user data to client
             const safeUserData = {
                 username: req.user.username,
@@ -157,11 +158,18 @@ class REBELAIServer {
                 permissions: req.user.permissions
             };
             
-            const authenticatedHtml = html
-                .replace('{{USER_DATA}}', JSON.stringify(safeUserData))
-                .replace('{{SESSION_TOKEN}}', this.sessionToken)
-                .replace('{{CSRF_TOKEN}}', this.csrfToken);
-            res.send(authenticatedHtml);
+            // Inject user data and tokens into the dashboard
+            htmlContent = htmlContent.replace(
+                '<head>',
+                `<head>
+                <script>
+                    window.REBEL_SESSION_TOKEN = '${this.sessionToken}';
+                    window.REBEL_CSRF_TOKEN = '${this.csrfToken}';
+                    window.REBEL_USER_DATA = ${JSON.stringify(safeUserData)};
+                </script>`
+            );
+            
+            res.send(htmlContent);
         });
 
         // 🔐 Secure user info endpoint (authenticated only)
