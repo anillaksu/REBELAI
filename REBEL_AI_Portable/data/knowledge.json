@@ -396,10 +396,10 @@
         "success_rate": 0
       },
       "du": {
-        "total_executions": 1,
-        "successful_executions": 1,
+        "total_executions": 2,
+        "successful_executions": 2,
         "failure_patterns": [],
-        "last_updated": "2025-09-15T10:46:52.631Z",
+        "last_updated": "2025-09-15T11:21:44.384Z",
         "success_rate": 100
       },
       "uptime": {
@@ -440,6 +440,13 @@
         ],
         "last_updated": "2025-09-15T11:21:11.383Z",
         "success_rate": 0
+      },
+      "groups": {
+        "total_executions": 1,
+        "successful_executions": 1,
+        "failure_patterns": [],
+        "last_updated": "2025-09-15T11:23:00.547Z",
+        "success_rate": 100
       }
     }
   },
@@ -722,8 +729,8 @@
         "variations": [
           "du -sh *"
         ],
-        "confidence": 0.7999999999999999,
-        "last_tested": "2025-09-15T10:46:52.631Z"
+        "confidence": 0.8999999999999999,
+        "last_tested": "2025-09-15T11:21:44.384Z"
       },
       "uptime": {
         "works": true,
@@ -748,6 +755,14 @@
         ],
         "confidence": 0.19999999999999998,
         "last_tested": "2025-09-15T11:21:11.383Z"
+      },
+      "groups": {
+        "works": true,
+        "variations": [
+          "groups"
+        ],
+        "confidence": 0.7999999999999999,
+        "last_tested": "2025-09-15T11:23:00.547Z"
       }
     },
     "darwin": {
@@ -973,9 +988,9 @@
           "avg_execution_time": 7523
         },
         "du": {
-          "usage_count": 1,
+          "usage_count": 2,
           "success_rate": 100,
-          "avg_execution_time": 16.5
+          "avg_execution_time": 28.75
         },
         "uptime": {
           "usage_count": 1,
@@ -991,29 +1006,34 @@
           "usage_count": 1,
           "success_rate": 0,
           "avg_execution_time": 7510.75
+        },
+        "groups": {
+          "usage_count": 1,
+          "success_rate": 100,
+          "avg_execution_time": 17.5
         }
       },
       "performance_metrics": {},
       "capabilities": {},
-      "last_seen": "2025-09-15T11:21:11.383Z"
+      "last_seen": "2025-09-15T11:23:00.547Z"
     }
   },
   "conversationLearning": {
-    "totalConversations": 20,
+    "totalConversations": 22,
     "uniqueIntents": 1,
     "dijkstraNodes": 2,
     "topIntents": [
       {
         "intent": "command_execution",
-        "count": 20
+        "count": 22
       }
     ],
-    "learningEfficiency": 0.05,
+    "learningEfficiency": 0.045454545454545456,
     "dijkstraOptimizationMetrics": {
       "totalNodes": 2,
       "totalConnections": 2,
       "averageWeight": "2.925",
-      "pathUsage": 17,
+      "pathUsage": 19,
       "averageSuccessRate": "0.500",
       "optimizationEfficiency": "1.00"
     }
