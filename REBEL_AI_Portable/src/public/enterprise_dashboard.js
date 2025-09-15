@@ -461,6 +461,8 @@ class EnterpriseDashboard {
             this.refreshMFAStatus();
         } else if (moduleId === 'profile') {
             this.loadProfileData();
+        } else if (moduleId === 'preferences') {
+            this.loadPreferences();
         }
     }
 
@@ -1570,43 +1572,43 @@ class EnterpriseDashboard {
         
         const preferences = {
             theme: getFormValue([
-                'select[name="theme"]', '#theme', '.theme-select'
+                '#themeSelect', 'select[name="theme"]', '.theme-select'
             ], 'dark'),
             terminalFontSize: getFormValue([
-                'input[name="terminalFontSize"]', '#terminalFontSize', '.terminal-font-size'
-            ], '16px'),
+                '#terminalFontSize', 'input[name="terminalFontSize"]', '.terminal-font-size'
+            ], '14'),
             animationSpeed: getFormValue([
-                'select[name="animationSpeed"]', '#animationSpeed', '.animation-speed'
-            ], 'fast'),
+                '#animationSpeed', 'select[name="animationSpeed"]', '.animation-speed'
+            ], 'normal'),
             turkishTranslation: getFormValue([
-                'input[name="turkishTranslation"]', '#turkishTranslation', '.turkish-translation'
+                '#enableTurkishTranslation', 'input[name="turkishTranslation"]', '.turkish-translation'
             ], true),
             dijkstraOptimization: getFormValue([
-                'input[name="dijkstraOptimization"]', '#dijkstraOptimization', '.dijkstra-optimization'
+                '#enableDijkstraOptimization', 'input[name="dijkstraOptimization"]', '.dijkstra-optimization'
             ], true),
             aiLearning: getFormValue([
-                'input[name="aiLearning"]', '#aiLearning', '.ai-learning'
+                '#enableAILearning', 'input[name="aiLearning"]', '.ai-learning'
             ], true),
             performanceMetrics: getFormValue([
-                'input[name="performanceMetrics"]', '#performanceMetrics', '.performance-metrics'
-            ], false),
+                '#showPerformanceMetrics', 'input[name="performanceMetrics"]', '.performance-metrics'
+            ], true),
             notifications: getFormValue([
-                'input[name="notifications"]', '#notifications', '.notifications'
+                '#enableNotifications', 'input[name="notifications"]', '.notifications'
             ], true),
             soundAlerts: getFormValue([
-                'input[name="soundAlerts"]', '#soundAlerts', '.sound-alerts'
+                '#enableSoundAlerts', 'input[name="soundAlerts"]', '.sound-alerts'
             ], false),
             notificationDuration: getFormValue([
-                'select[name="notificationDuration"]', '#notificationDuration', '.notification-duration'
+                '#notificationDuration', 'select[name="notificationDuration"]', '.notification-duration'
             ], '5'),
             auditLogging: getFormValue([
-                'input[name="auditLogging"]', '#auditLogging', '.audit-logging'
+                '#enableAuditLogging', 'input[name="auditLogging"]', '.audit-logging'
             ], true),
             sessionTimeout: getFormValue([
-                'select[name="sessionTimeout"]', '#sessionTimeout', '.session-timeout'
-            ], '30'),
+                '#sessionTimeout', 'select[name="sessionTimeout"]', '.session-timeout'
+            ], '60'),
             autoLock: getFormValue([
-                'input[name="autoLock"]', '#autoLock', '.auto-lock'
+                '#enableAutoLock', 'input[name="autoLock"]', '.auto-lock'
             ], true)
         };
         
@@ -1655,31 +1657,27 @@ class EnterpriseDashboard {
                 return false;
             };
             
-            // Reset all preference elements
-            resetElement(['select[name="theme"]', '#theme', '.theme-select'], 'dark');
-            resetElement(['input[name="terminalFontSize"]', '#terminalFontSize', '.terminal-font-size'], '16px');
-            resetElement(['select[name="animationSpeed"]', '#animationSpeed', '.animation-speed'], 'fast');
-            resetElement(['select[name="notificationDuration"]', '#notificationDuration', '.notification-duration'], '5');
-            resetElement(['select[name="sessionTimeout"]', '#sessionTimeout', '.session-timeout'], '30');
+            // Reset all preference elements using correct HTML IDs
+            resetElement(['#themeSelect', 'select[name="theme"]'], 'dark');
+            resetElement(['#terminalFontSize', 'input[name="terminalFontSize"]'], '14');
+            resetElement(['#animationSpeed', 'select[name="animationSpeed"]'], 'normal');
+            resetElement(['#notificationDuration', 'select[name="notificationDuration"]'], '5');
+            resetElement(['#sessionTimeout', 'select[name="sessionTimeout"]'], '60');
             
-            // Reset checkboxes with default values
-            const checkboxDefaults = {
-                turkishTranslation: true,
-                dijkstraOptimization: true, 
-                aiLearning: true,
-                performanceMetrics: false,
-                notifications: true,
-                soundAlerts: false,
-                auditLogging: true,
-                autoLock: true
-            };
+            // Reset checkboxes with correct HTML IDs and default values
+            const checkboxResets = [
+                ['#enableTurkishTranslation', true],
+                ['#enableDijkstraOptimization', true],
+                ['#enableAILearning', true],
+                ['#showPerformanceMetrics', true],
+                ['#enableNotifications', true],
+                ['#enableSoundAlerts', false],
+                ['#enableAuditLogging', true],
+                ['#enableAutoLock', true]
+            ];
             
-            Object.entries(checkboxDefaults).forEach(([name, defaultValue]) => {
-                resetElement([
-                    `input[name="${name}"]`, 
-                    `#${name}`, 
-                    `.${name.replace(/([A-Z])/g, '-$1').toLowerCase()}`
-                ], defaultValue, true);
+            checkboxResets.forEach(([selector, defaultValue]) => {
+                resetElement([selector], defaultValue, true);
             });
             
             // Clear localStorage
@@ -1692,6 +1690,65 @@ class EnterpriseDashboard {
             this.showNotification('✅ Preferences reset to defaults', 'success');
             this.addActivityItem(`Reset ${resetCount} preferences`, '🔄');
         }, 600);
+    }
+
+    loadPreferences() {
+        console.log('🎨 Loading saved preferences...');
+        
+        const savedPreferences = localStorage.getItem('rebelAIPreferences');
+        if (!savedPreferences) {
+            console.log('🎨 No saved preferences found, using defaults');
+            return;
+        }
+
+        try {
+            const preferences = JSON.parse(savedPreferences);
+            console.log('🎨 Loaded Preferences:', preferences);
+            let appliedCount = 0;
+
+            // Apply form values
+            const applyValue = (selector, value, isCheckbox = false) => {
+                const element = document.querySelector(selector);
+                if (element) {
+                    if (isCheckbox) {
+                        element.checked = value;
+                    } else {
+                        element.value = value;
+                    }
+                    appliedCount++;
+                    console.log(`🎨 Applied ${selector} = ${value}`);
+                    return true;
+                }
+                return false;
+            };
+
+            // Apply all preferences with correct selectors
+            applyValue('#themeSelect', preferences.theme);
+            applyValue('#terminalFontSize', preferences.terminalFontSize);
+            applyValue('#animationSpeed', preferences.animationSpeed);
+            applyValue('#enableTurkishTranslation', preferences.turkishTranslation, true);
+            applyValue('#enableDijkstraOptimization', preferences.dijkstraOptimization, true);
+            applyValue('#enableAILearning', preferences.aiLearning, true);
+            applyValue('#showPerformanceMetrics', preferences.performanceMetrics, true);
+            applyValue('#enableNotifications', preferences.notifications, true);
+            applyValue('#enableSoundAlerts', preferences.soundAlerts, true);
+            applyValue('#notificationDuration', preferences.notificationDuration);
+            applyValue('#enableAuditLogging', preferences.auditLogging, true);
+            applyValue('#sessionTimeout', preferences.sessionTimeout);
+            applyValue('#enableAutoLock', preferences.autoLock, true);
+
+            // Apply theme immediately if not dark
+            if (preferences.theme && preferences.theme !== 'dark') {
+                document.body.setAttribute('data-theme', preferences.theme);
+                console.log(`🎨 Applied theme: ${preferences.theme}`);
+            }
+
+            console.log(`🎨 Applied ${appliedCount} preferences successfully`);
+            this.addActivityItem(`Loaded ${appliedCount} preferences`, '🎨');
+        } catch (error) {
+            console.error('🎨 Failed to load preferences:', error);
+            localStorage.removeItem('rebelAIPreferences'); // Clear corrupted data
+        }
     }
 
     // ==========================================
