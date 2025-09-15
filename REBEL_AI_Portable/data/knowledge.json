@@ -2,24 +2,220 @@
   "command_success_rates": {
     "linux": {
       "ls": {
-        "total_executions": 2,
-        "successful_executions": 2,
+        "total_executions": 5,
+        "successful_executions": 5,
         "failure_patterns": [],
-        "last_updated": "2025-09-15T01:45:08.518Z",
+        "last_updated": "2025-09-15T03:08:27.486Z",
         "success_rate": 100
       },
       "whoami": {
-        "total_executions": 1,
-        "successful_executions": 1,
+        "total_executions": 2,
+        "successful_executions": 2,
         "failure_patterns": [],
-        "last_updated": "2025-09-15T01:45:12.332Z",
+        "last_updated": "2025-09-15T02:55:49.894Z",
         "success_rate": 100
       },
       "date": {
+        "total_executions": 4,
+        "successful_executions": 4,
+        "failure_patterns": [],
+        "last_updated": "2025-09-15T03:08:46.136Z",
+        "success_rate": 100
+      },
+      "saat": {
+        "total_executions": 3,
+        "successful_executions": 0,
+        "failure_patterns": [
+          {
+            "pattern": "command_not_found",
+            "description": "Command does not exist on this platform",
+            "suggested_action": "find_alternative",
+            "count": 3,
+            "first_seen": "2025-09-15T01:49:02.289Z",
+            "last_seen": "2025-09-15T03:04:11.243Z"
+          }
+        ],
+        "last_updated": "2025-09-15T03:04:11.243Z",
+        "success_rate": 0
+      },
+      "ben": {
+        "total_executions": 1,
+        "successful_executions": 0,
+        "failure_patterns": [
+          {
+            "pattern": "command_not_found",
+            "description": "Command does not exist on this platform",
+            "suggested_action": "find_alternative",
+            "count": 1,
+            "first_seen": "2025-09-15T01:49:15.029Z",
+            "last_seen": "2025-09-15T01:49:15.029Z"
+          }
+        ],
+        "last_updated": "2025-09-15T01:49:15.029Z",
+        "success_rate": 0
+      },
+      "yapay": {
+        "total_executions": 1,
+        "successful_executions": 0,
+        "failure_patterns": [
+          {
+            "pattern": "command_not_found",
+            "description": "Command does not exist on this platform",
+            "suggested_action": "find_alternative",
+            "count": 1,
+            "first_seen": "2025-09-15T01:49:35.334Z",
+            "last_seen": "2025-09-15T01:49:35.334Z"
+          }
+        ],
+        "last_updated": "2025-09-15T01:49:35.334Z",
+        "success_rate": 0
+      },
+      "[19:49,": {
+        "total_executions": 1,
+        "successful_executions": 0,
+        "failure_patterns": [
+          {
+            "pattern": "unknown_error",
+            "description": "Unrecognized error pattern",
+            "suggested_action": "manual_review",
+            "count": 3,
+            "first_seen": "2025-09-15T01:55:11.608Z",
+            "last_seen": "2025-09-15T01:55:11.608Z"
+          },
+          {
+            "pattern": "command_not_found",
+            "description": "Command does not exist on this platform",
+            "suggested_action": "find_alternative",
+            "count": 2,
+            "first_seen": "2025-09-15T01:55:11.608Z",
+            "last_seen": "2025-09-15T01:55:11.608Z"
+          }
+        ],
+        "last_updated": "2025-09-15T01:55:11.608Z",
+        "success_rate": 0
+      },
+      "hangi": {
+        "total_executions": 1,
+        "successful_executions": 0,
+        "failure_patterns": [
+          {
+            "pattern": "command_not_found",
+            "description": "Command does not exist on this platform",
+            "suggested_action": "find_alternative",
+            "count": 1,
+            "first_seen": "2025-09-15T01:55:41.186Z",
+            "last_seen": "2025-09-15T01:55:41.186Z"
+          }
+        ],
+        "last_updated": "2025-09-15T01:55:41.186Z",
+        "success_rate": 0
+      },
+      "top": {
+        "total_executions": 1,
+        "successful_executions": 0,
+        "failure_patterns": [
+          {
+            "pattern": "unknown_error",
+            "description": "Unrecognized error pattern",
+            "suggested_action": "manual_review",
+            "count": 1,
+            "first_seen": "2025-09-15T02:01:28.129Z",
+            "last_seen": "2025-09-15T02:01:28.129Z"
+          }
+        ],
+        "last_updated": "2025-09-15T02:01:28.129Z",
+        "success_rate": 0
+      },
+      "systeminfo": {
+        "total_executions": 1,
+        "successful_executions": 0,
+        "failure_patterns": [
+          {
+            "pattern": "command_not_found",
+            "description": "Command does not exist on this platform",
+            "suggested_action": "find_alternative",
+            "count": 1,
+            "first_seen": "2025-09-15T02:01:31.488Z",
+            "last_seen": "2025-09-15T02:01:31.488Z"
+          }
+        ],
+        "last_updated": "2025-09-15T02:01:31.489Z",
+        "success_rate": 0
+      },
+      "merhaba": {
+        "total_executions": 2,
+        "successful_executions": 0,
+        "failure_patterns": [
+          {
+            "pattern": "command_not_found",
+            "description": "Command does not exist on this platform",
+            "suggested_action": "find_alternative",
+            "count": 2,
+            "first_seen": "2025-09-15T02:46:39.892Z",
+            "last_seen": "2025-09-15T02:56:22.810Z"
+          }
+        ],
+        "last_updated": "2025-09-15T02:56:22.810Z",
+        "success_rate": 0
+      },
+      "pwd": {
         "total_executions": 1,
         "successful_executions": 1,
         "failure_patterns": [],
-        "last_updated": "2025-09-15T01:45:15.744Z",
+        "last_updated": "2025-09-15T02:55:42.242Z",
+        "success_rate": 100
+      },
+      "df": {
+        "total_executions": 2,
+        "successful_executions": 2,
+        "failure_patterns": [],
+        "last_updated": "2025-09-15T03:08:32.086Z",
+        "success_rate": 100
+      },
+      "kamerayı": {
+        "total_executions": 1,
+        "successful_executions": 0,
+        "failure_patterns": [
+          {
+            "pattern": "command_not_found",
+            "description": "Command does not exist on this platform",
+            "suggested_action": "find_alternative",
+            "count": 1,
+            "first_seen": "2025-09-15T03:04:16.385Z",
+            "last_seen": "2025-09-15T03:04:16.385Z"
+          }
+        ],
+        "last_updated": "2025-09-15T03:04:16.385Z",
+        "success_rate": 0
+      },
+      "echo": {
+        "total_executions": 1,
+        "successful_executions": 1,
+        "failure_patterns": [],
+        "last_updated": "2025-09-15T03:08:09.032Z",
+        "success_rate": 100
+      },
+      "ne": {
+        "total_executions": 1,
+        "successful_executions": 0,
+        "failure_patterns": [
+          {
+            "pattern": "command_not_found",
+            "description": "Command does not exist on this platform",
+            "suggested_action": "find_alternative",
+            "count": 1,
+            "first_seen": "2025-09-15T03:08:15.622Z",
+            "last_seen": "2025-09-15T03:08:15.622Z"
+          }
+        ],
+        "last_updated": "2025-09-15T03:08:15.622Z",
+        "success_rate": 0
+      },
+      "ps": {
+        "total_executions": 2,
+        "successful_executions": 2,
+        "failure_patterns": [],
+        "last_updated": "2025-09-15T03:08:48.261Z",
         "success_rate": 100
       }
     }
@@ -74,24 +270,137 @@
         "variations": [
           "ls -la"
         ],
-        "confidence": 0.8999999999999999,
-        "last_tested": "2025-09-15T01:45:08.518Z"
+        "confidence": 1,
+        "last_tested": "2025-09-15T03:08:27.486Z"
       },
       "whoami": {
         "works": true,
         "variations": [
           "whoami"
         ],
-        "confidence": 0.7999999999999999,
-        "last_tested": "2025-09-15T01:45:12.332Z"
+        "confidence": 0.8999999999999999,
+        "last_tested": "2025-09-15T02:55:49.894Z"
       },
       "date": {
         "works": true,
         "variations": [
           "date"
         ],
+        "confidence": 1,
+        "last_tested": "2025-09-15T03:08:46.136Z"
+      },
+      "saat": {
+        "works": false,
+        "variations": [
+          "saat kaç",
+          "saat var mı?"
+        ],
+        "confidence": 0,
+        "last_tested": "2025-09-15T03:04:11.243Z"
+      },
+      "ben": {
+        "works": false,
+        "variations": [
+          "ben kimim"
+        ],
+        "confidence": 0.19999999999999998,
+        "last_tested": "2025-09-15T01:49:15.029Z"
+      },
+      "yapay": {
+        "works": false,
+        "variations": [
+          "yapay zeka mısın?"
+        ],
+        "confidence": 0.19999999999999998,
+        "last_tested": "2025-09-15T01:49:35.334Z"
+      },
+      "[19:49,": {
+        "works": false,
+        "variations": [
+          "[19:49, 30.05.2025] +90 543 234 83 08: Havale olarak girildi ödemeleri [19:50, 30.05.2025] Özge Hanım Hanım: Tarih yakınlaştığında birbirine en yakın odaları bloke edersiniz [19:50, 30.05.2025] +90 543 234 83 08: Tamamdır [20:23, 30.05.2025] Özge Hanım Hanım: Yarınki grubun 40 odası bu listede [20:23, 30.05.2025] Özge Hanım Hanım: Diğerlerini de atacak müsait oldukça girelim. Yarın sabah sadece anahtarlarını veririz [01:44, 31.05.2025] Sahilkamp İstanbul: çadır ödeme dekontu [13:19, 31.05.2025] Özge Hanım Hanım: Arkadaşlar Emrah Beyin odalarının hepsi kahvaltısız bilginiz olsun [13:23, 01.06.2025] MUSTAFA BEY: Karavan zemin için gelen oldumu haberdar edin [14:37, 01.06.2025] MUSTAFA BEY: İski Vidanjör talep [15:17, 01.06.2025] Sahilkamp İstanbul: bütün odaları tek folyoda birleştirildi açıkta bir hesap gözükmüyor balansları sıfır bilginiz olsun @Özge Hanım Hanım [15:30, 01.06.2025] Özge Hanım Hanım: Emrah Bey şimdi aradı herkese çok teşekkür etti mükemmel bir deneyim yaşadıklarını söyledi. Emeği geçen tüm arkadaşların eline sağlık 😊 Bu kadar talepkar bir misafirden bu kadar güzel şeyler duymak beni çok mutlu etti. [15:37, 01.06.2025] Sahilkamp İstanbul: hepimizin emeğine sağlık [17:18, 01.06.2025] Sahilkamp İstanbul: arkadaşlar bayramın 2.ci günü cumartesi canlı müzik  3.günü pazar  dj performansı etkinliğimiz var etkinlik soran misafirlerimize bu şekilde bilgi verelim [12:05, 02.06.2025] Sahilkamp İstanbul: info@akadmakine.com.tr [12:05, 02.06.2025] Sahilkamp İstanbul: 24.05.2025 konaklama bedeli tek kalemde faturayı buraya atarmısınız [12:06, 02.06.2025] Sahilkamp İstanbul: fatih aktürk [12:06, 02.06.2025] Sahilkamp İstanbul: 0110572806  vergi numarasına kesilecek [15:50, 02.06.2025] Özge Hanım Hanım: Arkadaşlar yarın öğleden sonra AKF Etkinlik yetkililerinden biri tesisi görmeye gelecek. [15:50, 02.06.2025] Özge Hanım Hanım: Teklif detaylarını gönderiyorum bundan farklı bir fiyat veya detay konuşmamanızı rica ederim [15:50, 02.06.2025] Sahilkamp İstanbul: tamam dır özge hanım [16:41, 02.06.2025] GÜNAY KONSANTRE: Yunus yaman beyefendi çıkış yapmış bilginize [16:42, 02.06.2025] Sahilkamp İstanbul: tamam teşekkürler [16:47, 02.06.2025] Özge Hanım Hanım: Arkadaşlar daha iyi analiz edebilmek için soruyorum Münferit ve Walk In profillerini hangi amaçlarla kullanıyorsunuz? [17:01, 02.06.2025] +90 543 234 83 08: Rezervasyon yapmadan gelen misafirlere walk in manuel olarak rezervasyon açtığımız misafirlere münferit kullanıyoruz [17:02, 02.06.2025] Özge Hanım Hanım: Teşekkürler artık gruplar için münferiti kullanmayıp grup ismi ekleyebiliyoruz değil mi? [17:02, 02.06.2025] +90 543 234 83 08: Evet [17:03, 02.06.2025] Özge Hanım Hanım: Süper, teşekkürler [17:03, 02.06.2025] +90 543 234 83 08: Rica ederiz [17:13, 02.06.2025] Sahilkamp İstanbul: karavan ödemesi bir kısmı [18:12, 02.06.2025] GÜNAY KONSANTRE: 05416802994 Mustafa bey cumartesi günü d. Koza 32 de konaklama yapmış sarı renkli cross terlik unutmuşlar bulundugu taktirde geri dönüş talep ediyor ilgilenebilirmisiniz [18:45, 02.06.2025] Didem Resepsiyon: Tamam dır [14:27, 03.06.2025] Sahilkamp İstanbul: @Özge Hanım Hanım acentadan bi mail gelmiş dönüş bekliyorlar [15:12, 03.06.2025] Özge Hanım Hanım: Rezervasyon mailinde görünmüyor bana forwardlar mısın? [15:12, 03.06.2025] Sahilkamp İstanbul: opos travel [15:13, 03.06.2025] Sahilkamp İstanbul: görüntüleyebildiniz mi [15:13, 03.06.2025] Sahilkamp İstanbul: sarı gözüken mail [15:31, 03.06.2025] Sahilkamp İstanbul: Ceyhun bey geldi alanı gezdiler odalar hakkında konuştuk ve tekrar iletişime geçeceğini söyledi [17:21, 03.06.2025] GÜNAY KONSANTRE: Taş 10 havlu talep ediyor 3 adet ilgilenebilirmisiniz [17:46, 03.06.2025] GÜNAY KONSANTRE: 05364424526 seviç kormaz hanımefendi 26 numaralı karavanın sahibi buzdolabı bozulmuş yarın buzdolabı için tamirci geliş yapıcakmış onların giriş yapmanıza müsade etmenizi talep ediyor [17:46, 03.06.2025] Sahilkamp İstanbul: kimlik verip girebilir [18:44, 03.06.2025] Özge Hanım Hanım: Villa Gündoğdu’da 2 tane çift kişilik var mı? [18:44, 03.06.2025] Sahilkamp İstanbul: evet [18:57, 03.06.2025] GÜNAY KONSANTRE: 05324001131 Hasan aylık karavan ücreti öğrenmek istiyor ilgilenebilirmisiniz [09:23, 04.06.2025] Sahilkamp İstanbul: Bu fotoğrafı kaldırır mısınız [09:24, 04.06.2025] Sahilkamp İstanbul: bu karede olan müşteri bayramda burada evlenme teklifi edecekmiş bu eski kız arkadaşıymış fotoğrafın kaldırılmasını istiyor [09:24, 04.06.2025] Sahilkamp İstanbul: https://www.instagram.com/p/CfZlnaSK-gZ/?img_index=1&igsh=dm5kbG82YzNsNHBp [11:14, 04.06.2025] Özge Hanım Hanım: @Oğuzhan Bey fiyatları düşmeden önce rezervasyon yapan misafirden aradaki farkın iadesi ile ilgili bir mail gelmiş. Misafir burada haklı. Nasıl iadesini yapıyorsunuz bu gibi durumlarda? [11:14, 04.06.2025] Oğuzhan Bey: Ne zamana rezervasyonu [11:15, 04.06.2025] Özge Hanım Hanım: Yarın giriş 2 gece [11:16, 04.06.2025] Özge Hanım Hanım: Ya üst kategori odaya upgrade önereceğim ya da iade. İadeyi seçerse nasıl yapıldığını bilmek için soruyorum şuan [11:16, 04.06.2025] Oğuzhan Bey: Kredi kartına yapılması gereken iade kadarını iade ediyorum. [11:17, 04.06.2025] Özge Hanım Hanım: Tamam bilgilendirme yapacağım [11:45, 04.06.2025] GÜNAY KONSANTRE: Bayramda günü birlik giriş saglanabilirmi acaba misafirlerimizden gelen talep bu yöndedir [15:47, 04.06.2025] Özge Hanım Hanım: Bir çadır grubu spesifik bir alanda rezervasyon yapmak istiyor 15-20 çadır olacaklar. 1. ücgen bungallovun yanındaki alan tellerin yanı diye lokasyon belirttiler [15:47, 04.06.2025] Özge Hanım Hanım: 27-29 Haziran arası bunu yapabiliyor muyuz? [15:52, 04.06.2025] MUSTAFA BEY: Çadır alanı ayarlayabiliriz [15:52, 04.06.2025] MUSTAFA BEY: Alan belirlemeden [16:19, 04.06.2025] Özge Hanım Hanım: Çadır tuvaletlerinde alafranga tuvalet var mı? Grupta engelli bir misafir varmış. [16:23, 04.06.2025] Sahilkamp İstanbul: var özge hanım [18:16, 04.06.2025] GÜNAY KONSANTRE: Can morkoç çıkış yapmış bilginize [19:20, 04.06.2025] Özge Hanım Hanım: Arkadaşlar 7Haziran giriş 5 tane Deniz koza kahvaltı dahil iki kişilik 3500 TLden rezervasyon açar mısınız [19:20, 04.06.2025] Özge Hanım Hanım: 1gece [19:20, 04.06.2025] Özge Hanım Hanım: Ben misafir isimlerini yarın göndericem [19:20, 04.06.2025] Özge Hanım Hanım: Avrasya Travel olarak açalım [19:21, 04.06.2025] Özge Hanım Hanım: Denizler dolmak üzere hemen açarsanız iyi olur [19:35, 04.06.2025] Özge Hanım Hanım: 1tane de çift kişilik Taş Ev BB 8500 TL [19:43, 04.06.2025] Özge Hanım Hanım: Teşekkürler 1 koza daha ekler misin? [19:43, 04.06.2025] Özge Hanım Hanım: Yarın isimler ve ödemeyle ilgili bilgi verilen [19:44, 04.06.2025] Sahilkamp İstanbul: 6 koza 1 taş ev [10:24, 05.06.2025] MUSTAFA BEY: Merhaba Arkadaşlar [10:26, 05.06.2025] MUSTAFA BEY: Nurullah Operasyon ve sahada görev alacak Tüm arkadaşlarımız sorumluluk dahilinde bilgi aktarımı yaparsa sevinirim [10:44, 05.06.2025] MUSTAFA BEY: Arkadaşlarımızın dikkatine bütün gelen talepleri WhatsApp grubuna ve telsizli konuşma alışkanlığımızı sezon boyunca bir daha bir daha hatırlatmamak üzere lütfen herkes gelen talepleri sorunları dilekleri şikayetleri ihtiyaçları lütfen bütün arkadaşlarımız buraya yazsın ve ilgili arkadaşlarımız bu konuda halledildi yapıldı bakıyoruz bir sorun yok diyerek süreci nitelikli bir şekilde hizmeti sağlayalım [13:58, 05.06.2025] Özge Hanım Hanım: Bu gruba 2 Orman Koza 3300 TL kahvaltı dahil ekler misiniz. Yanyana blokaj atılmasını rica ederim [14:42, 05.06.2025] Özge Hanım Hanım: Sistemdeki tüm Expedia rezervasyonları acenta ödemeli [14:42, 05.06.2025] Özge Hanım Hanım: Bayram boyunca [14:43, 05.06.2025] Özge Hanım Hanım: Eklenirse yine yazarım size [14:43, 05.06.2025] Sahilkamp İstanbul: açıklamalarına yazabiliyosanız yazabilirmisiniz [14:43, 05.06.2025] Sahilkamp İstanbul: karışmasın sistem [14:44, 05.06.2025] Sahilkamp İstanbul: biz her misafire soruyoruz yinede [14:46, 05.06.2025] GÜNAY KONSANTRE: Darni karavan buzdolabı sogutmuyormuş ilgilenebilirmisiniz [14:50, 05.06.2025] Özge Hanım Hanım: Siz not alırsanız sevinirim [14:50, 05.06.2025] Özge Hanım Hanım: Avrasya Travel isimleri gönderdi [14:50, 05.06.2025] Özge Hanım Hanım: 2 Deniz Ormanı da göndercek bilgi bekliyor [14:55, 05.06.2025] +90 543 234 83 08: Hallettim [15:08, 05.06.2025] Özge Hanım Hanım: Expedia misafirlerine lütfen extra özenli davranalım gerekiyorsa giriş yapamadan odaları kontrol edelim. Yüksek puan vermeleri rezervasyonların artışı için çok önemli [15:10, 05.06.2025] Sahilkamp İstanbul: artık giriş odalarının hepsini kontrol ettirip o şekilde veriyoruz ekstra özen gösteririz [15:21, 05.06.2025] GÜNAY KONSANTRE: Yukarı kısım duş wclerin bulundugu kısımda elektrik olmadıgını belirtti misafirler ilgilenebilirmisiniz [15:48, 05.06.2025] Didem Resepsiyon: Çadırlara elektrik vermiyoruz [15:48, 05.06.2025] Didem Resepsiyon: Konuştum bilgi verdim [16:02, 05.06.2025] GÜNAY KONSANTRE: Çadırlara elektrik Verilmedigini belirttim beyefendiye ortak alandaki prizlerde elektrik olmadıgını belirtti [16:02, 05.06.2025] Didem Resepsiyon: Gitmiş direkten elektrik almaya çalışmış [16:03, 05.06.2025] Didem Resepsiyon: Uyardım kendisini [16:04, 05.06.2025] GÜNAY KONSANTRE: Anladım tamamdır kolay gelsin [16:25, 05.06.2025] Özge Hanım Hanım: 2 Orman Koza dbl 3300 TL kahvaltı dahil [16:25, 05.06.2025] Özge Hanım Hanım: Sarı ile işaretledim yeni eklenenleri [16:30, 05.06.2025] +90 543 234 83 08: Hallettim [16:30, 05.06.2025] MUSTAFA BEY: Web sitesinde sabah beri sorun yazıyor kimse neden söylemez [16:30, 05.06.2025] +90 543 234 83 08: Ödemeleri yapılmadı dimi hala [16:30, 05.06.2025] MUSTAFA BEY: Şimdi çözüldü sorun gelirse haber dar edinnnn lütfen [16:30, 05.06.2025] +90 543 234 83 08: Tamamdır [16:32, 05.06.2025] Didem Resepsiyon: Hala hata veriyor [16:32, 05.06.2025] Didem Resepsiyon: @MUSTAFA BEY [16:33, 05.06.2025] Özge Hanım Hanım: Birazdan yapacak 1 saat içinde [16:33, 05.06.2025] Didem Resepsiyon: Tamam dır [16:33, 05.06.2025] Özge Hanım Hanım: Nasıl bir hata veriyor ben girebiliyorum siteye [16:37, 05.06.2025] +90 543 234 83 08: Mesajlarda bi sorun var sanırım [16:37, 05.06.2025] +90 543 234 83 08: Cevap veriyoruz ama mesajlar gitmiyo sanırım [17:09, 05.06.2025] Özge Hanım Hanım: Avrasya’nın 25K ödemesi geldi mi bakar mısınız @Oğuzhan Bey [17:09, 05.06.2025] MUSTAFA BEY: Jivo Canlı destekten [17:09, 05.06.2025] Oğuzhan Bey: Geldi [17:09, 05.06.2025] Özge Hanım Hanım: Kalanını 1 saat sonra yapacak [17:09, 05.06.2025] Özge Hanım Hanım: Arkadaşlar hesabına girer misiniz [17:11, 05.06.2025] Sahilkamp İstanbul: hallediyorum [17:13, 05.06.2025] Sahilkamp İstanbul: kalan ödemeleri 17.700 tl dimi [17:14, 05.06.2025] Özge Hanım Hanım: Evet [17:15, 05.06.2025] Sahilkamp İstanbul: tamamdır [17:16, 05.06.2025] Didem Resepsiyon: Jivo canlı desteğe ulaşamıyoruz hat düşüyor [17:22, 05.06.2025] MUSTAFA BEY: Yazışmaaa [19:10, 05.06.2025] Sahilkamp İstanbul: ödeme geldi mi [19:13, 05.06.2025] Özge Hanım Hanım: Hayır [19:22, 05.06.2025] Sahilkamp İstanbul: ben odalara havale işledim [19:22, 05.06.2025] Sahilkamp İstanbul: tüm odalara [19:27, 05.06.2025] Özge Hanım Hanım: 5 daha gönderdi [19:30, 05.06.2025] Sahilkamp İstanbul: bütün ödemeyi bugün atıcaklarmı [19:30, 05.06.2025] Sahilkamp İstanbul: yarına kalırmı [19:31, 05.06.2025] Özge Hanım Hanım: Kalmaz diyor misafirlerden ödeme aldıkça gönderiyorum diyor [19:31, 05.06.2025] Özge Hanım Hanım: Ama acentacı bu belli olmaz [19:31, 05.06.2025] Sahilkamp İstanbul: tamamdır [19:32, 05.06.2025] Sahilkamp İstanbul: ben bütün odalara havale bastım ödemelerini [19:32, 05.06.2025] Sahilkamp İstanbul: parça parça giremedim [19:32, 05.06.2025] Sahilkamp İstanbul: bölünmedi bi türlü [19:37, 05.06.2025] Özge Hanım Hanım: Tek fatura kesecektik bir PM açıp girsek daha kolay olurdu [19:38, 05.06.2025] Sahilkamp İstanbul: folyo transfer işleminde biraz karışıklık yaşanıyor o yüzden diğer arkadaşlarada zorluk olmaması adına her odaya ödeme girdim :( [22:28, 05.06.2025] MUSTAFA BEY: Havuz 2 gün hizmete girecektir [22:29, 05.06.2025] SEFA PEKER: Tamam [22:31, 05.06.2025] MUSTAFA BEY: Tüm ekibin bilgisine fiyatları jivoya bildirmeye [22:31, 05.06.2025] MUSTAFA BEY: Sayfalara [22:31, 05.06.2025] MUSTAFA BEY: Havuz kişi başı şezlong şemsiye ve havuz girişi 600 TL iki kişi olursa 1000 TL 12 yaş altı %50 indirimli [22:31, 05.06.2025] Didem Resepsiyon: Tamam dır [22:48, 05.06.2025] Sahilkamp İstanbul: bu fiyatlar herkes içinmi geçerli konaklayanlar içindemi [22:49, 05.06.2025] MUSTAFA BEY: Herkes [06:41, 06.06.2025] MUSTAFA BEY: Bayram namazının huzuru, kurbanın bereketiyle… Sahil Kamp ve Nefes Ormanı ailemizin tüm emekçilerine ve sevdiklerine; Birlik, bereket ve muhabbet içinde nice bayramlara… Kurban Bayramınız mübarek olsun. [08:08, 06.06.2025] Didem Resepsiyon: Kurban bayramınız mübarek olsun 🌸 [09:58, 06.06.2025] Özge Hanım Hanım: Bayramınız mübarek olsun sevgili Sahil Kamp ailesi [10:02, 06.06.2025] Özge Hanım Hanım: Leyla Özdoğan ve İsmail Ulaş misafir ödemeli [10:03, 06.06.2025] Özge Hanım Hanım: Dün düşen diğer tüm Expedia rezervasyonlar acenta ödemeli [12:05, 06.06.2025] +90 506 771 58 28: Müsaitlik varsa bu araçla ilgilenebilir miyiz yol kenarına çekmiş [13:17, 06.06.2025] +90 506 771 58 28: Yarın için 12:00 de çıkışları girişte Uyaralım Arkadaşalar sahil kısmına gidenler oluyor ziya abinin işi zorlaşıyor Yetiştiremiyor [13:21, 06.06.2025] GÜNAY KONSANTRE: D.koza 3 çarşaf talep ediyor ve yatak baya yıpranmış ilgilenmenizi talep ediyor [13:26, 06.06.2025] APO SAHA: @~BADE [13:31, 06.06.2025] +90 506 771 58 28: Bilgilendirme ne durumda [15:25, 06.06.2025] Sebahat Consentr: Gündoğdu 1 kapı kilitli odanın biri bide buz dolabı çalışmıyormuş ilgilenir misiniz [15:27, 06.06.2025] MUSTAFA BEY: İlginiyoruz [15:41, 06.06.2025] +90 506 771 58 28: Tinos müsaitlik yer var mı dört kişilik [17:05, 06.06.2025] Sebahat Consentr: Deniz koza 30 perdesi yokmuş ilgilenir misiniz [17:06, 06.06.2025] Özge Hanım Hanım: Arkadaşlar Avrasya Travelda Sara Fadhil ve Lyan Ratheb isimli 2 odayı yanyana ister çocukları varmış [18:07, 06.06.2025] Özge Hanım Hanım: Tatilbudurdan kod gelecek verebilir misiniz [18:10, 06.06.2025] MUSTAFA BEY: 🎉 Liman Restoran’da Happy Hour Başladı! 🍽️☕🍕  Sahilkamp’ta konaklayan misafirlerimize özel, her gün 18:00 – 22:00 saatleri arasında %15 indirim fırsatı!  Amerikan tarzı sıcak-soğuk kahveler, taptaze balıklar, ızgaralar, makarnalar, pizzalar, fast food seçenekleri, tatlılar, meyve tabakları ve mezelerde geçerli bu özel indirimle akşamınızı lezzetle taçlandırın.  📍 Liman Restoran – Sadece konaklayan misafirlere özel [18:18, 06.06.2025] GÜNAY KONSANTRE: D.koza 3 arka kısımda kalan ortak buzdolabı çalışmıyor ilgilenebilir misiniz [18:25, 06.06.2025] Sebahat Consentr: Kumsal suit 2 sıcak su yokmuş ilgilenir misiniz [18:53, 06.06.2025] +90 506 771 58 28: İlgilenildi [20:19, 06.06.2025] Sebahat Consentr: Hâlâ yokmuz 10 bin tl ödedim jakuzi için akşam oldu kullanamıyorum diyo ilgilenir misiniz [20:24, 06.06.2025] APO SAHA: Baylar durumu [20:43, 06.06.2025] Sebahat Consentr: Beyefendi 3 tane deniz koza ayırmanızı istedi 45 dakikaya geliyrohz dedi [20:45, 06.06.2025] Sebahat Consentr: 05323945452 ortak alan prizlerini kullanmak istiyor [20:50, 06.06.2025] MUSTAFA BEY: Görüştüm [21:02, 06.06.2025] Sebahat Consentr: Girişte yüksek ses müzik açıkmış uyarmanizi istiyo  misafiri [21:02, 06.06.2025] Sebahat Consentr: Yukarıdaki ortak alan vuz dolabı çalışmıyormuş ilgilenir misiniz [21:02, 06.06.2025] Sahilkamp İstanbul: Çadırlara elektrik verilmiyor marketten şarj edilebilirler [21:04, 06.06.2025] Sahilkamp İstanbul: Müsaitlik var [21:05, 06.06.2025] Sebahat Consentr: Deniz koza 3 elektrik yokmuş ilgilenir misiniz yandakilerdede yokmuş [21:56, 06.06.2025] Sebahat Consentr: Ağrı kesici var mi [21:56, 06.06.2025] Sebahat Consentr: Deniz koza 44 petekleri yanmıyormuş ilgilenir misiniz [21:56, 06.06.2025] MUSTAFA BEY: Malasef ilaç sormuyoruz [10:42, 07.06.2025] Özge Hanım Hanım: Günaydın Expedia'dan dün düşenler Umut Görkem Aksoy acenta ödemeli, listedeki diğerleri misafir ödemeli [13:29, 07.06.2025] Sebahat Consentr: 05380300060 beyefendi cadr kurmak için yer soruyo yardımcı olur musunuz [13:56, 07.06.2025] MUSTAFA BEY: Çadır alanında Yelekli arkadaşlarımız var sahada çadır kurmak için o arkadaşlarımızdan destek alınabilir [13:56, 07.06.2025] MUSTAFA BEY: Mavi Yelekli arkadaşlarımız var [14:12, 07.06.2025] Özge Hanım Hanım: Avrasya Travel odalarımın hepsi giriş yaptı mı diye sorar anahtarlarını aldılar mı? [14:30, 07.06.2025] MUSTAFA BEY: Evet [14:37, 07.06.2025] Özge Hanım Hanım: Orman 53 ve 54tek' misafrileri giriş yapmadık biz anhtarımızı vermediler diyorlarmış. Biz anahtarlarını verdik değil mi? [15:20, 07.06.2025] Sebahat Consentr: Fatma çakır aranmış rezervasyonu wepten uzatmis [15:23, 07.06.2025] GÜNAY KONSANTRE: Safiye aztekin çıkış yapmış bilginize [15:25, 07.06.2025] Sebahat Consentr: 34 fnu 996 plakalı araç karavanın önünü kapatmış misafir odasına giriş yapamiyirmus [15:30, 07.06.2025] MUSTAFA BEY: Arıyoruz [15:36, 07.06.2025] GÜNAY KONSANTRE: Esma Ünal aktaş çıkış yapmış bilginize [16:13, 07.06.2025] Sebahat Consentr: Onur kaytan çıkış yapmış bilginize [16:31, 07.06.2025] Sebahat Consentr: Kara-taş masa istiyo ilgilenir misiniz [16:38, 07.06.2025] MUSTAFA BEY: 2 orman Koza [16:38, 07.06.2025] MUSTAFA BEY: 2 Dom çadır boşta [16:38, 07.06.2025] MUSTAFA BEY: Satışa açık [16:45, 07.06.2025] GÜNAY KONSANTRE: İlgilenebilirmisiniz [16:54, 07.06.2025] +90 506 771 58 28: Koza 29 Tuğba alçın [17:52, 07.06.2025] GÜNAY KONSANTRE: 34 hgz 599 plakalı araç Tiny house 6 önüne tam orta bir şekilde aracını park ettiği için diğer misafirler aracını park edemiyomuş ilgilenebilir misiniz [17:55, 07.06.2025] +90 506 771 58 28: İlgileniyorum [17:55, 07.06.2025] Didem Resepsiyon: Plaka kayıtlı değil sistemlerde [17:56, 07.06.2025] Didem Resepsiyon: Araç üstüne bakarmısınız tel var mı [18:32, 07.06.2025] GÜNAY KONSANTRE: Fatih Mete çıkış yapmış bilginize [18:57, 07.06.2025] Sahilkamp İstanbul: Emin Baydar cikmamis uzatma yapacak [19:03, 07.06.2025] Sahilkamp İstanbul: merhaba. tiny house 5 numarada kalıyoruz. buzdolabımız çalışmıyor ve gün içinde 2 görevliye durumu bildirdik ancak çözüm sağlanmadı. acilen birini yönlendirir misiniz? [19:06, 07.06.2025] +90 506 771 58 28: İlgileniyorummm [19:07, 07.06.2025] Sebahat Consentr: Ayhan dede çıkış yapmış [19:21, 07.06.2025] Sebahat Consentr: Orman alanı virajin olduğu yerde kavga çıkmış ilgilnmenizi istiyo misaforler [19:26, 07.06.2025] Sebahat Consentr: Kumsal suit 1 petekleri calismiyormhs [19:34, 07.06.2025] MUSTAFA BEY: Petekler yanmayacakm [19:34, 07.06.2025] MUSTAFA BEY: Çak [19:34, 07.06.2025] MUSTAFA BEY: Bataniye verilebilir [20:22, 07.06.2025] +90 506 771 58 28: 2 kişi çadır Çıkış yapılcak [20:22, 07.06.2025] +90 506 771 58 28: Rica olur [20:44, 07.06.2025] Sebahat Consentr: Tniy haus 5 buz dolabı çalışmıyormuş ilgilenir misiniz [21:10, 07.06.2025] Sebahat Consentr: Davut demir aranmış çıkış yapmış beyefendi onun içinse [21:12, 07.06.2025] MUSTAFA BEY: Apo [21:13, 07.06.2025] APO SAHA: Verdik tamam burası [22:08, 07.06.2025] Sebahat Consentr: Hayrettin uysal aramissiniz [22:09, 07.06.2025] Didem Resepsiyon: Çıkış yapması için  yada aracı otoparka çekmesi için aranmıştır [22:10, 07.06.2025] Sebahat Consentr: Ödemesini yapmış bugün konaklamada aracı sormadım tekrar dönüş yaparsanız 05333777051 [22:22, 07.06.2025] MUSTAFA BEY: Özge hanım Expedia kapı ödeme hiç biri gelmedi [22:23, 07.06.2025] MUSTAFA BEY: Kapıda ödemeyi kapatalım hiç bir sistemde cumartesi ve bayramda çalışmıyoruz [22:23, 07.06.2025] Özge Hanım Hanım: Kredi kartından alabilirsiniz ödemeleri [22:24, 07.06.2025] Özge Hanım Hanım: Case açarım misafir ödemelilerin kapanması için. [22:25, 07.06.2025] MUSTAFA BEY: İlerleyen saatlerde mi yapalım [22:25, 07.06.2025] Özge Hanım Hanım: Yok hayır hemen alabilirsiniz [22:26, 07.06.2025] Özge Hanım Hanım: Kredi kartları sisteme düşmüş olmalı [22:26, 07.06.2025] MUSTAFA BEY: 24:00  bekleyelim [22:27, 07.06.2025] MUSTAFA BEY: Haberdar edeceğiz [22:38, 07.06.2025] MUSTAFA BEY: Boş oda olarak açıklıkta var 7 oda indirimli gizli  satış girebiliriz [22:48, 07.06.2025] Özge Hanım Hanım: Giriyorum deneyelim [23:07, 07.06.2025] +90 543 234 83 08: Nerden bakıyoruz buna [23:08, 07.06.2025] Özge Hanım Hanım: Rezervasyonun içinden kredi kartı ekranı olmalı [23:08, 07.06.2025] Özge Hanım Hanım: Begüm’ün yetkisi vardı ama şuan o yetki kimde bilemiyorum [23:08, 07.06.2025] +90 543 234 83 08: Bende böyle bi ekran var [23:09, 07.06.2025] Özge Hanım Hanım: Extranetten de gösterir bi sn [23:13, 07.06.2025] +90 543 234 83 08: Ben görüntüleyemiyorum:( [23:15, 07.06.2025] Özge Hanım Hanım: Extranette de görünmüyor kredi kartları. [23:15, 07.06.2025] Özge Hanım Hanım: Kötü oldu ama gelmedilerse mecbur iptal edeceğiz [23:16, 07.06.2025] Özge Hanım Hanım: 3 tanesi de giriş yapmadı mı? [23:19, 07.06.2025] Özge Hanım Hanım: Sıla Duman gelmiş sadece in house görünüyor [23:39, 07.06.2025] Özge Hanım Hanım: Yarın girişli misafir ödemeliler gelmezse 14:00-15:00 gibi misafirleri arayalım gelemeyecklerse bana haber verin iptal edelim [11:07, 08.06.2025] +90 506 771 58 28: Acil aranması gerekli Rica [13:45, 08.06.2025] Sebahat Consentr: Ilkker akkaş odayı bekliyo orman koza [13:45, 08.06.2025] Sebahat Consentr: 05467765155 [14:12, 08.06.2025] GÜNAY KONSANTRE: D koza 36 masa yokmuş önlerinde ilgilenebilirmisiniz [14:19, 08.06.2025] MUSTAFA BEY: Ik [14:19, 08.06.2025] MUSTAFA BEY: OK [14:20, 08.06.2025] MUSTAFA BEY: Çadır alanı müsait odalar müsait [14:20, 08.06.2025] MUSTAFA BEY: Çadır alanı direk alabilirsiniz [14:20, 08.06.2025] MUSTAFA BEY: Kapıda rezervasyon alabiliriz [14:20, 08.06.2025] GÜNAY KONSANTRE: D koza 27 tam karşısında bulunan ortak alan buzdolabı çalışmıyormuş içerisinde bulunan ürünler bozulmuş ilgilenebilirmisiniz [14:21, 08.06.2025] GÜNAY KONSANTRE: Tamamdır Mustafa bey [14:56, 08.06.2025] MUSTAFA BEY: Tek kişi mi bakıyor [14:56, 08.06.2025] GÜNAY KONSANTRE: Ben bakıyorum Mustafa bey [14:56, 08.06.2025] Sebahat Consentr: Ben aktifim suan [14:56, 08.06.2025] GÜNAY KONSANTRE: Hatta şuan görüşüm yapıyorum [15:42, 08.06.2025] +90 506 771 58 28: Yoğunluk yoksa aracı bulundu yerden alınması Rica [15:49, 08.06.2025] Sebahat Consentr: Koza 78 masası yokmuş ilgilenir misiniz [16:22, 08.06.2025] +90 506 771 58 28: Araçların bulundu yerden alınması uygundur [17:14, 08.06.2025] GÜNAY KONSANTRE: Ortak alan duş ve wc'lerin çok kirli olduğunu ve ihtiyaçlarını bile gideremediklerini söylüyor misafirler ilgilenebilir misiniz [17:38, 08.06.2025] Özge Hanım Hanım: Hepsi Expedia ödemeli yeni düşen rezervasyonlar [18:10, 08.06.2025] Sebahat Consentr: Maran karavan elektirik yok [18:10, 08.06.2025] Sebahat Consentr: Gardenya 4 sıcak su yokmuş ilgilenir misiniz [18:31, 08.06.2025] Didem Resepsiyon: Suyu biraz akıtsın sıcak su akar [18:49, 08.06.2025] Sebahat Consentr: Ilettim akıtmış zaten ama gelmemiş [18:54, 08.06.2025] GÜNAY KONSANTRE: Su çok az geliyormuş [18:59, 08.06.2025] GÜNAY KONSANTRE: Bugün çıkış yapılmış d.koza 24 Apple 1 adet beyaz renk kulaklık unutulmuş bulunduğu takdirde geri dönüş talep ediyor ilgilenebilirmisiniz 05530290700 [19:19, 08.06.2025] Sebahat Consentr: Orman koza 7nin anahtarını almış misafir ama açmıyormuş yardımcı olabilir misiniz kimseyi  bulamamş sahada [19:38, 08.06.2025] Sebahat Consentr: 05337773347 mustafa ersoy 5 dk önce rezervasyon yapmis iptal etmek istiyo iptal islemi 48 saat oncesi olmaz dedim ama dönüş bekliyo [20:02, 08.06.2025] Sebahat Consentr: Deniz koza battaniye istiyo ilgilenir misiniz [20:43, 08.06.2025] Sebahat Consentr: 33 [20:56, 08.06.2025] Sebahat Consentr: Beyefendi yetkili biriyle görüşmek istiyo [21:00, 08.06.2025] Özge Hanım Hanım: 5dk önce yaptıysa bence iptal edilebilir. Bütün online kanallarda 1saat içinde tüm misafirlere iptal hakkı tanınıyor. Expedia veya başka yerden yapsaydı kendisi iptal edebilirdi [21:00, 08.06.2025] Özge Hanım Hanım: Bence bizim websitesinden de bu hak tanınmalı [21:04, 08.06.2025] Sebahat Consentr: Dj perfonmans nerde ve saat kaçta bilgi alabilir miyim [21:05, 08.06.2025] Sebahat Consentr: Dönüş bekliyo misafir ilgilenirseniz olumlu olumsuz [21:06, 08.06.2025] Özge Hanım Hanım: Ben şuan çok sesli bir ortamdayım. Eğer Mustafa Bey iptali onaylıyorsa sen dönüp söyler misin [21:09, 08.06.2025] Sebahat Consentr: Olur dönerim [21:09, 08.06.2025] Sebahat Consentr: Ortak alan wcler çok kirliymiş bayan tuvaleti taşmış ilgilenir misiniz [21:10, 08.06.2025] Sebahat Consentr: Taş ev 9 aşırı ses yapıyormuş misafirler uyarmanizi rica ediyo [21:25, 08.06.2025] Sahilkamp İstanbul: birazdan başlayacak [21:25, 08.06.2025] Sahilkamp İstanbul: hazırlık aşamasında şuan [21:26, 08.06.2025] Sahilkamp İstanbul: girişte sol arka kısımda sahne var [21:26, 08.06.2025] Sebahat Consentr: Tuvaletlerden aşırı şikayetçi misafir 5 dakika sonra tekrar giderim temiz değilse tüm sayfalarınıza yazacam dedi acil ilgilenir misiniz [21:27, 08.06.2025] Sahilkamp İstanbul: bakılıyo şuan [10:17, 09.06.2025] GÜNAY KONSANTRE: WhatsApp hattına mesaj iletmiş beyefendi mail adresi için ilgilenebilirmisiniz [10:37, 09.06.2025] Didem Resepsiyon: İletildi [10:37, 09.06.2025] Didem Resepsiyon: Uygun görülürse iade yapılır [11:25, 09.06.2025] Özge Hanım Hanım: Merhaba Booking.com misafir ödemeli bugün girişler [11:25, 09.06.2025] Özge Hanım Hanım: Expedia acenta ödemeli bugün giriş [11:28, 09.06.2025] GÜNAY KONSANTRE: O.koza 78 nevresim degişikligi talep ediyor ilgilenebilirmisiniz [11:46, 09.06.2025] GÜNAY KONSANTRE: Meryem uyanık mail iletmiş ilgilenebilirmisiniz 05448353076 [12:13, 09.06.2025] Özge Hanım Hanım: Meryem Uyanık'a iptal edilebileceği söylendi mi? [12:14, 09.06.2025] Özge Hanım Hanım: Tarih değişikliği önerdim iptal edeceğinizi söylediniz 2 gündür bekliyorum demiş [12:14, 09.06.2025] MUSTAFA BEY: Öle bilgi kimse vermez [12:15, 09.06.2025] MUSTAFA BEY: Bayram sonrası tekrar bakalım [12:16, 09.06.2025] Özge Hanım Hanım: Giriş tarihi bugün olduğu için bilgi bekliyor ne diyelim? [12:19, 09.06.2025] Özge Hanım Hanım: Arkadaşlar Meryem Uyanık 5 dk önce rezervasyon yapıp iptal etmek isteyen miydi? [12:19, 09.06.2025] Sebahat Consentr: Hayır değildi [12:19, 09.06.2025] Özge Hanım Hanım: Tamamdır [12:19, 09.06.2025] Sebahat Consentr: Mustafa ersoy o beyefendi [12:26, 09.06.2025] Özge Hanım Hanım: Tiny Karavan ne kadar deniz görüyor? [12:42, 09.06.2025] +90 543 234 83 08: orman içinde yukarda [12:43, 09.06.2025] Özge Hanım Hanım: Deniz görümüyor diye anlıyorum. Biz bu odaları oluştururken Ayşe Hanım ile baktığımızda bu oda için deniz manzaralı demişti. Odaları bu şekilde oluşturduk. Deniz gören karavan hangisi peki? [12:43, 09.06.2025] +90 543 234 83 08: deniz görüyo [12:43, 09.06.2025] +90 543 234 83 08: manzarası var [12:43, 09.06.2025] Özge Hanım Hanım: Ok [12:43, 09.06.2025] +90 543 234 83 08: https://www.sahilkampistanbul.com/konaklama/tiny-karavan/ [12:44, 09.06.2025] Özge Hanım Hanım: Misafir ne kadar gördüğünü sormuş kısmi olarak mı net mi görüyor? [12:44, 09.06.2025] Özge Hanım Hanım: Bu fotolar var bende ama hiçbirinde ne kadar deniz gördüğü belli değil [12:45, 09.06.2025] +90 543 234 83 08: net görüyo denizi [12:45, 09.06.2025] Özge Hanım Hanım: ok teşekkürler [12:45, 09.06.2025] MUSTAFA BEY: Kısmi diyelim [12:45, 09.06.2025] MUSTAFA BEY: Darni Karvan net [13:30, 09.06.2025] GÜNAY KONSANTRE: Taş ev 2 havlu talep ediyor 3 adet ilgilenebilirmisiniz [13:36, 09.06.2025] Özge Hanım Hanım: Bu misafirden konaklama esnasında herhangi bir talep oldu mu? [13:38, 09.06.2025] +90 543 234 83 08: ödeme mi [13:38, 09.06.2025] Özge Hanım Hanım: Yok yanlış yazmışım misafirin herhangi bir geri bildirimi oldu mu beğenmediği bir şey, vs? [13:38, 09.06.2025] +90 543 234 83 08: bilmiyorum [14:20, 09.06.2025] MUSTAFA BEY: Arkadaşlar yorumlara yükleniyoruz [14:20, 09.06.2025] MUSTAFA BEY: Herkes den kendi ismine işletme adınaaaa yorum [14:20, 09.06.2025] MUSTAFA BEY: 10 ar adet [14:21, 09.06.2025] MUSTAFA BEY: Sın gün biraz yüklenelim 🙏 [14:21, 09.06.2025] +90 506 771 58 28: Anlaşıldı Mustafa Bey [15:45, 09.06.2025] Özge Hanım Hanım: Arkadaşlar kırmızı bayrakladığım mailler benim takibimde. [15:45, 09.06.2025] Özge Hanım Hanım: Meryem Uyanık rezervasyonunu siz düzenlemişsiniz ona ben dönüş yapmıyorum. [15:45, 09.06.2025] GÜNAY KONSANTRE: Magara 2 yatakta ve yerlerde fazlasıyla karınca varmış ilgilenebilirmisiniz [15:58, 09.06.2025] GÜNAY KONSANTRE: Tiny house 4 buzdolabı çalışmıyormuş ilgilenebilirmisiniz [16:01, 09.06.2025] +90 506 771 58 28: İlgilenildi [16:21, 09.06.2025] APO SAHA: Hallettik [16:21, 09.06.2025] GÜNAY KONSANTRE: Tamamdır kolay gelsin [16:22, 09.06.2025] MUSTAFA BEY: Bir Kamp Alanı, Bir Yaşam Hikayesi…  10 yıl önce küçük bir çadır alanı olarak çıktık yola. Bugün 100 dönümlük doğa alanında glamping, bungalov, havuz, restoran, market gibi birçok hizmeti sizlerle buluşturuyoruz. Bunu; yaz-kış demeden, 25 kişilik özverili ekibimizle sürdürüyoruz.  Bayram dönemleri gibi özel günlerde yoğunluk yaşanabiliyor. Bu dönemlerde zaman zaman beklentilerle gerçekler arasında fark oluşabiliyor. Yaşanan aksaklıkları görüyor, duyuyor ve her zaman çözüm üretmeye gayret ediyoruz.  Bizim vaadimiz; doğayla uyum, sadelik ve sürdürülebilirlik üzerine kurulu. Her yıl dijitalleşmeye, alt yapıya ve deneyim kalitesine yatırım yapıyor, kamp ruhunu korumaya çalışıyoruz.  Tüm geri bildirimlerinizi yapıcı şekilde önemsiyoruz. Sadece doğayı değil, sizle… [17:01, 09.06.2025] Sebahat Consentr: Kara-taş ketil varsa rica ediyo [17:01, 09.06.2025] Didem Resepsiyon: Evett notları gördüm [17:01, 09.06.2025] Didem Resepsiyon: Teşekkür ederim [17:38, 09.06.2025] Sebahat Consentr: Dom 4 ilacı varmış dolap çalışmıyormuş [17:40, 09.06.2025] APO SAHA: Dom çadırda dolap yok [17:45, 09.06.2025] +90 506 771 58 28: Dom çadırı değil Tiny House 8 ile change yapacağım [21:32, 09.06.2025] Sahilkamp İstanbul: web sitesinde bi sorun var sanırım [21:36, 09.06.2025] MUSTAFA BEY: Mesela [21:36, 09.06.2025] Sahilkamp İstanbul: sayfa açılmıyormuş [21:37, 09.06.2025] MUSTAFA BEY: Muş [21:37, 09.06.2025] MUSTAFA BEY: Ama çalışıyor [21:37, 09.06.2025] MUSTAFA BEY: Denersen [21:37, 09.06.2025] MUSTAFA BEY: Sahada ekip var telsizler açık olsun [21:37, 09.06.2025] MUSTAFA BEY: Teyit yapacaklar [21:38, 09.06.2025] Sahilkamp İstanbul: bizde bi sorun yok onlar erişim sağlayamıyolar [21:38, 09.06.2025] MUSTAFA BEY: Onlara söyleyelim sitemizde bir sorun yok başka pc veya başka telefondan deneyebilirsiniz [21:43, 09.06.2025] Sebahat Consentr: Instegramdaki hata veriyo bazen ondan olabilir googledan giriş yapmalarını iletiyorum oluyo [11:25, 10.06.2025] Özge Hanım Hanım: Yarın girişli Booking.com 2 tane Kumsal Suite rezervasyonu misafir ödemeli. Yarın sakin bir gün. Odaların jakuzisi dahil her şeyin düzgün çalıştığına ve temizliğine emin olalım ve misafirlerden çıkışta iyi puan vermelerini talep edelim lütfen. Çok önemli 2 misafir Booking.com puanımızı yükseltmek için [11:25, 10.06.2025] Özge Hanım Hanım: Kredi kartlarından bugünden ödeme alınabilir. [11:37, 10.06.2025] Didem Resepsiyon: Tamam dır özge hanım [11:38, 10.06.2025] Özge Hanım Hanım: Avrasya Travel odaları ile ilgili bana feedback verir misiniz? Misafir portföyü nasıldı bir sorun çıkardılar mı [12:26, 10.06.2025] Didem Resepsiyon: Hayır çok  memnun ayrıldılar [12:32, 10.06.2025] Özge Hanım Hanım: @Oğuzhan Bey Oğuzhan Bey Sağlık Meslek Lisesi Kübra Köse'den de olabilir geçen ay 62800TL ödeme geldi mi? [14:34, 10.06.2025] MUSTAFA BEY: Abi merhabalar 23 Haziran bir gece 30 Haziran 1 gece toplam iki gece konaklama [14:34, 10.06.2025] MUSTAFA BEY: Bekir binicilik [14:34, 10.06.2025] MUSTAFA BEY: Adına rezervasyon yapalım misafirin [14:35, 10.06.2025] Sahilkamp İstanbul: hemen hallediyorum hangi oda için olacak [17:14, 10.06.2025] Özge Hanım Hanım: Günübirlik giriş ücreti neydi? [17:15, 10.06.2025] Didem Resepsiyon: 250 tl girişi sabah 10.00 çıkış 19.00 [17:16, 10.06.2025] Özge Hanım Hanım: Peki maksimum kişi sayısı kısıtı var mı çadırlar için [17:17, 10.06.2025] Özge Hanım Hanım: Örnek 12 kişilik çadırla gelebilirler mi? [17:17, 10.06.2025] Sahilkamp İstanbul: hayır yok kişi başı ücret alınıyor zaten [17:17, 10.06.2025] Sahilkamp İstanbul: büyüklüğün önemi yok alan geniş zaten [20:35, 10.06.2025] Sebahat Consentr: Çadır için yatak Var mi şuan misafir alamamış yolda geliyo [20:45, 10.06.2025] Sebahat Consentr: Misafire dönüş yapacam müsait olan biri dönüş yaoabil8r mi bana [21:40, 10.06.2025] Didem Resepsiyon: Yatak kiralıyoruz evet [21:40, 10.06.2025] Didem Resepsiyon: 200 tl bi tane [00:30, 11.06.2025] MUSTAFA BEY: Arkadaşlar İade taleplerini ropar yapalım gerekçeleriyle [00:30, 11.06.2025] MUSTAFA BEY: İletişim bilgileri yanına [00:31, 11.06.2025] MUSTAFA BEY: Gelen mailler de konular  car sefa [00:31, 11.06.2025] MUSTAFA BEY: Excel dosya yapalım [00:31, 11.06.2025] Sahilkamp İstanbul: tamamdır [11:29, 11.06.2025] GÜNAY KONSANTRE: Sultan kurt rezervasyon iptali için mail iletmiş herhangi bir dönüş olmamış ilgilenebilirmisiniz [11:42, 11.06.2025] Sahilkamp İstanbul: Gelmemiş diye not alınmış [11:42, 11.06.2025] MUSTAFA BEY: ? [11:42, 11.06.2025] Sahilkamp İstanbul: Geri iade olmuyor 48 saat önce arayıp ileri tarihe almasi gerekiyordu [11:42, 11.06.2025] Sahilkamp İstanbul: Hazırlanıyor [11:44, 11.06.2025] GÜNAY KONSANTRE: Konuyu bu şekilde ilettim Gelmiş yer olmadıgı için geri çıkış yapmışlar hiç bir arkadaşımız bu şekilde söylemez biliyorum ama salı günü sizlere geri dönüş ve iade yapılır denilmiş bayan bu şekilde iletti [12:17, 11.06.2025] Sebahat Consentr: Ben iznimi bugün kullanacam bilginiz olsun  mustafa beyin bilgisi var kolay gelsin  ... [13:53, 11.06.2025] Özge Hanım Hanım: Alanda 45 kişilik 2 ayrı eğitim odası veya atölye gibi alan var mı? [13:54, 11.06.2025] Sahilkamp İstanbul: Hayır maalesef yok [16:02, 11.06.2025] Özge Hanım Hanım: Sultan Kurt'a iade yapılacak mı, yapılmayacak mı? Misafir mail atıyor sürekli cevap vermek gerek. [16:04, 11.06.2025] Sahilkamp İstanbul: değerlendirme süreci var beklemesi gerekiyor özge hanım [22:39, 11.06.2025] MUSTAFA BEY: Talepler gruplara yazalım [22:40, 11.06.2025] Sahilkamp İstanbul: tamam mustafa bey [11:33, 12.06.2025] Özge Hanım Hanım: Merhaba başka eklenecek olan rezervasyonlar varsa ekleyip Oğuzhan Bey ile paylaşabilirsiniz. Ben maillerde başka bulamadım [12:28, 12.06.2025] Didem Resepsiyon: Şuan için yok [12:29, 12.06.2025] Özge Hanım Hanım: @Oğuzhan Bey Oğuzhan Bey merhaba sadece bir misafiri sistemde bulamadım onun bilgileri de geldiğinde tamamlanmış olacak. Siz diğer ikisinin iadesini başlatabilirsiniz. [13:46, 12.06.2025] Özge Hanım Hanım: Mangal kiralama ücreti nedir? [13:53, 12.06.2025] Sahilkamp İstanbul: set halinde 400 tl kömür dahil [13:54, 12.06.2025] Sahilkamp İstanbul: semaver 200 tl çay hediye [13:54, 12.06.2025] Özge Hanım Hanım: Peki ateş çukuru kiralanıyor mu? [13:54, 12.06.2025] Sahilkamp İstanbul: evet 100 tl [13:55, 12.06.2025] Sahilkamp İstanbul: tek sefer ödeme yapıyor konaklama boyunca kullanabilir Son haliyle iade talepleri [14:03, 12.06.2025] Özge Hanım Hanım: Sağlık Meslek Lisesi Grubu; 14 Haziran giriş 30 Orman Koza kişi başı 2500 TL ücret ile (kahvaltı ve akşam yemeği dahil) 4 Orman Koza ücretsiz (kahvaltı ve akşam yemeği dahil)  Akşam yemeği (sucuk/köfte ekmek) * 76 kişi  7 çocuk aile yanlarında konaklayacak. Ücresiz kahvaltı ve akşam yemeği ikram edilecek. 4 tane servis şoförü kendi araçlarında konaklayacak. Ücretsiz kahvaltı ve akşam yemeği ikram edilecek. [14:04, 12.06.2025] Özge Hanım Hanım: Ödemesinin 62800 TLsi yapılmış, kalanı bugün içinde gelecek. Takibimde [14:04, 12.06.2025] Özge Hanım Hanım: İsim listesini de akşama kadar göndereceğim [14:05, 12.06.2025] Özge Hanım Hanım: Tek özel ricaları var oda anahtarları veliler dışında kimseye verilmesin. Çocuklara verilmesini asla istemiyorlar. [14:06, 12.06.2025] Özge Hanım Hanım: Ödemeleri geldi @Oğuzhan Bey kontrol edebilir miyiz [14:07, 12.06.2025] Oğuzhan Bey: geldi [14:07, 12.06.2025] Özge Hanım Hanım: Ok grubun ödemesinin tamamı yapıldı sisteme girer misiniz. [14:21, 12.06.2025] Özge Hanım Hanım: Bugün ve yarın giriş 2 Tatilbudur rezervasyonu acenta ödemeli [15:46, 12.06.2025] Sebahat Consentr: Ahşap ev bungalov masa yokmuş içinde ilgilenir misiniz [16:26, 12.06.2025] Özge Hanım Hanım: Dom, Gardenya,Mağara, Taş Ev, Tinyler'e haftasonuna özel %15 indirim tanımladım. Bilginize [16:27, 12.06.2025] Sahilkamp İstanbul: tamam dır özge hanım"
+        ],
+        "confidence": 0.19999999999999998,
+        "last_tested": "2025-09-15T01:55:11.609Z"
+      },
+      "hangi": {
+        "works": false,
+        "variations": [
+          "hangi bilgilere sahipsin?"
+        ],
+        "confidence": 0.19999999999999998,
+        "last_tested": "2025-09-15T01:55:41.186Z"
+      },
+      "top": {
+        "works": false,
+        "variations": [
+          "top"
+        ],
+        "confidence": 0.19999999999999998,
+        "last_tested": "2025-09-15T02:01:28.129Z"
+      },
+      "systeminfo": {
+        "works": false,
+        "variations": [
+          "systeminfo"
+        ],
+        "confidence": 0.19999999999999998,
+        "last_tested": "2025-09-15T02:01:31.489Z"
+      },
+      "merhaba": {
+        "works": false,
+        "variations": [
+          "merhaba"
+        ],
+        "confidence": 0.09999999999999998,
+        "last_tested": "2025-09-15T02:56:22.810Z"
+      },
+      "pwd": {
+        "works": true,
+        "variations": [
+          "pwd"
+        ],
         "confidence": 0.7999999999999999,
-        "last_tested": "2025-09-15T01:45:15.744Z"
+        "last_tested": "2025-09-15T02:55:42.242Z"
+      },
+      "df": {
+        "works": true,
+        "variations": [
+          "df -h"
+        ],
+        "confidence": 0.8999999999999999,
+        "last_tested": "2025-09-15T03:08:32.086Z"
+      },
+      "kamerayı": {
+        "works": false,
+        "variations": [
+          "kamerayı aç"
+        ],
+        "confidence": 0.19999999999999998,
+        "last_tested": "2025-09-15T03:04:16.385Z"
+      },
+      "echo": {
+        "works": true,
+        "variations": [
+          "echo \"🚀 Merhaba! REBEL AI Terminal'e hoş geldin. Komutlarını Türkçe yazabilirsin.\""
+        ],
+        "confidence": 0.7999999999999999,
+        "last_tested": "2025-09-15T03:08:09.032Z"
+      },
+      "ne": {
+        "works": false,
+        "variations": [
+          "ne iş yaparsın"
+        ],
+        "confidence": 0.19999999999999998,
+        "last_tested": "2025-09-15T03:08:15.622Z"
+      },
+      "ps": {
+        "works": true,
+        "variations": [
+          "ps aux"
+        ],
+        "confidence": 0.8999999999999999,
+        "last_tested": "2025-09-15T03:08:48.261Z"
       }
     },
     "darwin": {
@@ -115,7 +424,9 @@
       ]
     }
   },
-  "fallback_routes": {},
+  "fallback_routes": {
+    "linux": {}
+  },
   "learned_optimizations": {},
   "device_profiles": {
     "5ece5f04": {
@@ -125,24 +436,94 @@
       "first_seen": "2025-09-14T23:11:44.055Z",
       "command_preferences": {
         "ls": {
-          "usage_count": 2,
+          "usage_count": 5,
           "success_rate": 100,
-          "avg_execution_time": 20.25
+          "avg_execution_time": 27.28125
         },
         "whoami": {
-          "usage_count": 1,
+          "usage_count": 2,
           "success_rate": 100,
-          "avg_execution_time": 15
+          "avg_execution_time": 21.5
         },
         "date": {
+          "usage_count": 4,
+          "success_rate": 100,
+          "avg_execution_time": 32.125
+        },
+        "saat": {
+          "usage_count": 3,
+          "success_rate": 0,
+          "avg_execution_time": 15.75
+        },
+        "ben": {
+          "usage_count": 1,
+          "success_rate": 0,
+          "avg_execution_time": 19.5
+        },
+        "yapay": {
+          "usage_count": 1,
+          "success_rate": 0,
+          "avg_execution_time": 13
+        },
+        "[19:49,": {
+          "usage_count": 1,
+          "success_rate": 0,
+          "avg_execution_time": 12.9
+        },
+        "hangi": {
+          "usage_count": 1,
+          "success_rate": 0,
+          "avg_execution_time": 22.5
+        },
+        "top": {
+          "usage_count": 1,
+          "success_rate": 0,
+          "avg_execution_time": 72.5
+        },
+        "systeminfo": {
+          "usage_count": 1,
+          "success_rate": 0,
+          "avg_execution_time": 15.5
+        },
+        "merhaba": {
+          "usage_count": 2,
+          "success_rate": 0,
+          "avg_execution_time": 16.5
+        },
+        "pwd": {
           "usage_count": 1,
           "success_rate": 100,
+          "avg_execution_time": 9
+        },
+        "df": {
+          "usage_count": 2,
+          "success_rate": 100,
           "avg_execution_time": 17
+        },
+        "kamerayı": {
+          "usage_count": 1,
+          "success_rate": 0,
+          "avg_execution_time": 14.5
+        },
+        "echo": {
+          "usage_count": 1,
+          "success_rate": 100,
+          "avg_execution_time": 9.5
+        },
+        "ne": {
+          "usage_count": 1,
+          "success_rate": 0,
+          "avg_execution_time": 17
+        },
+        "ps": {
+          "usage_count": 2,
+          "success_rate": 100,
+          "avg_execution_time": 19.5
         }
       },
       "performance_metrics": {},
       "capabilities": {},
-      "last_seen": "2025-09-15T01:45:15.744Z"
+      "last_seen": "2025-09-15T03:08:48.261Z"
     }
   }
 }

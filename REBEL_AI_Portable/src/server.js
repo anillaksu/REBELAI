@@ -15,6 +15,7 @@ const crypto = require('crypto');
 const CommandExecutor = require('./command_executor');
 const DijkstraOptimizer = require('./dijkstra_optimizer');
 const KnowledgeManager = require('./knowledge_manager');
+const TurkishTranslator = require('./turkish_translator');
 
 class REBELAIServer {
     constructor() {
@@ -31,6 +32,7 @@ class REBELAIServer {
         this.commandExecutor = new CommandExecutor();
         this.dijkstraOptimizer = new DijkstraOptimizer();
         this.knowledgeManager = new KnowledgeManager();
+        this.turkishTranslator = new TurkishTranslator();
         
         this.setupMiddleware();
         this.setupRoutes();
@@ -132,10 +134,20 @@ class REBELAIServer {
                 }
 
                 let finalCommand = command;
+                let translation = null;
                 
                 // Handle quick actions
                 if (action) {
                     finalCommand = this.mapActionToCommand(action);
+                } else if (command) {
+                    // First, translate Turkish commands to English
+                    translation = this.turkishTranslator.translate(command);
+                    finalCommand = translation.translatedCommand;
+                    
+                    // Log translation for debugging
+                    if (translation.translationType !== 'english_passthrough') {
+                        console.log(`🇹🇷 Turkish Translation: "${translation.originalCommand}" → "${translation.translatedCommand}" (${translation.translationType}, confidence: ${translation.confidence})`);
+                    }
                 }
 
                 // Dijkstra optimization

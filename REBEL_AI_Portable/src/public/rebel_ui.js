@@ -290,6 +290,28 @@ class REBELTerminalUI {
         result.results.forEach((cmdResult, index) => {
             const outputDiv = document.createElement('div');
             
+            // Show Turkish translation info if available
+            if (cmdResult.translation && cmdResult.translation.translationType !== 'english_passthrough') {
+                const translationDiv = document.createElement('div');
+                translationDiv.style.color = '#00aaff';
+                translationDiv.style.fontStyle = 'italic';
+                translationDiv.style.marginBottom = '0.5rem';
+                translationDiv.style.fontSize = '0.9rem';
+                
+                const confidence = Math.round(cmdResult.translation.confidence * 100);
+                translationDiv.innerHTML = `🇹🇷 Türkçe: "${cmdResult.translation.originalCommand}" → "${cmdResult.translation.translatedCommand}" (${confidence}% güven)`;
+                
+                if (cmdResult.translation.suggestion) {
+                    const suggestionDiv = document.createElement('div');
+                    suggestionDiv.style.color = '#888';
+                    suggestionDiv.style.fontSize = '0.8rem';
+                    suggestionDiv.textContent = `💡 ${cmdResult.translation.suggestion}`;
+                    translationDiv.appendChild(suggestionDiv);
+                }
+                
+                this.terminalOutput.appendChild(translationDiv);
+            }
+            
             if (cmdResult.success) {
                 outputDiv.className = 'command-output';
                 
