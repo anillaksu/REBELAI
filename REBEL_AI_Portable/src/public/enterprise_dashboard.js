@@ -182,6 +182,24 @@ class EnterpriseDashboard {
         
         // 🎨 Preferences Event Listeners
         this.setupPreferencesEventListeners();
+
+        // Additional buttons that may be missing
+        document.getElementById('refreshMfa')?.addEventListener('click', () => {
+            this.refreshMFAStatus();
+        });
+
+        document.getElementById('backupCodes')?.addEventListener('click', () => {
+            this.showBackupCodes();
+        });
+
+        // Knowledge export/import buttons from HTML
+        document.getElementById('exportAllKnowledge')?.addEventListener('click', () => {
+            this.exportKnowledgeData();
+        });
+
+        document.getElementById('backupKnowledge')?.addEventListener('click', () => {
+            this.exportKnowledgeData();
+        });
     }
 
     setupMFAEventListeners() {
@@ -1735,7 +1753,7 @@ If you lose access to your authentication device, you can use these codes to reg
 // Initialize dashboard when DOM is ready
 document.addEventListener('DOMContentLoaded', () => {
     console.log('🛡️ REBEL AI Enterprise Dashboard Loading...');
-    new EnterpriseDashboard();
+    window.dashboard = new EnterpriseDashboard();
 });
 
 // Add notification close button styles
