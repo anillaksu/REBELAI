@@ -16,10 +16,10 @@
         "success_rate": 100
       },
       "date": {
-        "total_executions": 4,
-        "successful_executions": 4,
+        "total_executions": 5,
+        "successful_executions": 5,
         "failure_patterns": [],
-        "last_updated": "2025-09-15T03:08:46.136Z",
+        "last_updated": "2025-09-15T07:09:35.112Z",
         "success_rate": 100
       },
       "saat": {
@@ -189,10 +189,10 @@
         "success_rate": 0
       },
       "echo": {
-        "total_executions": 1,
-        "successful_executions": 1,
+        "total_executions": 4,
+        "successful_executions": 4,
         "failure_patterns": [],
-        "last_updated": "2025-09-15T03:08:09.032Z",
+        "last_updated": "2025-09-15T07:14:18.944Z",
         "success_rate": 100
       },
       "ne": {
@@ -217,6 +217,22 @@
         "failure_patterns": [],
         "last_updated": "2025-09-15T03:08:48.261Z",
         "success_rate": 100
+      },
+      "Ne": {
+        "total_executions": 1,
+        "successful_executions": 0,
+        "failure_patterns": [
+          {
+            "pattern": "command_not_found",
+            "description": "Command does not exist on this platform",
+            "suggested_action": "find_alternative",
+            "count": 1,
+            "first_seen": "2025-09-15T07:09:57.025Z",
+            "last_seen": "2025-09-15T07:09:57.025Z"
+          }
+        ],
+        "last_updated": "2025-09-15T07:09:57.025Z",
+        "success_rate": 0
       }
     }
   },
@@ -287,7 +303,7 @@
           "date"
         ],
         "confidence": 1,
-        "last_tested": "2025-09-15T03:08:46.136Z"
+        "last_tested": "2025-09-15T07:09:35.112Z"
       },
       "saat": {
         "works": false,
@@ -381,10 +397,12 @@
       "echo": {
         "works": true,
         "variations": [
-          "echo \"🚀 Merhaba! REBEL AI Terminal'e hoş geldin. Komutlarını Türkçe yazabilirsin.\""
+          "echo \"🚀 Merhaba! REBEL AI Terminal'e hoş geldin. Komutlarını Türkçe yazabilirsin.\"",
+          "echo \"📷 Kamera sistemden erişilebilir değil. Sistem komutlarını deneyin.\"",
+          "echo \"📋 Türkçe Komutlar: saat, ben kimim, dosyalar, konum, sistem, işlemler, disk, ağ\""
         ],
-        "confidence": 0.7999999999999999,
-        "last_tested": "2025-09-15T03:08:09.032Z"
+        "confidence": 1,
+        "last_tested": "2025-09-15T07:14:18.944Z"
       },
       "ne": {
         "works": false,
@@ -401,6 +419,14 @@
         ],
         "confidence": 0.8999999999999999,
         "last_tested": "2025-09-15T03:08:48.261Z"
+      },
+      "Ne": {
+        "works": false,
+        "variations": [
+          "Ne iş yaparsın"
+        ],
+        "confidence": 0.19999999999999998,
+        "last_tested": "2025-09-15T07:09:57.025Z"
       }
     },
     "darwin": {
@@ -524,6 +550,32 @@
       "performance_metrics": {},
       "capabilities": {},
       "last_seen": "2025-09-15T03:08:48.261Z"
+    },
+    "7deeb271": {
+      "platform": "linux",
+      "architecture": "x64",
+      "hostname": "06926d80b001",
+      "first_seen": "2025-09-15T07:09:24.054Z",
+      "command_preferences": {
+        "echo": {
+          "usage_count": 3,
+          "success_rate": 100,
+          "avg_execution_time": 39.625
+        },
+        "date": {
+          "usage_count": 1,
+          "success_rate": 100,
+          "avg_execution_time": 12
+        },
+        "Ne": {
+          "usage_count": 1,
+          "success_rate": 0,
+          "avg_execution_time": 18.5
+        }
+      },
+      "performance_metrics": {},
+      "capabilities": {},
+      "last_seen": "2025-09-15T07:14:18.944Z"
     }
   }
 }

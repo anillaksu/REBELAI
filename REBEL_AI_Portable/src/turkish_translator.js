@@ -88,6 +88,9 @@ class TurkishTranslator {
             'yapay': 'echo "🤖 Ben REBEL AI Terminal asistanıyım. Sistem komutlarında yardımcı oluyorum."',
             'yapay zeka': 'echo "🧠 REBEL AI: Türkçe komutları anlayıp İngilizce sistem komutlarına çeviriyorum."',
             'sen kimsin': 'echo "🚀 Ben REBEL AI - Dijkstra Edition! Taşınabilir AI terminal asistanınızım."',
+            'ne iş yaparsın': 'echo "💼 Ben REBEL AI Terminal asistanıyım! Türkçe komutlarınızı sistem komutlarına çeviriyorum. Örnek: \'saat\', \'dosyalar\', \'sistem\' yazabilirsiniz."',
+            'neler yapabilirsin': 'echo "⚡ Türkçe komutları anlayıp sistem komutlarına çevirebilirim: saat, dosyalar, sistem bilgisi, kullanıcı bilgisi ve daha fazlası!"',
+            'hangi komutlar': 'echo "📋 Desteklediğim komutlar: saat, ben kimim, dosyalar, konum, sistem, işlemler, disk, ağ, yardım"',
             
             // Clear/reset
             'temizle': 'clear',
