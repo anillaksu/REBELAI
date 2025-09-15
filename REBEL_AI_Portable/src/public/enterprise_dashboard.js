@@ -328,7 +328,8 @@ class EnterpriseDashboard {
 
         // Update platform info
         if (data.platform) {
-            document.getElementById('platformInfo')?.textContent = `${data.platform} ${data.architecture || ''}`;
+            const platformEl = document.getElementById('platformInfo');
+            if (platformEl) platformEl.textContent = `${data.platform} ${data.architecture || ''}`;
         }
     }
 
