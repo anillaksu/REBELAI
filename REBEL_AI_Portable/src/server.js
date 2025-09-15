@@ -281,10 +281,16 @@ class REBELAIServer {
             }
         });
 
-        // Knowledge database - requires auth
+        // Knowledge database - requires auth (Enhanced with Conversation Learning)
         this.app.get('/api/knowledge', this.requireAuth.bind(this), async (req, res) => {
             try {
                 const knowledge = await this.knowledgeManager.getKnowledge();
+                
+                // 🧠 Add Conversation Learning Stats for real-time feedback
+                if (this.conversationLearning) {
+                    knowledge.conversationLearning = this.conversationLearning.getLearningStats();
+                }
+                
                 res.json(knowledge);
             } catch (error) {
                 res.status(500).json({ error: 'Failed to get knowledge data' });

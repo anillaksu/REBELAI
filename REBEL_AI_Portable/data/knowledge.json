@@ -189,10 +189,10 @@
         "success_rate": 0
       },
       "echo": {
-        "total_executions": 11,
-        "successful_executions": 11,
+        "total_executions": 13,
+        "successful_executions": 13,
         "failure_patterns": [],
-        "last_updated": "2025-09-15T08:20:24.223Z",
+        "last_updated": "2025-09-15T08:28:43.462Z",
         "success_rate": 100
       },
       "ne": {
@@ -498,10 +498,11 @@
           "echo \"📋 Türkçe Komutlar: saat, ben kimim, dosyalar, konum, sistem, işlemler, disk, ağ\"",
           "echo \"💼 Ben REBEL AI Terminal asistanıyım! Türkçe komutlarınızı sistem komutlarına çeviriyorum. Örnek: 'saat', 'dosyalar', 'sistem' yazabilirsiniz.\"",
           "echo \"⚡ Türkçe komutları anlayıp sistem komutlarına çevirebilirim: saat, dosyalar, sistem bilgisi, kullanıcı bilgisi ve daha fazlası!\"",
-          "echo \"👋 Selam! Yardım için 'yardım' yazabilirsin.\""
+          "echo \"👋 Selam! Yardım için 'yardım' yazabilirsin.\"",
+          "echo \"🔋 Taşınabilir sistem. Pil bilgisi için: 'cat /proc/acpi/battery/BAT0/info' veya 'acpi -b'\""
         ],
         "confidence": 1,
-        "last_tested": "2025-09-15T08:20:24.224Z"
+        "last_tested": "2025-09-15T08:28:43.462Z"
       },
       "ne": {
         "works": false,
@@ -707,9 +708,9 @@
       "first_seen": "2025-09-15T07:09:24.054Z",
       "command_preferences": {
         "echo": {
-          "usage_count": 10,
+          "usage_count": 12,
           "success_rate": 100,
-          "avg_execution_time": 31.7626953125
+          "avg_execution_time": 24.940673828125
         },
         "date": {
           "usage_count": 1,
@@ -759,7 +760,7 @@
       },
       "performance_metrics": {},
       "capabilities": {},
-      "last_seen": "2025-09-15T08:20:24.224Z"
+      "last_seen": "2025-09-15T08:28:43.462Z"
     }
   }
 }
