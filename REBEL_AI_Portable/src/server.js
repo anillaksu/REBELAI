@@ -140,13 +140,18 @@ class REBELAIServer {
                 if (action) {
                     finalCommand = this.mapActionToCommand(action);
                 } else if (command) {
-                    // First, translate Turkish commands to English
-                    translation = this.turkishTranslator.translate(command);
+                    // First, translate Turkish commands to English (now async with AI support)
+                    translation = await this.turkishTranslator.translate(command);
                     finalCommand = translation.translatedCommand;
                     
                     // Log translation for debugging
                     if (translation.translationType !== 'english_passthrough') {
                         console.log(`🇹🇷 Turkish Translation: "${translation.originalCommand}" → "${translation.translatedCommand}" (${translation.translationType}, confidence: ${translation.confidence})`);
+                        
+                        // AI öğrenme bildirimi
+                        if (translation.aiGenerated) {
+                            console.log(`🧠 AI Learning: New command learned via AI analysis`);
+                        }
                     }
                 }
 
@@ -183,7 +188,10 @@ class REBELAIServer {
 
                 res.json({
                     success: allSuccess,
-                    results: results,
+                    results: results.map(result => ({
+                        ...result,
+                        translation: translation  // Türkçe çeviri bilgisini dahil et
+                    })),
                     optimized_commands: optimizedCommands,
                     timestamp: new Date().toISOString()
                 });

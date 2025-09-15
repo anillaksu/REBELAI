@@ -8,6 +8,22 @@ class TurkishTranslator {
         this.turkishCommands = this.buildTurkishCommandMap();
         this.turkishPatterns = this.buildTurkishPatterns();
         this.contextualMappings = this.buildContextualMappings();
+        
+        // AI Learning Engine'i dinamik olarak yükle
+        this.aiLearning = null;
+        this.loadAILearning();
+    }
+
+    async loadAILearning() {
+        try {
+            if (process.env.OPENAI_API_KEY) {
+                const AILearningEngine = require('./ai_learning_engine');
+                this.aiLearning = new AILearningEngine();
+                console.log('🧠 AI Learning Engine loaded');
+            }
+        } catch (error) {
+            console.log('⚠️  AI Learning Engine not available:', error.message);
+        }
     }
 
     buildTurkishCommandMap() {
@@ -77,6 +93,8 @@ class TurkishTranslator {
             'yardım': 'echo "📋 Kullanılabilir Türkçe komutlar:\\n🕐 saat - tarih ve saat\\n👤 ben kimim - kullanıcı bilgisi\\n📁 dosyalar - dosya listesi\\n📍 konum - mevcut dizin\\n💻 sistem - sistem bilgisi\\n⚙️ işlemler - çalışan programlar\\n💾 disk - disk kullanımı\\n🌐 ağ - ağ bilgisi"',
             'help': 'echo "📋 Available commands: date, whoami, ls, pwd, ps aux, df -h, free -h"',
             'komutlar': 'echo "📋 Türkçe Komutlar: saat, ben kimim, dosyalar, konum, sistem, işlemler, disk, ağ"',
+            'bana yardım et': 'echo "🆘 Size nasıl yardımcı olabilirim? Türkçe komutlar için \'yardım\' yazın."',
+            'yardım et': 'echo "🤝 Size yardım etmek için buradayım! \'komutlar\' yazarak mevcut komutları görebilirsiniz."',
             
             // Camera/multimedia (placeholder for future implementation)
             'kamera': 'echo "📷 Kamera erişimi şu anda desteklenmiyor. Sistem komutları için \'yardım\' yazın."',
@@ -151,7 +169,7 @@ class TurkishTranslator {
         };
     }
 
-    translate(turkishCommand) {
+    async translate(turkishCommand) {
         if (!turkishCommand || typeof turkishCommand !== 'string') {
             return turkishCommand;
         }
@@ -203,6 +221,30 @@ class TurkishTranslator {
             };
         }
 
+        // 🧠 AI Learning: Bilinmeyen Türkçe komut için AI'dan yardım al
+        if (this.aiLearning && this.containsTurkishCharacters(cleaned)) {
+            try {
+                console.log(`🧠 AI Learning: Analyzing unknown Turkish command: "${turkishCommand}"`);
+                const aiSuggestion = await this.aiLearning.analyzeFailedTurkishCommand(turkishCommand);
+                
+                if (aiSuggestion.isValidTranslation && aiSuggestion.confidence > 0.5) {
+                    // Yeni komutu öğren
+                    await this.aiLearning.learnNewCommand(cleaned, aiSuggestion);
+                    
+                    return {
+                        translatedCommand: aiSuggestion.translatedCommand,
+                        originalCommand: turkishCommand,
+                        translationType: 'ai_learning',
+                        confidence: aiSuggestion.confidence,
+                        suggestion: `AI önerisi: ${aiSuggestion.explanation}`,
+                        aiGenerated: true
+                    };
+                }
+            } catch (error) {
+                console.log(`🚨 AI Translation Error: ${error.message}`);
+            }
+        }
+
         // No translation found
         return {
             translatedCommand: turkishCommand,
@@ -211,6 +253,15 @@ class TurkishTranslator {
             confidence: 0.0,
             suggestion: this.generateSuggestion(cleaned)
         };
+    }
+
+    // Türkçe karakter kontrolü
+    containsTurkishCharacters(text) {
+        const turkishChars = /[çğıöşüÇĞIİÖŞÜ]/;
+        const turkishWords = ['ben', 'sen', 'bu', 'şu', 'ne', 'kim', 'neden', 'nasıl', 'nerede', 'ne zaman', 
+                             'yardım', 'komut', 'sistem', 'dosya', 'klasör', 'saat', 'tarih', 'bana', 'yap', 'et'];
+        
+        return turkishChars.test(text) || turkishWords.some(word => text.includes(word));
     }
 
     findFuzzyMatch(input) {

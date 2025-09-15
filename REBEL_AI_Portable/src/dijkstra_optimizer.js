@@ -10,6 +10,22 @@ class DijkstraOptimizer {
         this.platform = os.platform();
         this.commandGraph = this.buildCommandGraph();
         this.optimizationRules = this.loadOptimizationRules();
+        
+        // AI Learning Engine'i dinamik olarak yükle
+        this.aiLearning = null;
+        this.loadAILearning();
+    }
+
+    async loadAILearning() {
+        try {
+            if (process.env.OPENAI_API_KEY) {
+                const AILearningEngine = require('./ai_learning_engine');
+                this.aiLearning = new AILearningEngine();
+                console.log('🧠 AI-Enhanced Dijkstra Optimizer loaded');
+            }
+        } catch (error) {
+            console.log('⚠️  AI Learning not available for Dijkstra:', error.message);
+        }
     }
 
     // Build command dependency graph
