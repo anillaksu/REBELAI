@@ -622,8 +622,13 @@ class EnterpriseDashboard {
 
             if (response.ok) {
                 const knowledgeData = await response.json();
+                console.log('🧠 Knowledge API Response:', knowledgeData);
+                console.log('🧠 Learning Stats:', knowledgeData.learning_stats);
+                console.log('🧠 Data Structure:', Object.keys(knowledgeData));
                 // Use unified update method
                 this.updateKnowledgeInterface(knowledgeData);
+            } else {
+                console.error('🧠 Knowledge API Error:', response.status, response.statusText);
             }
         } catch (error) {
             console.error('Failed to load knowledge data:', error);

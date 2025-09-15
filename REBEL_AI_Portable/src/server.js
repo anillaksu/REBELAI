@@ -404,6 +404,9 @@ class REBELAIServer {
             try {
                 const knowledge = await this.knowledgeManager.getKnowledge();
                 
+                // 🧠 Add Learning Statistics for dashboard display
+                knowledge.learning_stats = this.knowledgeManager.getLearningStats();
+                
                 // 🧠 Add Conversation Learning Stats for real-time feedback
                 if (this.conversationLearning) {
                     knowledge.conversationLearning = this.conversationLearning.getLearningStats();
@@ -411,6 +414,7 @@ class REBELAIServer {
                 
                 res.json(knowledge);
             } catch (error) {
+                console.error('Knowledge API Error:', error);
                 res.status(500).json({ error: 'Failed to get knowledge data' });
             }
         });

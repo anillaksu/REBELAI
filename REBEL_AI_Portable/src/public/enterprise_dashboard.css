@@ -83,6 +83,51 @@ body {
     -moz-osx-font-smoothing: grayscale;
 }
 
+/* Light Theme Support */
+body[data-theme="light"] {
+    --bg-primary: #f8f9fa;
+    --bg-secondary: #ffffff;
+    --bg-tertiary: #e9ecef;
+    --bg-quaternary: #dee2e6;
+    --bg-card: rgba(255, 255, 255, 0.95);
+    --bg-glass: rgba(0, 123, 255, 0.1);
+    --bg-glass-strong: rgba(0, 123, 255, 0.15);
+    
+    --text-primary: #212529;
+    --text-secondary: #495057;
+    --text-muted: #6c757d;
+    --text-accent: #007bff;
+    --text-success: #28a745;
+    --text-warning: #ffc107;
+    --text-error: #dc3545;
+    
+    --cyber-blue: #007bff;
+    --cyber-blue-bright: #0056b3;
+    --cyber-blue-dark: #004085;
+    --cyber-green: #28a745;
+    --cyber-purple: #6f42c1;
+    --cyber-pink: #e83e8c;
+    --cyber-orange: #fd7e14;
+    
+    --border-color: #dee2e6;
+    --shadow-dark: 0 8px 32px rgba(0, 0, 0, 0.15);
+    --shadow-card: 0 4px 20px rgba(0, 0, 0, 0.1);
+    --glow-small: 0 0 5px rgba(0, 123, 255, 0.3);
+    --glow-medium: 0 0 15px rgba(0, 123, 255, 0.3);
+    --glow-large: 0 0 30px rgba(0, 123, 255, 0.3);
+}
+
+/* Auto theme (system preference) */
+@media (prefers-color-scheme: light) {
+    body[data-theme="auto"] {
+        --bg-primary: #f8f9fa;
+        --bg-secondary: #ffffff;
+        --text-primary: #212529;
+        --text-secondary: #495057;
+        --cyber-blue: #007bff;
+    }
+}
+
 /* Scrollbar Styling */
 ::-webkit-scrollbar {
     width: 8px;
