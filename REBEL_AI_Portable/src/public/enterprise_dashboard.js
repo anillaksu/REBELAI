@@ -384,8 +384,11 @@ class EnterpriseDashboard {
         this.commandHistory.push(command);
         this.historyIndex = this.commandHistory.length;
 
-        // Show command in terminal
+        // Show command in terminal with enhanced formatting
         this.addTerminalMessage('user', command);
+        
+        // Show AI processing status
+        this.addTerminalMessage('system', '🧠 AI Processing: Language detection & optimization...');
 
         // Clear input
         input.value = '';
@@ -404,49 +407,128 @@ class EnterpriseDashboard {
             const data = await response.json();
 
             if (response.ok) {
-                // Show results
+                // Show AI analysis first
+                if (data.analysis) {
+                    this.addTerminalMessage('info', `🎯 AI Confidence: ${data.analysis.confidence || 'N/A'}%`);
+                }
+                
+                // Show translation info with enhanced details
+                if (data.translation && data.translation.translationType !== 'english_passthrough') {
+                    this.addTerminalMessage('info', `🇹🇷 Turkish Detected: "${data.translation.originalCommand}" → "${data.translation.translatedCommand}"`);
+                    this.addTerminalMessage('info', `📊 Translation Confidence: ${data.translation.confidence || 'High'}%`);
+                }
+
+                // Show Dijkstra optimization details
+                if (data.optimized_commands && data.optimized_commands.length > 1) {
+                    this.addTerminalMessage('info', `⚡ Dijkstra Route: ${data.optimized_commands.join(' → ')}`);
+                    if (data.optimization_efficiency) {
+                        this.addTerminalMessage('info', `📈 Efficiency Gain: ${data.optimization_efficiency}%`);
+                    }
+                }
+
+                // Show learning insights
+                if (data.learning) {
+                    this.addTerminalMessage('info', `🧠 Learning Status: ${data.learning.status || 'Active'}`);
+                    if (data.learning.suggestions) {
+                        this.addTerminalMessage('info', `💡 AI Suggestion: ${data.learning.suggestions}`);
+                    }
+                }
+
+                // Show command execution results
                 data.results.forEach(result => {
                     if (result.success) {
                         this.addTerminalMessage('success', result.output);
                         
-                        // Show translation info if available
-                        if (result.translation && result.translation.translationType !== 'english_passthrough') {
-                            this.addTerminalMessage('info', `🇹🇷 Turkish: "${result.translation.originalCommand}" → "${result.translation.translatedCommand}"`);
-                        }
+                        // Update stats
+                        this.updateCommandStats(true);
+                        this.addActivityItem(`Command executed: ${command}`, '⚡');
                     } else {
                         this.addTerminalMessage('error', result.error);
+                        this.updateCommandStats(false);
+                        
+                        // Show AI error analysis if available
+                        if (result.error_analysis) {
+                            this.addTerminalMessage('info', `🔍 AI Error Analysis: ${result.error_analysis}`);
+                        }
                     }
                 });
 
-                // Show optimization info
-                if (data.optimized_commands && data.optimized_commands.length > 1) {
-                    this.addTerminalMessage('info', `⚡ Dijkstra optimized: ${data.optimized_commands.join(' → ')}`);
+                // Show performance metrics
+                if (data.execution_time) {
+                    this.addTerminalMessage('info', `⏱️ Execution Time: ${data.execution_time}ms`);
                 }
+
             } else {
                 this.addTerminalMessage('error', data.error || 'Command execution failed');
+                this.updateCommandStats(false);
             }
         } catch (error) {
             this.addTerminalMessage('error', 'Network error: ' + error.message);
+            this.updateCommandStats(false);
         }
 
-        // Scroll to bottom
+        // Scroll to bottom and focus input
         this.scrollTerminalToBottom();
+        this.focusTerminalInput();
     }
 
     async executeQuickAction(action) {
-        const actionMap = {
-            'list_files': 'ls -la',
-            'current_user': 'whoami',
-            'current_directory': 'pwd',
-            'current_date': 'date',
-            'disk_usage': 'df -h',
-            'processes': 'ps aux | head -10'
+        const enhancedActionMap = {
+            // 📁 File Operations
+            'list_files': { cmd: 'ls -la', desc: '📁 List all files with details', turkish: 'dosyalar' },
+            'list_hidden': { cmd: 'ls -la | grep "^\\."', desc: '👻 Show hidden files', turkish: 'gizli dosyalar' },
+            'file_sizes': { cmd: 'du -sh *', desc: '📊 Show file sizes', turkish: 'dosya boyutları' },
+            'recent_files': { cmd: 'find . -type f -mtime -1', desc: '🕐 Recent files (24h)', turkish: 'son dosyalar' },
+            
+            // 👤 User & System Info  
+            'current_user': { cmd: 'whoami', desc: '👤 Current user info', turkish: 'ben kimim' },
+            'current_directory': { cmd: 'pwd', desc: '📍 Current location', turkish: 'neredeyim' },
+            'current_date': { cmd: 'date', desc: '🕒 Current date/time', turkish: 'saat kaç' },
+            'system_info': { cmd: 'uname -a', desc: '💻 System information', turkish: 'sistem bilgisi' },
+            'user_groups': { cmd: 'groups', desc: '👥 User group memberships', turkish: 'gruplarım' },
+            
+            // 📊 System Monitoring
+            'disk_usage': { cmd: 'df -h', desc: '💾 Disk space usage', turkish: 'disk kullanımı' },
+            'memory_usage': { cmd: 'free -h', desc: '🧠 Memory usage', turkish: 'bellek kullanımı' },
+            'processes': { cmd: 'ps aux | head -15', desc: '⚙️ Running processes', turkish: 'çalışan işlemler' },
+            'top_processes': { cmd: 'top -bn1 | head -20', desc: '🔥 Top CPU processes', turkish: 'en çok kullanan' },
+            'system_load': { cmd: 'uptime', desc: '📈 System load & uptime', turkish: 'sistem yükü' },
+            
+            // 🌐 Network Operations
+            'network_info': { cmd: 'ifconfig | head -20', desc: '🌐 Network configuration', turkish: 'ağ bilgisi' },
+            'ping_test': { cmd: 'ping -c 4 google.com', desc: '📡 Test internet connection', turkish: 'internet testi' },
+            'network_status': { cmd: 'netstat -tuln | head -10', desc: '🔌 Network connections', turkish: 'ağ bağlantıları' },
+            
+            // 🔧 Advanced Commands
+            'command_history': { cmd: 'history | tail -10', desc: '📜 Recent commands', turkish: 'son komutlar' },
+            'environment_vars': { cmd: 'env | head -10', desc: '🌍 Environment variables', turkish: 'çevre değişkenleri' },
+            'running_services': { cmd: 'systemctl --type=service --state=running | head -10', desc: '🏃 Running services', turkish: 'çalışan servisler' },
+            
+            // 🇹🇷 Turkish Demo Commands
+            'turkish_demo_time': { cmd: 'saat kaç', desc: '🇹🇷 Turkish: What time is it?', turkish: null },
+            'turkish_demo_files': { cmd: 'dosyalar', desc: '🇹🇷 Turkish: Show files', turkish: null },
+            'turkish_demo_user': { cmd: 'ben kimim', desc: '🇹🇷 Turkish: Who am I?', turkish: null },
+            'turkish_demo_location': { cmd: 'neredeyim', desc: '🇹🇷 Turkish: Where am I?', turkish: null },
+            
+            // 🧹 Utility Commands
+            'clear_screen': { cmd: 'clear', desc: '🧹 Clear terminal screen', turkish: 'temizle' },
+            'disk_space_detailed': { cmd: 'du -h --max-depth=1 | sort -hr', desc: '📊 Detailed disk usage', turkish: 'detaylı disk' },
+            'system_resources': { cmd: 'ps aux --sort=-%cpu | head -10', desc: '💻 Top resource usage', turkish: 'kaynak kullanımı' }
         };
 
-        const command = actionMap[action];
-        if (command) {
-            document.getElementById('commandInput').value = command;
+        const actionInfo = enhancedActionMap[action];
+        if (actionInfo) {
+            // Show what command will be executed with enhanced info
+            this.addTerminalMessage('info', `🎯 Quick Action: ${actionInfo.desc}`);
+            if (actionInfo.turkish) {
+                this.addTerminalMessage('info', `🇹🇷 Turkish equivalent: "${actionInfo.turkish}"`);
+            }
+            
+            // Set command and execute
+            document.getElementById('commandInput').value = actionInfo.cmd;
             await this.executeCommand();
+        } else {
+            this.addTerminalMessage('error', `Unknown quick action: ${action}`);
         }
     }
 
