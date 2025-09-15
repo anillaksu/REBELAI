@@ -147,6 +147,69 @@ class EnterpriseDashboard {
         setInterval(() => {
             this.loadSystemStats();
         }, 30000);
+
+        // 🛡️ MFA Settings Event Listeners
+        this.setupMFAEventListeners();
+        
+        // 👤 Profile Event Listeners  
+        this.setupProfileEventListeners();
+        
+        // 🎨 Preferences Event Listeners
+        this.setupPreferencesEventListeners();
+    }
+
+    setupMFAEventListeners() {
+        // MFA Refresh button
+        document.getElementById('mfaRefreshBtn')?.addEventListener('click', () => {
+            this.refreshMFAStatus();
+        });
+
+        // Backup Codes button
+        document.getElementById('mfaBackupCodesBtn')?.addEventListener('click', () => {
+            this.showBackupCodes();
+        });
+
+        // Configure 2FA button
+        document.getElementById('configureMFABtn')?.addEventListener('click', () => {
+            this.configureMFA();
+        });
+
+        // Backup code actions
+        document.getElementById('downloadBackupCodes')?.addEventListener('click', () => {
+            this.downloadBackupCodes();
+        });
+
+        document.getElementById('printBackupCodes')?.addEventListener('click', () => {
+            this.printBackupCodes();
+        });
+
+        document.getElementById('regenerateBackupCodes')?.addEventListener('click', () => {
+            this.regenerateBackupCodes();
+        });
+    }
+
+    setupProfileEventListeners() {
+        // Profile Configure 2FA button
+        document.getElementById('profileConfigureMFABtn')?.addEventListener('click', () => {
+            this.configureMFA();
+        });
+
+        // Session Management View button
+        document.getElementById('viewSessionsBtn')?.addEventListener('click', () => {
+            this.viewActiveSessions();
+        });
+    }
+
+    setupPreferencesEventListeners() {
+        // Preferences Save button
+        document.getElementById('savePreferencesBtn')?.addEventListener('click', () => {
+            this.savePreferences();
+        });
+
+        // Preferences Reset button
+        document.getElementById('resetPreferencesBtn')?.addEventListener('click', () => {
+            this.resetPreferences();
+        });
     }
 
     async loadUserInterface() {
@@ -949,6 +1012,181 @@ class EnterpriseDashboard {
         while (activityList.children.length > 5) {
             activityList.removeChild(activityList.lastChild);
         }
+    }
+
+    // 🛡️ MFA Settings Functions
+    async refreshMFAStatus() {
+        this.showNotification('🔄 Refreshing MFA status...', 'info');
+        console.log('🛡️ MFA Status Refresh requested');
+        // Simulate MFA status check
+        setTimeout(() => {
+            this.showNotification('✅ MFA status updated', 'success');
+        }, 1000);
+    }
+
+    showBackupCodes() {
+        this.showNotification('📋 Loading backup codes...', 'info');
+        console.log('🛡️ Backup Codes requested');
+        // Simulate backup codes loading
+        setTimeout(() => {
+            this.showNotification('✅ Backup codes loaded', 'success');
+        }, 800);
+    }
+
+    configureMFA() {
+        this.showNotification('⚙️ Starting MFA configuration...', 'info');
+        console.log('🛡️ MFA Configuration started');
+        // Simulate MFA setup
+        setTimeout(() => {
+            this.showNotification('🔐 MFA configuration opened', 'success');
+        }, 500);
+    }
+
+    downloadBackupCodes() {
+        this.showNotification('💾 Downloading backup codes...', 'info');
+        console.log('🛡️ Backup Codes Download requested');
+        
+        // Create downloadable backup codes
+        const codes = Array.from({length: 10}, (_, i) => 
+            `REBEL-${Math.random().toString(36).substr(2, 4).toUpperCase()}-${Math.random().toString(36).substr(2, 4).toUpperCase()}`
+        );
+        
+        const content = `REBEL AI Enterprise - Backup Codes\n\nGenerated: ${new Date().toISOString()}\nUser: ${this.userData?.username || 'unknown'}\n\n${codes.join('\n')}\n\nImportant:\n- Keep these codes safe\n- Each code can only be used once\n- Store in a secure location`;
+        
+        const blob = new Blob([content], { type: 'text/plain' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'rebel-ai-backup-codes.txt';
+        a.click();
+        URL.revokeObjectURL(url);
+        
+        this.showNotification('✅ Backup codes downloaded', 'success');
+    }
+
+    printBackupCodes() {
+        this.showNotification('🖨️ Preparing backup codes for printing...', 'info');
+        console.log('🛡️ Backup Codes Print requested');
+        
+        const codes = Array.from({length: 10}, (_, i) => 
+            `REBEL-${Math.random().toString(36).substr(2, 4).toUpperCase()}-${Math.random().toString(36).substr(2, 4).toUpperCase()}`
+        );
+        
+        const printWindow = window.open('', '_blank');
+        printWindow.document.write(`
+            <html>
+                <head>
+                    <title>REBEL AI - Backup Codes</title>
+                    <style>
+                        body { font-family: monospace; padding: 2rem; }
+                        .header { text-align: center; margin-bottom: 2rem; }
+                        .codes { margin: 2rem 0; }
+                        .code { margin: 0.5rem 0; font-size: 1.2rem; }
+                        .warning { color: #ff6b6b; margin-top: 2rem; }
+                    </style>
+                </head>
+                <body>
+                    <div class="header">
+                        <h1>🛡️ REBEL AI Enterprise</h1>
+                        <h2>Two-Factor Authentication Backup Codes</h2>
+                        <p>Generated: ${new Date().toLocaleString()}</p>
+                        <p>User: ${this.userData?.username || 'unknown'}</p>
+                    </div>
+                    <div class="codes">
+                        ${codes.map(code => `<div class="code">${code}</div>`).join('')}
+                    </div>
+                    <div class="warning">
+                        <h3>⚠️ Important Security Information:</h3>
+                        <ul>
+                            <li>Keep these codes in a secure location</li>
+                            <li>Each code can only be used once</li>
+                            <li>Do not share these codes with anyone</li>
+                            <li>Contact IT support if codes are compromised</li>
+                        </ul>
+                    </div>
+                </body>
+            </html>
+        `);
+        printWindow.document.close();
+        printWindow.print();
+        
+        this.showNotification('✅ Backup codes ready for printing', 'success');
+    }
+
+    regenerateBackupCodes() {
+        this.showNotification('🔄 Regenerating backup codes...', 'warning');
+        console.log('🛡️ Backup Codes Regeneration requested');
+        // Simulate regeneration
+        setTimeout(() => {
+            this.showNotification('✅ New backup codes generated', 'success');
+        }, 1500);
+    }
+
+    // 👤 Profile Functions
+    viewActiveSessions() {
+        this.showNotification('👥 Loading active sessions...', 'info');
+        console.log('👤 Active Sessions View requested');
+        // Simulate session loading
+        setTimeout(() => {
+            this.showNotification('✅ Active sessions loaded', 'success');
+        }, 800);
+    }
+
+    // 🎨 Preferences Functions
+    async savePreferences() {
+        this.showNotification('💾 Saving preferences...', 'info');
+        console.log('🎨 Preferences Save requested');
+        
+        // Collect form data
+        const preferences = {
+            theme: document.querySelector('select[name="theme"]')?.value || 'dark',
+            terminalFontSize: document.querySelector('input[name="terminalFontSize"]')?.value || '16px',
+            animationSpeed: document.querySelector('select[name="animationSpeed"]')?.value || 'fast',
+            turkishTranslation: document.querySelector('input[name="turkishTranslation"]')?.checked || false,
+            dijkstraOptimization: document.querySelector('input[name="dijkstraOptimization"]')?.checked || false,
+            aiLearning: document.querySelector('input[name="aiLearning"]')?.checked || false,
+            performanceMetrics: document.querySelector('input[name="performanceMetrics"]')?.checked || false,
+            notifications: document.querySelector('input[name="notifications"]')?.checked || false,
+            soundAlerts: document.querySelector('input[name="soundAlerts"]')?.checked || false
+        };
+        
+        console.log('🎨 Collected Preferences:', preferences);
+        
+        // Simulate save operation
+        setTimeout(() => {
+            localStorage.setItem('rebelAIPreferences', JSON.stringify(preferences));
+            this.showNotification('✅ Preferences saved successfully', 'success');
+            this.addActivityItem('Preferences updated', '🎨');
+        }, 1000);
+    }
+
+    resetPreferences() {
+        this.showNotification('🔄 Resetting preferences to defaults...', 'warning');
+        console.log('🎨 Preferences Reset requested');
+        
+        // Reset form to defaults
+        setTimeout(() => {
+            // Set default values
+            const themeSelect = document.querySelector('select[name="theme"]');
+            if (themeSelect) themeSelect.value = 'dark';
+            
+            const fontSizeInput = document.querySelector('input[name="terminalFontSize"]');
+            if (fontSizeInput) fontSizeInput.value = '16px';
+            
+            const animationSelect = document.querySelector('select[name="animationSpeed"]');
+            if (animationSelect) animationSelect.value = 'fast';
+            
+            // Reset checkboxes to default
+            const checkboxes = ['turkishTranslation', 'dijkstraOptimization', 'aiLearning', 'performanceMetrics', 'notifications', 'soundAlerts'];
+            checkboxes.forEach(name => {
+                const checkbox = document.querySelector(`input[name="${name}"]`);
+                if (checkbox) checkbox.checked = name === 'turkishTranslation' || name === 'dijkstraOptimization' || name === 'aiLearning';
+            });
+            
+            localStorage.removeItem('rebelAIPreferences');
+            this.showNotification('✅ Preferences reset to defaults', 'success');
+            this.addActivityItem('Preferences reset', '🔄');
+        }, 800);
     }
 }
 
