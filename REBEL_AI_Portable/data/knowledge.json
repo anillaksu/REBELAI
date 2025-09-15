@@ -2,10 +2,24 @@
   "command_success_rates": {
     "linux": {
       "ls": {
+        "total_executions": 2,
+        "successful_executions": 2,
+        "failure_patterns": [],
+        "last_updated": "2025-09-15T01:45:08.518Z",
+        "success_rate": 100
+      },
+      "whoami": {
         "total_executions": 1,
         "successful_executions": 1,
         "failure_patterns": [],
-        "last_updated": "2025-09-14T23:11:44.055Z",
+        "last_updated": "2025-09-15T01:45:12.332Z",
+        "success_rate": 100
+      },
+      "date": {
+        "total_executions": 1,
+        "successful_executions": 1,
+        "failure_patterns": [],
+        "last_updated": "2025-09-15T01:45:15.744Z",
         "success_rate": 100
       }
     }
@@ -60,8 +74,24 @@
         "variations": [
           "ls -la"
         ],
+        "confidence": 0.8999999999999999,
+        "last_tested": "2025-09-15T01:45:08.518Z"
+      },
+      "whoami": {
+        "works": true,
+        "variations": [
+          "whoami"
+        ],
         "confidence": 0.7999999999999999,
-        "last_tested": "2025-09-14T23:11:44.055Z"
+        "last_tested": "2025-09-15T01:45:12.332Z"
+      },
+      "date": {
+        "works": true,
+        "variations": [
+          "date"
+        ],
+        "confidence": 0.7999999999999999,
+        "last_tested": "2025-09-15T01:45:15.744Z"
       }
     },
     "darwin": {
@@ -95,14 +125,24 @@
       "first_seen": "2025-09-14T23:11:44.055Z",
       "command_preferences": {
         "ls": {
+          "usage_count": 2,
+          "success_rate": 100,
+          "avg_execution_time": 20.25
+        },
+        "whoami": {
           "usage_count": 1,
           "success_rate": 100,
-          "avg_execution_time": 15.5
+          "avg_execution_time": 15
+        },
+        "date": {
+          "usage_count": 1,
+          "success_rate": 100,
+          "avg_execution_time": 17
         }
       },
       "performance_metrics": {},
       "capabilities": {},
-      "last_seen": "2025-09-14T23:11:44.055Z"
+      "last_seen": "2025-09-15T01:45:15.744Z"
     }
   }
 }
