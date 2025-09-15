@@ -17,6 +17,10 @@ const DijkstraOptimizer = require('./dijkstra_optimizer');
 const KnowledgeManager = require('./knowledge_manager');
 const TurkishTranslator = require('./turkish_translator');
 
+// 🔐 Enterprise Authentication System
+const AuthManager = require('./auth_manager');
+const AuthRoutes = require('./auth_routes');
+
 class REBELAIServer {
     constructor() {
         this.app = express();
@@ -38,6 +42,13 @@ class REBELAIServer {
         this.conversationLearning = null;
         this.loadConversationLearning();
         
+        // 🔐 Enterprise Authentication System
+        this.authManager = new AuthManager();
+        this.authRoutes = new AuthRoutes(this.authManager);
+        
+        // 🔒 SECURITY: Configure legacy token validator with server's session token
+        this.authManager.setLegacyTokenValidator(this.sessionToken);
+        
         this.setupMiddleware();
         this.setupRoutes();
         this.setupStaticFiles();
@@ -54,6 +65,9 @@ class REBELAIServer {
         
         this.app.use(bodyParser.json({ limit: '1mb' }));
         this.app.use(bodyParser.urlencoded({ extended: true, limit: '1mb' }));
+        
+        // 🔐 Cookie parser for session management
+        this.app.use(require('cookie-parser')());
         
         // Security headers
         this.app.use((req, res, next) => {
@@ -102,6 +116,9 @@ class REBELAIServer {
     }
 
     setupRoutes() {
+        // 🔐 Mount Enterprise Authentication Routes
+        this.app.use('/api/auth', this.authRoutes.getRouter());
+        
         // Main terminal page with tokens
         this.app.get('/', (req, res) => {
             let htmlContent = fs.readFileSync(path.join(__dirname, 'public', 'index.html'), 'utf8');
@@ -128,8 +145,8 @@ class REBELAIServer {
             });
         });
 
-        // Execute command - requires auth and CSRF
-        this.app.post('/api/execute', this.requireAuth.bind(this), this.requireCSRF.bind(this), async (req, res) => {
+        // Execute command - Enterprise auth with role-based permissions
+        this.app.post('/api/execute', this.authManager.authorize(['execute']), async (req, res) => {
             try {
                 const { command, action } = req.body;
                 
@@ -230,8 +247,8 @@ class REBELAIServer {
             }
         });
 
-        // Hardware information - requires auth
-        this.app.get('/api/hardware', this.requireAuth.bind(this), async (req, res) => {
+        // Hardware information - requires OWNER/ROOT privileges
+        this.app.get('/api/hardware', this.authManager.authorize(['hardware']), async (req, res) => {
             try {
                 const [cpu, mem, disks, graphics, network] = await Promise.all([
                     si.cpu(),
@@ -281,8 +298,8 @@ class REBELAIServer {
             }
         });
 
-        // Knowledge database - requires auth (Enhanced with Conversation Learning)
-        this.app.get('/api/knowledge', this.requireAuth.bind(this), async (req, res) => {
+        // Knowledge database - requires operator access (Enhanced with Conversation Learning)
+        this.app.get('/api/knowledge', this.authManager.authorize(['knowledge']), async (req, res) => {
             try {
                 const knowledge = await this.knowledgeManager.getKnowledge();
                 
@@ -297,8 +314,8 @@ class REBELAIServer {
             }
         });
 
-        // System status - requires auth
-        this.app.get('/api/status', this.requireAuth.bind(this), (req, res) => {
+        // System status - requires basic access
+        this.app.get('/api/status', this.authManager.authorize(['system:read']), (req, res) => {
             res.json({
                 status: 'running',
                 platform: os.platform(),

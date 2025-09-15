@@ -235,19 +235,19 @@
         "success_rate": 0
       },
       "Bana": {
-        "total_executions": 1,
+        "total_executions": 2,
         "successful_executions": 0,
         "failure_patterns": [
           {
             "pattern": "command_not_found",
             "description": "Command does not exist on this platform",
             "suggested_action": "find_alternative",
-            "count": 1,
+            "count": 2,
             "first_seen": "2025-09-15T07:22:27.030Z",
-            "last_seen": "2025-09-15T07:22:27.030Z"
+            "last_seen": "2025-09-15T08:42:56.946Z"
           }
         ],
-        "last_updated": "2025-09-15T07:22:27.030Z",
+        "last_updated": "2025-09-15T08:42:56.946Z",
         "success_rate": 0
       },
       "man": {
@@ -531,10 +531,11 @@
       "Bana": {
         "works": false,
         "variations": [
-          "Bana yardım et"
+          "Bana yardım et",
+          "Bana web sitesi yap"
         ],
-        "confidence": 0.19999999999999998,
-        "last_tested": "2025-09-15T07:22:27.030Z"
+        "confidence": 0.09999999999999998,
+        "last_tested": "2025-09-15T08:42:56.946Z"
       },
       "man": {
         "works": false,
@@ -723,9 +724,9 @@
           "avg_execution_time": 18.5
         },
         "Bana": {
-          "usage_count": 1,
+          "usage_count": 2,
           "success_rate": 0,
-          "avg_execution_time": 12
+          "avg_execution_time": 19
         },
         "man": {
           "usage_count": 3,
@@ -760,7 +761,7 @@
       },
       "performance_metrics": {},
       "capabilities": {},
-      "last_seen": "2025-09-15T08:28:43.462Z"
+      "last_seen": "2025-09-15T08:42:56.946Z"
     }
   }
 }
