@@ -126,7 +126,7 @@ class AuthRoutes {
                 const schema = z.object({
                     username: z.string().min(1),
                     password: z.string().min(1),
-                    mfaToken: z.string().optional(),
+                    mfaToken: z.string().nullable().optional(),
                     rememberMe: z.boolean().optional()
                 });
 
