@@ -1,0 +1,213 @@
+🧠 Knowledge AI
+🔄 Refresh
+📄 Export
+🗑️ Clear
+📊 Learning Statistics
+Active Learning
+🎯
+--
+Commands Learned
+📈
+--
+Avg Success Rate
+🌐
+--
+Platforms
+🔄
+--
+Fallback Routes
+⚡ Command Knowledge
+
+All Platforms
+Command	Success Rate	Executions	Confidence	Last Updated	Actions
+ls linux
+89%
+9	
+50%
+15.09.2025	👁️
+whoami linux
+100%
+2	
+50%
+15.09.2025	👁️
+date linux
+100%
+7	
+50%
+15.09.2025	👁️
+saat linux
+0%
+3	
+50%
+15.09.2025	👁️
+ben linux
+0%
+1	
+50%
+15.09.2025	👁️
+yapay linux
+0%
+1	
+50%
+15.09.2025	👁️
+[19:49, linux
+0%
+1	
+50%
+15.09.2025	👁️
+hangi linux
+0%
+1	
+50%
+15.09.2025	👁️
+top linux
+0%
+2	
+50%
+15.09.2025	👁️
+systeminfo linux
+0%
+1	
+50%
+15.09.2025	👁️
+merhaba linux
+0%
+2	
+50%
+15.09.2025	👁️
+pwd linux
+100%
+3	
+50%
+15.09.2025	👁️
+df linux
+100%
+2	
+50%
+15.09.2025	👁️
+kamerayı linux
+0%
+1	
+50%
+15.09.2025	👁️
+echo linux
+100%
+16	
+50%
+15.09.2025	👁️
+ne linux
+0%
+1	
+50%
+15.09.2025	👁️
+ps linux
+100%
+2	
+50%
+15.09.2025	👁️
+Ne linux
+0%
+1	
+50%
+15.09.2025	👁️
+Bana linux
+0%
+2	
+50%
+15.09.2025	👁️
+man linux
+0%
+3	
+50%
+15.09.2025	👁️
+Github linux
+0%
+1	
+50%
+15.09.2025	👁️
+Bu linux
+0%
+1	
+50%
+15.09.2025	👁️
+Web linux
+0%
+1	
+50%
+15.09.2025	👁️
+Sistem linux
+0%
+1	
+50%
+15.09.2025	👁️
+hi linux
+0%
+1	
+50%
+15.09.2025	👁️
+sistem linux
+0%
+1	
+50%
+15.09.2025	👁️
+ifconfig linux
+0%
+2	
+50%
+15.09.2025	👁️
+du linux
+100%
+2	
+50%
+15.09.2025	👁️
+uptime linux
+100%
+1	
+50%
+15.09.2025	👁️
+ping linux
+0%
+1	
+50%
+15.09.2025	👁️
+history linux
+0%
+1	
+50%
+15.09.2025	👁️
+groups linux
+100%
+1	
+50%
+15.09.2025	👁️
+env linux
+0%
+1	
+50%
+15.09.2025	👁️
+systemctl linux
+0%
+2	
+50%
+15.09.2025	👁️
+clear linux
+100%
+1	
+50%
+15.09.2025	👁️
+💻 Device Profiles
+🖥️
+Current Device
+Loading...
+Current
+Platform: --
+Architecture: --
+Commands Used: --
+💡 AI Recommendations
+💭
+No recommendations yet
+Execute more commands to get AI recommendations
+0%
+📁 Knowledge Management
+💾 Export All Knowledge 💽 Create Backup
+📂 Import Knowledge 🗑️ Reset All

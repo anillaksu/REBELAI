@@ -593,6 +593,28 @@ class REBELAIServer {
                 res.status(500).json({ error: 'Failed to import learning data' });
             }
         });
+
+        // 🗑️ Reset AI learning data - CRITICAL MISSING ENDPOINT
+        this.app.post('/api/ai/reset-learning', this.authManager.authorize(['system:write']), async (req, res) => {
+            try {
+                const { confirm } = req.body;
+                if (!confirm) {
+                    return res.status(400).json({ error: 'Confirmation required' });
+                }
+                
+                // Reset AI learning data
+                this.aiCommandIntelligence.resetLearningData();
+                
+                res.json({ 
+                    success: true, 
+                    message: 'All learning data has been reset',
+                    timestamp: new Date().toISOString()
+                });
+            } catch (error) {
+                console.error('AI reset learning error:', error);
+                res.status(500).json({ error: 'Failed to reset learning data' });
+            }
+        });
     }
 
     generateBackupCodes() {

@@ -583,6 +583,25 @@ class AICommandIntelligence {
             this.contextAwareness = { ...this.contextAwareness, ...data.contextAwareness };
         }
     }
+
+    // Reset all learning data - CRITICAL MISSING METHOD
+    resetLearningData() {
+        // Clear all learned patterns
+        this.commandPatterns.clear();
+        
+        // Clear user history
+        this.userHistory = [];
+        
+        // Reset context awareness to defaults
+        this.contextAwareness = {
+            currentDirectory: '/',
+            recentFiles: [],
+            systemInfo: {},
+            installedPackages: []
+        };
+        
+        console.log('🗑️ AI Learning data has been reset to default state');
+    }
 }
 
 module.exports = AICommandIntelligence;

@@ -196,7 +196,14 @@ class EnterpriseDashboard {
             this.exportKnowledgeData();
         });
 
+        // Clear/Reset Knowledge - support multiple IDs for HTML alignment
         document.getElementById('clearKnowledge')?.addEventListener('click', () => {
+            this.clearKnowledgeData();
+        });
+        document.getElementById('resetAll')?.addEventListener('click', () => {
+            this.clearKnowledgeData();
+        });
+        document.getElementById('resetKnowledge')?.addEventListener('click', () => {
             this.clearKnowledgeData();
         });
 
@@ -578,12 +585,15 @@ class EnterpriseDashboard {
         try {
             const response = await fetch('/api/knowledge', {
                 headers: {
-                    'X-Auth-Token': window.REBEL_SESSION_TOKEN
-                }
+                    'Authorization': `Bearer ${this.authToken}`,
+                    'Content-Type': 'application/json'
+                },
+                credentials: 'include'
             });
 
             if (response.ok) {
                 const knowledgeData = await response.json();
+                // Use unified update method
                 this.updateKnowledgeInterface(knowledgeData);
             }
         } catch (error) {
@@ -601,17 +611,24 @@ class EnterpriseDashboard {
             document.getElementById('fallbackRoutes').textContent = stats.fallback_routes || 0;
         }
 
-        // Update device profile
-        if (data.device_profile) {
-            const device = data.device_profile;
-            document.getElementById('currentDeviceName').textContent = device.hostname || 'Unknown Device';
-            document.getElementById('currentDeviceId').textContent = data.device_id || 'N/A';
-            document.getElementById('devicePlatform').textContent = device.platform || 'Unknown';
-            document.getElementById('deviceArch').textContent = device.architecture || 'Unknown';
-            
-            const commandCount = device.command_preferences ? Object.keys(device.command_preferences).length : 0;
-            document.getElementById('deviceCommands').textContent = commandCount;
-        }
+        // Update device profile with robust fallbacks
+        const deviceProfile = data.device_profile || {};
+        const deviceElements = {
+            'currentDeviceName': deviceProfile.hostname || deviceProfile.name || 'REBEL AI System',
+            'currentDeviceId': data.device_id || deviceProfile.device_id || 'rebel-001',
+            'devicePlatform': deviceProfile.platform || deviceProfile.os || 'linux',
+            'deviceArch': deviceProfile.architecture || deviceProfile.arch || 'x64',
+            'deviceCommands': deviceProfile.command_preferences ? 
+                Object.keys(deviceProfile.command_preferences).length : 
+                (data.learning_stats?.total_commands_learned || 0)
+        };
+        
+        Object.entries(deviceElements).forEach(([id, value]) => {
+            const element = document.getElementById(id);
+            if (element) {
+                element.textContent = value;
+            }
+        });
 
         // Update command knowledge table
         this.updateCommandKnowledgeTable(data.command_success_rates);
@@ -636,7 +653,10 @@ class EnterpriseDashboard {
                 
                 const successRate = Math.round(stats.success_rate || 0);
                 const confidence = Math.round((stats.confidence || 0.5) * 100);
-                const lastUpdated = new Date(stats.last_updated).toLocaleDateString();
+                // Safely parse last_updated to avoid "Invalid Date"
+                const lastUpdated = stats.last_updated ? 
+                    (new Date(stats.last_updated).toLocaleDateString() !== 'Invalid Date' ? 
+                        new Date(stats.last_updated).toLocaleDateString() : '—') : '—';
 
                 row.innerHTML = `
                     <td>
@@ -2149,13 +2169,16 @@ class EnterpriseDashboard {
             // Fetch knowledge data from API
             const response = await fetch('/api/knowledge', {
                 headers: {
-                    'Authorization': `Bearer ${window.REBEL_SESSION_TOKEN}`
-                }
+                    'Authorization': `Bearer ${this.authToken}`,
+                    'Content-Type': 'application/json'
+                },
+                credentials: 'include'
             });
 
             if (response.ok) {
                 const knowledgeData = await response.json();
-                this.updateKnowledgeDisplay(knowledgeData);
+                // Use unified interface update method
+                this.updateKnowledgeInterface(knowledgeData);
                 this.showNotification('Knowledge database refreshed', 'success');
                 this.addActivityItem('Knowledge data refreshed', '🧠');
             } else {
@@ -2167,31 +2190,7 @@ class EnterpriseDashboard {
         }
     }
 
-    updateKnowledgeDisplay(knowledgeData) {
-        // Update learning statistics
-        const stats = [
-            { id: 'commandCount', value: knowledgeData.totalCommands || 0, label: 'Commands Learned' },
-            { id: 'successRate', value: knowledgeData.successRate || 0, label: 'Success Rate', suffix: '%' },
-            { id: 'optimizationCount', value: knowledgeData.optimizations || 0, label: 'Optimizations' },
-            { id: 'conversationCount', value: knowledgeData.conversations || 0, label: 'Conversations' }
-        ];
-
-        stats.forEach(stat => {
-            const element = document.getElementById(stat.id);
-            if (element) {
-                const value = stat.suffix ? `${stat.value}${stat.suffix}` : stat.value;
-                element.textContent = value;
-            }
-        });
-
-        // Update patterns section
-        const patternsContainer = document.getElementById('learnedPatterns');
-        if (patternsContainer && knowledgeData.patterns) {
-            patternsContainer.innerHTML = knowledgeData.patterns.map(pattern => 
-                `<div class="pattern-item">${pattern}</div>`
-            ).join('');
-        }
-    }
+    // Note: updateKnowledgeDisplay removed - using unified updateKnowledgeInterface approach
 
     exportKnowledgeData() {
         this.showNotification('Exporting knowledge database...', 'info');
@@ -2225,23 +2224,75 @@ class EnterpriseDashboard {
         this.addActivityItem('Knowledge database exported', '📄');
     }
 
-    clearKnowledgeData() {
+    async clearKnowledgeData() {
         if (confirm('Are you sure you want to clear all knowledge data? This cannot be undone.')) {
-            // Reset display values
-            const elements = ['commandCount', 'successRate', 'optimizationCount', 'conversationCount'];
-            elements.forEach(id => {
-                const element = document.getElementById(id);
-                if (element) element.textContent = '0';
-            });
+            try {
+                this.showNotification('Clearing knowledge database...', 'info');
+                
+                // Make API call to clear server-side data
+                const response = await fetch('/api/ai/reset-learning', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${this.authToken}`,
+                        'Content-Type': 'application/json'
+                    },
+                    credentials: 'include',
+                    body: JSON.stringify({ confirm: true })
+                });
 
-            // Clear patterns
-            const patternsContainer = document.getElementById('learnedPatterns');
-            if (patternsContainer) {
-                patternsContainer.innerHTML = '<div class="pattern-item">No patterns learned yet</div>';
+                if (response.ok) {
+                    // Reset display values after successful server reset
+                    const elements = [
+                        'totalCommandsLearned', 'avgSuccessRate', 'platformsLearned', 
+                        'fallbackRoutes', 'currentDeviceName', 'currentDeviceId',
+                        'devicePlatform', 'deviceArch', 'deviceCommands'
+                    ];
+                    
+                    elements.forEach(id => {
+                        const element = document.getElementById(id);
+                        if (element) {
+                            if (id.includes('Success') || id.includes('Rate')) {
+                                element.textContent = '0%';
+                            } else if (id.includes('Device') && !id.includes('Commands')) {
+                                element.textContent = '--';
+                            } else {
+                                element.textContent = '0';
+                            }
+                        }
+                    });
+
+                    // Clear command knowledge table
+                    const tableBody = document.getElementById('commandKnowledgeBody');
+                    if (tableBody) {
+                        tableBody.innerHTML = '<tr><td colspan="6" class="no-data">No command knowledge available yet</td></tr>';
+                    }
+
+                    // Clear recommendations
+                    const recommendations = document.getElementById('recommendationsList');
+                    if (recommendations) {
+                        recommendations.innerHTML = `
+                            <div class="no-recommendations">
+                                <span class="no-rec-icon">💭</span>
+                                <div class="no-rec-text">No recommendations yet</div>
+                                <div class="no-rec-subtitle">Execute more commands to get AI recommendations</div>
+                            </div>
+                        `;
+                    }
+
+                    this.showNotification('Knowledge database cleared successfully', 'success');
+                    this.addActivityItem('Knowledge database cleared', '🗑️');
+                    
+                    // Refresh data from server to confirm reset
+                    setTimeout(() => {
+                        this.refreshKnowledgeData();
+                    }, 1000);
+                } else {
+                    throw new Error('Failed to clear knowledge data');
+                }
+            } catch (error) {
+                console.error('Clear knowledge error:', error);
+                this.showNotification('Failed to clear knowledge data', 'error');
             }
-
-            this.showNotification('Knowledge database cleared', 'warning');
-            this.addActivityItem('Knowledge database cleared', '🗑️');
         }
     }
 
