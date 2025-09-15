@@ -2,11 +2,20 @@
   "command_success_rates": {
     "linux": {
       "ls": {
-        "total_executions": 8,
+        "total_executions": 9,
         "successful_executions": 8,
-        "failure_patterns": [],
-        "last_updated": "2025-09-15T10:22:52.669Z",
-        "success_rate": 100
+        "failure_patterns": [
+          {
+            "pattern": "unknown_error",
+            "description": "Unrecognized error pattern",
+            "suggested_action": "manual_review",
+            "count": 2,
+            "first_seen": "2025-09-15T10:45:46.218Z",
+            "last_seen": "2025-09-15T10:45:46.218Z"
+          }
+        ],
+        "last_updated": "2025-09-15T10:45:46.218Z",
+        "success_rate": 88.88888888888889
       },
       "whoami": {
         "total_executions": 2,
@@ -16,10 +25,10 @@
         "success_rate": 100
       },
       "date": {
-        "total_executions": 6,
-        "successful_executions": 6,
+        "total_executions": 7,
+        "successful_executions": 7,
         "failure_patterns": [],
-        "last_updated": "2025-09-15T10:21:55.647Z",
+        "last_updated": "2025-09-15T10:38:51.342Z",
         "success_rate": 100
       },
       "saat": {
@@ -111,19 +120,19 @@
         "success_rate": 0
       },
       "top": {
-        "total_executions": 1,
+        "total_executions": 2,
         "successful_executions": 0,
         "failure_patterns": [
           {
             "pattern": "unknown_error",
             "description": "Unrecognized error pattern",
             "suggested_action": "manual_review",
-            "count": 1,
+            "count": 2,
             "first_seen": "2025-09-15T02:01:28.129Z",
-            "last_seen": "2025-09-15T02:01:28.129Z"
+            "last_seen": "2025-09-15T10:42:27.294Z"
           }
         ],
-        "last_updated": "2025-09-15T02:01:28.129Z",
+        "last_updated": "2025-09-15T10:42:27.294Z",
         "success_rate": 0
       },
       "systeminfo": {
@@ -159,10 +168,10 @@
         "success_rate": 0
       },
       "pwd": {
-        "total_executions": 2,
-        "successful_executions": 2,
+        "total_executions": 3,
+        "successful_executions": 3,
         "failure_patterns": [],
-        "last_updated": "2025-09-15T10:24:04.548Z",
+        "last_updated": "2025-09-15T10:41:32.134Z",
         "success_rate": 100
       },
       "df": {
@@ -189,10 +198,10 @@
         "success_rate": 0
       },
       "echo": {
-        "total_executions": 15,
-        "successful_executions": 15,
+        "total_executions": 16,
+        "successful_executions": 16,
         "failure_patterns": [],
-        "last_updated": "2025-09-15T10:34:39.674Z",
+        "last_updated": "2025-09-15T10:39:44.534Z",
         "success_rate": 100
       },
       "ne": {
@@ -345,6 +354,76 @@
         ],
         "last_updated": "2025-09-15T10:21:21.134Z",
         "success_rate": 0
+      },
+      "sistem": {
+        "total_executions": 1,
+        "successful_executions": 0,
+        "failure_patterns": [
+          {
+            "pattern": "command_not_found",
+            "description": "Command does not exist on this platform",
+            "suggested_action": "find_alternative",
+            "count": 1,
+            "first_seen": "2025-09-15T10:40:50.887Z",
+            "last_seen": "2025-09-15T10:40:50.887Z"
+          }
+        ],
+        "last_updated": "2025-09-15T10:40:50.887Z",
+        "success_rate": 0
+      },
+      "ifconfig": {
+        "total_executions": 2,
+        "successful_executions": 0,
+        "failure_patterns": [
+          {
+            "pattern": "command_not_found",
+            "description": "Command does not exist on this platform",
+            "suggested_action": "find_alternative",
+            "count": 4,
+            "first_seen": "2025-09-15T10:44:12.328Z",
+            "last_seen": "2025-09-15T10:48:27.696Z"
+          },
+          {
+            "pattern": "unknown_error",
+            "description": "Unrecognized error pattern",
+            "suggested_action": "manual_review",
+            "count": 2,
+            "first_seen": "2025-09-15T10:44:12.328Z",
+            "last_seen": "2025-09-15T10:48:27.696Z"
+          }
+        ],
+        "last_updated": "2025-09-15T10:48:27.696Z",
+        "success_rate": 0
+      },
+      "du": {
+        "total_executions": 1,
+        "successful_executions": 1,
+        "failure_patterns": [],
+        "last_updated": "2025-09-15T10:46:52.631Z",
+        "success_rate": 100
+      },
+      "uptime": {
+        "total_executions": 1,
+        "successful_executions": 1,
+        "failure_patterns": [],
+        "last_updated": "2025-09-15T10:47:54.041Z",
+        "success_rate": 100
+      },
+      "ping": {
+        "total_executions": 1,
+        "successful_executions": 0,
+        "failure_patterns": [
+          {
+            "pattern": "command_not_found",
+            "description": "Command does not exist on this platform",
+            "suggested_action": "find_alternative",
+            "count": 2,
+            "first_seen": "2025-09-15T10:47:56.405Z",
+            "last_seen": "2025-09-15T10:47:56.405Z"
+          }
+        ],
+        "last_updated": "2025-09-15T10:47:56.406Z",
+        "success_rate": 0
       }
     }
   },
@@ -397,10 +476,11 @@
         "works": true,
         "variations": [
           "ls -la",
-          "ls"
+          "ls",
+          "ls -la | grep \"^\\.\""
         ],
-        "confidence": 1,
-        "last_tested": "2025-09-15T10:22:52.669Z"
+        "confidence": 0.9,
+        "last_tested": "2025-09-15T10:45:46.218Z"
       },
       "whoami": {
         "works": true,
@@ -416,7 +496,7 @@
           "date"
         ],
         "confidence": 1,
-        "last_tested": "2025-09-15T10:21:55.647Z"
+        "last_tested": "2025-09-15T10:38:51.342Z"
       },
       "saat": {
         "works": false,
@@ -462,10 +542,11 @@
       "top": {
         "works": false,
         "variations": [
-          "top"
+          "top",
+          "top -bn1 | head -20"
         ],
-        "confidence": 0.19999999999999998,
-        "last_tested": "2025-09-15T02:01:28.129Z"
+        "confidence": 0.09999999999999998,
+        "last_tested": "2025-09-15T10:42:27.294Z"
       },
       "systeminfo": {
         "works": false,
@@ -488,8 +569,8 @@
         "variations": [
           "pwd"
         ],
-        "confidence": 0.8999999999999999,
-        "last_tested": "2025-09-15T10:24:04.548Z"
+        "confidence": 0.9999999999999999,
+        "last_tested": "2025-09-15T10:41:32.134Z"
       },
       "df": {
         "works": true,
@@ -519,7 +600,7 @@
           "echo \"🔋 Taşınabilir sistem. Pil bilgisi için: 'cat /proc/acpi/battery/BAT0/info' veya 'acpi -b'\""
         ],
         "confidence": 1,
-        "last_tested": "2025-09-15T10:34:39.674Z"
+        "last_tested": "2025-09-15T10:39:44.534Z"
       },
       "ne": {
         "works": false,
@@ -603,6 +684,46 @@
         ],
         "confidence": 0.19999999999999998,
         "last_tested": "2025-09-15T10:21:21.134Z"
+      },
+      "sistem": {
+        "works": false,
+        "variations": [
+          "sistem durumunu ver"
+        ],
+        "confidence": 0.19999999999999998,
+        "last_tested": "2025-09-15T10:40:50.887Z"
+      },
+      "ifconfig": {
+        "works": false,
+        "variations": [
+          "ifconfig | head -20"
+        ],
+        "confidence": 0.09999999999999998,
+        "last_tested": "2025-09-15T10:48:27.696Z"
+      },
+      "du": {
+        "works": true,
+        "variations": [
+          "du -sh *"
+        ],
+        "confidence": 0.7999999999999999,
+        "last_tested": "2025-09-15T10:46:52.631Z"
+      },
+      "uptime": {
+        "works": true,
+        "variations": [
+          "uptime"
+        ],
+        "confidence": 0.7999999999999999,
+        "last_tested": "2025-09-15T10:47:54.041Z"
+      },
+      "ping": {
+        "works": false,
+        "variations": [
+          "ping -c 4 google.com"
+        ],
+        "confidence": 0.19999999999999998,
+        "last_tested": "2025-09-15T10:47:56.406Z"
       }
     },
     "darwin": {
@@ -627,7 +748,26 @@
     }
   },
   "fallback_routes": {
-    "linux": {}
+    "linux": {
+      "ifconfig": {
+        "alternatives": [
+          "ip addr",
+          "ifconfig -a"
+        ],
+        "reason": "command_not_found",
+        "confidence": 0.8,
+        "created": "2025-09-15T10:48:27.696Z"
+      },
+      "ping": {
+        "alternatives": [
+          "ping -c 4",
+          "ping -t"
+        ],
+        "reason": "command_not_found",
+        "confidence": 0.8,
+        "created": "2025-09-15T10:47:56.406Z"
+      }
+    }
   },
   "learned_optimizations": {},
   "device_profiles": {
@@ -734,14 +874,14 @@
       "first_seen": "2025-09-15T07:09:24.054Z",
       "command_preferences": {
         "echo": {
-          "usage_count": 14,
+          "usage_count": 15,
           "success_rate": 100,
-          "avg_execution_time": 39.73516845703125
+          "avg_execution_time": 42.867584228515625
         },
         "date": {
-          "usage_count": 2,
+          "usage_count": 3,
           "success_rate": 100,
-          "avg_execution_time": 27.5
+          "avg_execution_time": 28.25
         },
         "Ne": {
           "usage_count": 1,
@@ -759,9 +899,9 @@
           "avg_execution_time": 29.95833333333333
         },
         "ls": {
-          "usage_count": 3,
-          "success_rate": 100,
-          "avg_execution_time": 34.875
+          "usage_count": 4,
+          "success_rate": 75,
+          "avg_execution_time": 5031.770833333333
         },
         "Github": {
           "usage_count": 1,
@@ -789,32 +929,62 @@
           "avg_execution_time": 15
         },
         "pwd": {
+          "usage_count": 2,
+          "success_rate": 100,
+          "avg_execution_time": 23.75
+        },
+        "sistem": {
+          "usage_count": 1,
+          "success_rate": 0,
+          "avg_execution_time": 34
+        },
+        "top": {
+          "usage_count": 1,
+          "success_rate": 0,
+          "avg_execution_time": 7575.5
+        },
+        "ifconfig": {
+          "usage_count": 2,
+          "success_rate": 0,
+          "avg_execution_time": 7523
+        },
+        "du": {
           "usage_count": 1,
           "success_rate": 100,
-          "avg_execution_time": 13.5
+          "avg_execution_time": 16.5
+        },
+        "uptime": {
+          "usage_count": 1,
+          "success_rate": 100,
+          "avg_execution_time": 16
+        },
+        "ping": {
+          "usage_count": 1,
+          "success_rate": 0,
+          "avg_execution_time": 11
         }
       },
       "performance_metrics": {},
       "capabilities": {},
-      "last_seen": "2025-09-15T10:34:39.674Z"
+      "last_seen": "2025-09-15T10:48:27.696Z"
     }
   },
   "conversationLearning": {
-    "totalConversations": 9,
+    "totalConversations": 18,
     "uniqueIntents": 1,
     "dijkstraNodes": 2,
     "topIntents": [
       {
         "intent": "command_execution",
-        "count": 9
+        "count": 18
       }
     ],
-    "learningEfficiency": 0.1111111111111111,
+    "learningEfficiency": 0.05555555555555555,
     "dijkstraOptimizationMetrics": {
       "totalNodes": 2,
       "totalConnections": 2,
       "averageWeight": "2.925",
-      "pathUsage": 6,
+      "pathUsage": 15,
       "averageSuccessRate": "0.500",
       "optimizationEfficiency": "1.00"
     }

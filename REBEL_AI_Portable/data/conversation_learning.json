@@ -71,6 +71,94 @@
       "intent": "command_execution",
       "emotionalContext": "neutral",
       "learningValue": "improve_command_understanding"
+    },
+    {
+      "timestamp": "2025-09-15T10:39:17.452Z",
+      "userInput": "saat kaç",
+      "systemResponse": "{\"commandExecuted\":true,\"wasSuccessful\":false,\"hasTranslation\":true,\"commandCount\":1,\"timestamp\":\"2025-09-15T10:38:51.343Z\",\"processingType\":\"terminal_command\"}",
+      "intent": "command_execution",
+      "emotionalContext": "neutral",
+      "learningValue": "improve_command_understanding"
+    },
+    {
+      "timestamp": "2025-09-15T10:40:08.121Z",
+      "userInput": "ne iş yaparsın?",
+      "systemResponse": "{\"commandExecuted\":true,\"wasSuccessful\":false,\"hasTranslation\":true,\"commandCount\":1,\"timestamp\":\"2025-09-15T10:39:44.535Z\",\"processingType\":\"terminal_command\"}",
+      "intent": "command_execution",
+      "emotionalContext": "neutral",
+      "learningValue": "improve_command_understanding"
+    },
+    {
+      "timestamp": "2025-09-15T10:41:11.681Z",
+      "userInput": "sistem durumunu ver",
+      "systemResponse": "{\"commandExecuted\":true,\"wasSuccessful\":false,\"hasTranslation\":true,\"commandCount\":1,\"timestamp\":\"2025-09-15T10:40:50.889Z\",\"processingType\":\"terminal_command\"}",
+      "intent": "command_execution",
+      "emotionalContext": "neutral",
+      "learningValue": "improve_command_understanding"
+    },
+    {
+      "timestamp": "2025-09-15T10:41:50.794Z",
+      "userInput": "neredeyim",
+      "systemResponse": "{\"commandExecuted\":true,\"wasSuccessful\":false,\"hasTranslation\":true,\"commandCount\":1,\"timestamp\":\"2025-09-15T10:41:32.136Z\",\"processingType\":\"terminal_command\"}",
+      "intent": "command_execution",
+      "emotionalContext": "neutral",
+      "learningValue": "improve_command_understanding"
+    },
+    {
+      "timestamp": "2025-09-15T10:42:50.949Z",
+      "userInput": "top -bn1 | head -20",
+      "systemResponse": "{\"commandExecuted\":true,\"wasSuccessful\":false,\"hasTranslation\":true,\"commandCount\":2,\"timestamp\":\"2025-09-15T10:42:27.295Z\",\"processingType\":\"terminal_command\"}",
+      "intent": "command_execution",
+      "emotionalContext": "neutral",
+      "learningValue": "improve_command_understanding"
+    },
+    {
+      "timestamp": "2025-09-15T10:44:36.406Z",
+      "userInput": "ifconfig | head -20",
+      "systemResponse": "{\"commandExecuted\":true,\"wasSuccessful\":false,\"hasTranslation\":true,\"commandCount\":3,\"timestamp\":\"2025-09-15T10:44:12.329Z\",\"processingType\":\"terminal_command\"}",
+      "intent": "command_execution",
+      "emotionalContext": "neutral",
+      "learningValue": "improve_command_understanding"
+    },
+    {
+      "timestamp": "2025-09-15T10:46:09.889Z",
+      "userInput": "ls -la | grep \"^\\.\"",
+      "systemResponse": "{\"commandExecuted\":true,\"wasSuccessful\":false,\"hasTranslation\":true,\"commandCount\":3,\"timestamp\":\"2025-09-15T10:45:46.220Z\",\"processingType\":\"terminal_command\"}",
+      "intent": "command_execution",
+      "emotionalContext": "neutral",
+      "learningValue": "improve_command_understanding"
+    },
+    {
+      "timestamp": "2025-09-15T10:47:18.364Z",
+      "userInput": "du -sh *",
+      "systemResponse": "{\"commandExecuted\":true,\"wasSuccessful\":false,\"hasTranslation\":true,\"commandCount\":1,\"timestamp\":\"2025-09-15T10:46:52.632Z\",\"processingType\":\"terminal_command\"}",
+      "intent": "command_execution",
+      "emotionalContext": "neutral",
+      "learningValue": "improve_command_understanding"
+    },
+    {
+      "timestamp": "2025-09-15T10:48:11.304Z",
+      "userInput": "uptime",
+      "systemResponse": "{\"commandExecuted\":true,\"wasSuccessful\":false,\"hasTranslation\":true,\"commandCount\":1,\"timestamp\":\"2025-09-15T10:47:54.043Z\",\"processingType\":\"terminal_command\"}",
+      "intent": "command_execution",
+      "emotionalContext": "neutral",
+      "learningValue": "improve_command_understanding"
+    },
+    {
+      "timestamp": "2025-09-15T10:48:12.047Z",
+      "userInput": "ping -c 4 google.com",
+      "systemResponse": "{\"commandExecuted\":true,\"wasSuccessful\":false,\"hasTranslation\":true,\"commandCount\":2,\"timestamp\":\"2025-09-15T10:47:56.407Z\",\"processingType\":\"terminal_command\"}",
+      "intent": "command_execution",
+      "emotionalContext": "neutral",
+      "learningValue": "improve_command_understanding"
+    },
+    {
+      "timestamp": "2025-09-15T10:48:44.260Z",
+      "userInput": "ifconfig | head -20",
+      "systemResponse": "{\"commandExecuted\":true,\"wasSuccessful\":false,\"hasTranslation\":true,\"commandCount\":3,\"timestamp\":\"2025-09-15T10:48:27.697Z\",\"processingType\":\"terminal_command\"}",
+      "intent": "command_execution",
+      "emotionalContext": "neutral",
+      "learningValue": "improve_command_understanding"
     }
   ],
   "intentPatterns": {
@@ -80,7 +168,7 @@
         "context": "neutral",
         "skill": "intermediate",
         "quality": 0.5,
-        "timestamp": "2025-09-15T08:27:20.122Z",
+        "timestamp": "2025-09-15T10:40:08.121Z",
         "learningValue": "system_interaction"
       },
       {
@@ -88,7 +176,7 @@
         "context": "neutral",
         "skill": "intermediate",
         "quality": 0.5,
-        "timestamp": "2025-09-15T08:29:01.472Z",
+        "timestamp": "2025-09-15T10:41:11.681Z",
         "learningValue": "system_interaction"
       },
       {
@@ -96,7 +184,7 @@
         "context": "neutral",
         "skill": "intermediate",
         "quality": 0.5,
-        "timestamp": "2025-09-15T08:43:20.034Z",
+        "timestamp": "2025-09-15T10:41:50.794Z",
         "learningValue": "system_interaction"
       },
       {
@@ -104,7 +192,7 @@
         "context": "neutral",
         "skill": "intermediate",
         "quality": 0.5,
-        "timestamp": "2025-09-15T10:21:46.508Z",
+        "timestamp": "2025-09-15T10:42:50.949Z",
         "learningValue": "system_interaction"
       },
       {
@@ -112,7 +200,7 @@
         "context": "neutral",
         "skill": "intermediate",
         "quality": 0.5,
-        "timestamp": "2025-09-15T10:22:00.803Z",
+        "timestamp": "2025-09-15T10:44:36.405Z",
         "learningValue": "system_interaction"
       },
       {
@@ -120,7 +208,7 @@
         "context": "neutral",
         "skill": "intermediate",
         "quality": 0.5,
-        "timestamp": "2025-09-15T10:22:12.740Z",
+        "timestamp": "2025-09-15T10:46:09.888Z",
         "learningValue": "system_interaction"
       },
       {
@@ -128,7 +216,7 @@
         "context": "neutral",
         "skill": "intermediate",
         "quality": 0.5,
-        "timestamp": "2025-09-15T10:23:01.973Z",
+        "timestamp": "2025-09-15T10:47:18.364Z",
         "learningValue": "system_interaction"
       },
       {
@@ -136,7 +224,7 @@
         "context": "neutral",
         "skill": "intermediate",
         "quality": 0.5,
-        "timestamp": "2025-09-15T10:23:10.240Z",
+        "timestamp": "2025-09-15T10:48:11.304Z",
         "learningValue": "system_interaction"
       },
       {
@@ -144,7 +232,15 @@
         "context": "neutral",
         "skill": "intermediate",
         "quality": 0.5,
-        "timestamp": "2025-09-15T10:24:22.139Z",
+        "timestamp": "2025-09-15T10:48:12.047Z",
+        "learningValue": "system_interaction"
+      },
+      {
+        "intent": "command_execution",
+        "context": "neutral",
+        "skill": "intermediate",
+        "quality": 0.5,
+        "timestamp": "2025-09-15T10:48:44.260Z",
         "learningValue": "system_interaction"
       }
     ]
@@ -157,7 +253,7 @@
         "system_interaction"
       ],
       "learningOpportunity": "improve_command_understanding",
-      "timestamp": 1757931862139
+      "timestamp": 1757933324260
     },
     "system_interaction": {
       "intent": "system_interaction",
@@ -171,11 +267,11 @@
   },
   "pathPerformance": {
     "command_execution": {
-      "uses": 6,
-      "averageLength": 1.96875,
+      "uses": 17,
+      "averageLength": 1.9999847412109375,
       "successRate": 0.5,
-      "lastUsed": 1757931862139
+      "lastUsed": 1757933324260
     }
   },
-  "lastUpdated": "2025-09-15T10:24:22.139Z"
+  "lastUpdated": "2025-09-15T10:48:44.260Z"
 }
