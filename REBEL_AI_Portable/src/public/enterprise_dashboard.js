@@ -278,10 +278,10 @@ class EnterpriseDashboard {
 
     async loadSystemStats() {
         try {
-            // Load system status
+            // Load system status  
             const statusResponse = await fetch('/api/status', {
                 headers: {
-                    'Authorization': `Bearer ${window.REBEL_SESSION_TOKEN}`
+                    'X-Auth-Token': window.REBEL_SESSION_TOKEN
                 }
             });
 
@@ -293,7 +293,7 @@ class EnterpriseDashboard {
             // Load AI learning stats
             const knowledgeResponse = await fetch('/api/knowledge', {
                 headers: {
-                    'Authorization': `Bearer ${window.REBEL_SESSION_TOKEN}`
+                    'X-Auth-Token': window.REBEL_SESSION_TOKEN
                 }
             });
 
