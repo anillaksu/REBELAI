@@ -18,6 +18,7 @@ const CommandExecutor = require('./command_executor');
 const DijkstraOptimizer = require('./dijkstra_optimizer');
 const KnowledgeManager = require('./knowledge_manager');
 const TurkishTranslator = require('./turkish_translator');
+const AICommandIntelligence = require('./ai_command_intelligence');
 
 // 🔐 Enterprise Authentication System
 const AuthManager = require('./auth_manager');
@@ -55,6 +56,7 @@ class REBELAIServer {
         this.dijkstraOptimizer = new DijkstraOptimizer();
         this.knowledgeManager = new KnowledgeManager();
         this.turkishTranslator = new TurkishTranslator();
+        this.aiCommandIntelligence = new AICommandIntelligence();
         
         // Conversation Learning Engine - niyet analizi odaklı öğrenme
         this.conversationLearning = null;
@@ -523,6 +525,72 @@ class REBELAIServer {
             } catch (error) {
                 console.error('Backup codes error:', error);
                 res.status(500).json({ error: 'Failed to generate backup codes' });
+            }
+        });
+
+        // 🧠 AI Command Intelligence API endpoints
+        this.app.post('/api/ai/suggest', this.authManager.authorize(['execute']), async (req, res) => {
+            try {
+                const { partial, context } = req.body;
+                const suggestions = this.aiCommandIntelligence.getSuggestions(partial, context);
+                res.json({ suggestions });
+            } catch (error) {
+                console.error('AI suggestions error:', error);
+                res.status(500).json({ error: 'Failed to get command suggestions' });
+            }
+        });
+
+        this.app.post('/api/ai/translate', this.authManager.authorize(['execute']), async (req, res) => {
+            try {
+                const { input } = req.body;
+                const translation = this.aiCommandIntelligence.translateNaturalLanguage(input);
+                res.json(translation);
+            } catch (error) {
+                console.error('AI translation error:', error);
+                res.status(500).json({ error: 'Failed to translate natural language' });
+            }
+        });
+
+        this.app.post('/api/ai/analyze-error', this.authManager.authorize(['execute']), async (req, res) => {
+            try {
+                const { command, error, output } = req.body;
+                const analysis = this.aiCommandIntelligence.analyzeError(command, error, output);
+                res.json(analysis);
+            } catch (error) {
+                console.error('AI error analysis error:', error);
+                res.status(500).json({ error: 'Failed to analyze error' });
+            }
+        });
+
+        this.app.post('/api/ai/learn', this.authManager.authorize(['execute']), async (req, res) => {
+            try {
+                const { command, success } = req.body;
+                this.aiCommandIntelligence.learnFromCommand(command, success);
+                res.json({ success: true, message: 'Learning recorded' });
+            } catch (error) {
+                console.error('AI learning error:', error);
+                res.status(500).json({ error: 'Failed to record learning' });
+            }
+        });
+
+        this.app.get('/api/ai/export-learning', this.authManager.authorize(['system:read']), async (req, res) => {
+            try {
+                const learningData = this.aiCommandIntelligence.exportLearningData();
+                res.json(learningData);
+            } catch (error) {
+                console.error('AI export learning error:', error);
+                res.status(500).json({ error: 'Failed to export learning data' });
+            }
+        });
+
+        this.app.post('/api/ai/import-learning', this.authManager.authorize(['system:read']), async (req, res) => {
+            try {
+                const { learningData } = req.body;
+                this.aiCommandIntelligence.importLearningData(learningData);
+                res.json({ success: true, message: 'Learning data imported' });
+            } catch (error) {
+                console.error('AI import learning error:', error);
+                res.status(500).json({ error: 'Failed to import learning data' });
             }
         });
     }

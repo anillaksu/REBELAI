@@ -22,6 +22,12 @@ class EnterpriseDashboard {
         this.commandHistory = [];
         this.historyIndex = -1;
         
+        // 🧠 AI Command Intelligence
+        this.aiSuggestions = [];
+        this.currentSuggestion = -1;
+        this.suggestionTimeout = null;
+        this.isShowingSuggestions = false;
+        
         // UI Elements
         this.loadingScreen = document.getElementById('loadingScreen');
         this.mainDashboard = document.getElementById('mainDashboard');
@@ -127,11 +133,33 @@ class EnterpriseDashboard {
         document.getElementById('commandInput')?.addEventListener('keydown', (e) => {
             if (e.key === 'ArrowUp') {
                 e.preventDefault();
-                this.navigateHistory('up');
+                if (this.isShowingSuggestions && this.aiSuggestions.length > 0) {
+                    this.navigateAISuggestions('up');
+                } else {
+                    this.navigateHistory('up');
+                }
             } else if (e.key === 'ArrowDown') {
                 e.preventDefault();
-                this.navigateHistory('down');
+                if (this.isShowingSuggestions && this.aiSuggestions.length > 0) {
+                    this.navigateAISuggestions('down');
+                } else {
+                    this.navigateHistory('down');
+                }
+            } else if (e.key === 'Tab') {
+                e.preventDefault();
+                if (this.isShowingSuggestions && this.currentSuggestion >= 0) {
+                    this.applySuggestion();
+                } else {
+                    this.requestAISuggestions(e.target.value);
+                }
+            } else if (e.key === 'Escape') {
+                this.hideSmartSuggestions();
             }
+        });
+
+        // 🧠 AI smart suggestions on input
+        document.getElementById('commandInput')?.addEventListener('input', (e) => {
+            this.handleSmartSuggestions(e);
         });
 
         document.getElementById('executeBtn')?.addEventListener('click', () => {
@@ -1699,6 +1727,302 @@ class EnterpriseDashboard {
             });
             
             this.showNotification('📺 Terminal session shared', 'success');
+        }
+    }
+
+    // ==========================================
+    // 🧠 AI Command Intelligence Functions  
+    // ==========================================
+
+    async handleSmartSuggestions(event) {
+        const input = event.target.value.trim();
+        
+        // Clear existing timeout
+        if (this.suggestionTimeout) {
+            clearTimeout(this.suggestionTimeout);
+        }
+        
+        // Don't show suggestions for very short input
+        if (input.length < 2) {
+            this.hideSmartSuggestions();
+            return;
+        }
+        
+        // Debounce the suggestion request
+        this.suggestionTimeout = setTimeout(() => {
+            this.requestAISuggestions(input);
+        }, 300);
+    }
+
+    async requestAISuggestions(input) {
+        try {
+            if (!input || input.length < 2) return;
+            
+            // Check if it's natural language first
+            const translation = await this.translateNaturalLanguage(input);
+            if (translation.success) {
+                this.showTranslationSuggestion(translation);
+                return;
+            }
+            
+            // Get AI suggestions
+            const response = await fetch('/api/ai/suggest', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${this.authToken}`,
+                    'Content-Type': 'application/json'
+                },
+                credentials: 'include',
+                body: JSON.stringify({
+                    partial: input,
+                    context: {
+                        currentDirectory: this.terminalSession?.pwd || '/',
+                        recentFiles: [],
+                        systemInfo: this.systemStats
+                    }
+                })
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                this.aiSuggestions = data.suggestions || [];
+                this.displayAISuggestions(input);
+            }
+        } catch (error) {
+            console.error('AI suggestions error:', error);
+        }
+    }
+
+    async translateNaturalLanguage(input) {
+        try {
+            const response = await fetch('/api/ai/translate', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${this.authToken}`,
+                    'Content-Type': 'application/json'
+                },
+                credentials: 'include',
+                body: JSON.stringify({ input })
+            });
+
+            if (response.ok) {
+                return await response.json();
+            }
+            return { success: false };
+        } catch (error) {
+            console.error('AI translation error:', error);
+            return { success: false };
+        }
+    }
+
+    displayAISuggestions(input) {
+        if (this.aiSuggestions.length === 0) {
+            this.hideSmartSuggestions();
+            return;
+        }
+
+        // Create suggestions container if it doesn't exist
+        let suggestionsContainer = document.getElementById('aiSuggestions');
+        if (!suggestionsContainer) {
+            suggestionsContainer = document.createElement('div');
+            suggestionsContainer.id = 'aiSuggestions';
+            suggestionsContainer.className = 'ai-suggestions';
+            
+            const commandInput = document.getElementById('commandInput');
+            if (commandInput) {
+                commandInput.parentNode.appendChild(suggestionsContainer);
+            }
+        }
+
+        // Clear existing suggestions
+        suggestionsContainer.innerHTML = '';
+
+        // Add suggestions
+        this.aiSuggestions.forEach((suggestion, index) => {
+            const suggestionElement = document.createElement('div');
+            suggestionElement.className = 'suggestion-item';
+            suggestionElement.innerHTML = `
+                <div class="suggestion-command">${suggestion.command}</div>
+                <div class="suggestion-meta">
+                    <span class="suggestion-type">${this.getSuggestionTypeIcon(suggestion.type)}</span>
+                    <span class="suggestion-confidence">${Math.round((suggestion.score || suggestion.confidence || 0) * 100)}%</span>
+                </div>
+            `;
+            
+            suggestionElement.addEventListener('click', () => {
+                this.currentSuggestion = index;
+                this.applySuggestion();
+            });
+
+            suggestionsContainer.appendChild(suggestionElement);
+        });
+
+        this.isShowingSuggestions = true;
+        this.currentSuggestion = 0;
+        this.highlightCurrentSuggestion();
+    }
+
+    showTranslationSuggestion(translation) {
+        let suggestionsContainer = document.getElementById('aiSuggestions');
+        if (!suggestionsContainer) {
+            suggestionsContainer = document.createElement('div');
+            suggestionsContainer.id = 'aiSuggestions';
+            suggestionsContainer.className = 'ai-suggestions';
+            
+            const commandInput = document.getElementById('commandInput');
+            if (commandInput) {
+                commandInput.parentNode.appendChild(suggestionsContainer);
+            }
+        }
+
+        suggestionsContainer.innerHTML = `
+            <div class="translation-suggestion">
+                <div class="translation-header">🧠 AI Translation:</div>
+                <div class="translation-original">"${translation.originalInput}"</div>
+                <div class="translation-arrow">↓</div>
+                <div class="translation-command">${translation.translatedCommand}</div>
+                <div class="translation-confidence">Confidence: ${Math.round(translation.confidence * 100)}%</div>
+                <button class="apply-translation" onclick="dashboard.applyTranslation('${translation.translatedCommand}')">
+                    Apply Command
+                </button>
+            </div>
+        `;
+
+        this.isShowingSuggestions = true;
+    }
+
+    applyTranslation(command) {
+        const commandInput = document.getElementById('commandInput');
+        if (commandInput) {
+            commandInput.value = command;
+            commandInput.focus();
+        }
+        this.hideSmartSuggestions();
+    }
+
+    navigateAISuggestions(direction) {
+        if (this.aiSuggestions.length === 0) return;
+
+        if (direction === 'up') {
+            this.currentSuggestion = Math.max(0, this.currentSuggestion - 1);
+        } else if (direction === 'down') {
+            this.currentSuggestion = Math.min(this.aiSuggestions.length - 1, this.currentSuggestion + 1);
+        }
+
+        this.highlightCurrentSuggestion();
+    }
+
+    highlightCurrentSuggestion() {
+        const suggestions = document.querySelectorAll('.suggestion-item');
+        suggestions.forEach((item, index) => {
+            if (index === this.currentSuggestion) {
+                item.classList.add('highlighted');
+            } else {
+                item.classList.remove('highlighted');
+            }
+        });
+    }
+
+    applySuggestion() {
+        if (this.currentSuggestion >= 0 && this.aiSuggestions[this.currentSuggestion]) {
+            const suggestion = this.aiSuggestions[this.currentSuggestion];
+            const commandInput = document.getElementById('commandInput');
+            if (commandInput) {
+                commandInput.value = suggestion.command;
+                commandInput.focus();
+            }
+            this.hideSmartSuggestions();
+        }
+    }
+
+    hideSmartSuggestions() {
+        const suggestionsContainer = document.getElementById('aiSuggestions');
+        if (suggestionsContainer) {
+            suggestionsContainer.style.display = 'none';
+        }
+        this.isShowingSuggestions = false;
+        this.currentSuggestion = -1;
+    }
+
+    showSmartSuggestions() {
+        const suggestionsContainer = document.getElementById('aiSuggestions');
+        if (suggestionsContainer && this.aiSuggestions.length > 0) {
+            suggestionsContainer.style.display = 'block';
+            this.isShowingSuggestions = true;
+        }
+    }
+
+    getSuggestionTypeIcon(type) {
+        const icons = {
+            'direct': '⚡',
+            'history': '🕒',
+            'context': '📁',
+            'nlp': '🧠',
+            'turkish': '🇹🇷',
+            'context-git': '🔀'
+        };
+        return icons[type] || '💡';
+    }
+
+    async analyzeCommandError(command, error, output) {
+        try {
+            const response = await fetch('/api/ai/analyze-error', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${this.authToken}`,
+                    'Content-Type': 'application/json'
+                },
+                credentials: 'include',
+                body: JSON.stringify({ command, error, output })
+            });
+
+            if (response.ok) {
+                const analysis = await response.json();
+                this.displayErrorAnalysis(analysis);
+                return analysis;
+            }
+        } catch (error) {
+            console.error('Error analysis failed:', error);
+        }
+        return null;
+    }
+
+    displayErrorAnalysis(analysis) {
+        if (!analysis || !analysis.suggestions) return;
+
+        const errorMessage = `
+            <div class="error-analysis">
+                <div class="error-header">🤖 AI Error Analysis</div>
+                <div class="error-category">Category: ${analysis.category}</div>
+                <div class="error-suggestions">
+                    <h4>Suggestions:</h4>
+                    ${analysis.suggestions.suggestions ? analysis.suggestions.suggestions.map(s => `<div class="suggestion">• ${s}</div>`).join('') : ''}
+                    ${analysis.suggestions.installSuggestions ? 
+                        `<div class="install-suggestions">
+                            <h5>Installation options:</h5>
+                            ${analysis.suggestions.installSuggestions.map(s => `<div class="install-suggestion">• ${s}</div>`).join('')}
+                        </div>` : ''}
+                </div>
+            </div>
+        `;
+
+        this.addTerminalMessage('ai-analysis', errorMessage);
+    }
+
+    // Learn from command execution
+    async learnFromCommand(command, success) {
+        try {
+            await fetch('/api/ai/learn', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${this.authToken}`,
+                    'Content-Type': 'application/json'
+                },
+                credentials: 'include',
+                body: JSON.stringify({ command, success })
+            });
+        } catch (error) {
+            console.error('AI learning failed:', error);
         }
     }
 
