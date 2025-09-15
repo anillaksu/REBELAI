@@ -447,6 +447,22 @@
         "failure_patterns": [],
         "last_updated": "2025-09-15T11:23:00.547Z",
         "success_rate": 100
+      },
+      "env": {
+        "total_executions": 1,
+        "successful_executions": 0,
+        "failure_patterns": [
+          {
+            "pattern": "unknown_error",
+            "description": "Unrecognized error pattern",
+            "suggested_action": "manual_review",
+            "count": 1,
+            "first_seen": "2025-09-15T13:06:52.988Z",
+            "last_seen": "2025-09-15T13:06:52.988Z"
+          }
+        ],
+        "last_updated": "2025-09-15T13:06:52.988Z",
+        "success_rate": 0
       }
     }
   },
@@ -763,6 +779,14 @@
         ],
         "confidence": 0.7999999999999999,
         "last_tested": "2025-09-15T11:23:00.547Z"
+      },
+      "env": {
+        "works": false,
+        "variations": [
+          "env | head -10"
+        ],
+        "confidence": 0.19999999999999998,
+        "last_tested": "2025-09-15T13:06:52.988Z"
       }
     },
     "darwin": {
@@ -1016,24 +1040,40 @@
       "performance_metrics": {},
       "capabilities": {},
       "last_seen": "2025-09-15T11:23:00.547Z"
+    },
+    "585cf566": {
+      "platform": "linux",
+      "architecture": "x64",
+      "hostname": "27bb4c4191ac",
+      "first_seen": "2025-09-15T13:06:52.988Z",
+      "command_preferences": {
+        "env": {
+          "usage_count": 1,
+          "success_rate": 0,
+          "avg_execution_time": 7513.5
+        }
+      },
+      "performance_metrics": {},
+      "capabilities": {},
+      "last_seen": "2025-09-15T13:06:52.988Z"
     }
   },
   "conversationLearning": {
-    "totalConversations": 22,
+    "totalConversations": 23,
     "uniqueIntents": 1,
     "dijkstraNodes": 2,
     "topIntents": [
       {
         "intent": "command_execution",
-        "count": 22
+        "count": 23
       }
     ],
-    "learningEfficiency": 0.045454545454545456,
+    "learningEfficiency": 0.043478260869565216,
     "dijkstraOptimizationMetrics": {
       "totalNodes": 2,
       "totalConnections": 2,
       "averageWeight": "2.925",
-      "pathUsage": 19,
+      "pathUsage": 20,
       "averageSuccessRate": "0.500",
       "optimizationEfficiency": "1.00"
     }

@@ -183,18 +183,18 @@
       "intent": "command_execution",
       "emotionalContext": "neutral",
       "learningValue": "improve_command_understanding"
+    },
+    {
+      "timestamp": "2025-09-15T13:07:11.028Z",
+      "userInput": "env | head -10",
+      "systemResponse": "{\"commandExecuted\":true,\"wasSuccessful\":false,\"hasTranslation\":true,\"commandCount\":2,\"timestamp\":\"2025-09-15T13:06:52.989Z\",\"processingType\":\"terminal_command\"}",
+      "intent": "command_execution",
+      "emotionalContext": "neutral",
+      "learningValue": "improve_command_understanding"
     }
   ],
   "intentPatterns": {
     "command_execution": [
-      {
-        "intent": "command_execution",
-        "context": "neutral",
-        "skill": "intermediate",
-        "quality": 0.5,
-        "timestamp": "2025-09-15T10:42:50.949Z",
-        "learningValue": "system_interaction"
-      },
       {
         "intent": "command_execution",
         "context": "neutral",
@@ -266,6 +266,14 @@
         "quality": 0.5,
         "timestamp": "2025-09-15T11:23:22.185Z",
         "learningValue": "system_interaction"
+      },
+      {
+        "intent": "command_execution",
+        "context": "neutral",
+        "skill": "intermediate",
+        "quality": 0.5,
+        "timestamp": "2025-09-15T13:07:11.027Z",
+        "learningValue": "system_interaction"
       }
     ]
   },
@@ -277,7 +285,7 @@
         "system_interaction"
       ],
       "learningOpportunity": "improve_command_understanding",
-      "timestamp": 1757935402185
+      "timestamp": 1757941631027
     },
     "system_interaction": {
       "intent": "system_interaction",
@@ -291,11 +299,11 @@
   },
   "pathPerformance": {
     "command_execution": {
-      "uses": 20,
-      "averageLength": 1.9999980926513672,
+      "uses": 21,
+      "averageLength": 1.9999990463256836,
       "successRate": 0.5,
-      "lastUsed": 1757935402185
+      "lastUsed": 1757941631027
     }
   },
-  "lastUpdated": "2025-09-15T11:23:22.185Z"
+  "lastUpdated": "2025-09-15T13:07:11.028Z"
 }
