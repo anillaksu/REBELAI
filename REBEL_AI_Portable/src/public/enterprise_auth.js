@@ -171,11 +171,13 @@ class EnterpriseAuth {
                     document.getElementById('mfaToken').focus();
                     this.showNotification('🔐 Enter your 2FA code', 'info');
                 } else {
-                    // Successful login
+                    // Successful login - immediate redirect
                     this.showNotification('✅ Login successful! Redirecting...', 'success');
-                    setTimeout(() => {
-                        window.location.href = '/dashboard';
-                    }, 1500);
+                    // Store auth data
+                    localStorage.setItem('isAuthenticated', 'true');
+                    localStorage.setItem('userRole', data.user.role);
+                    // Immediate redirect to dashboard
+                    window.location.href = '/dashboard';
                 }
             } else {
                 this.showNotification(data.error || 'Login failed', 'error');

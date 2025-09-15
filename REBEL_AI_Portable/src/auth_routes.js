@@ -159,6 +159,7 @@ class AuthRoutes {
 
                 res.cookie('sessionToken', result.tokens.sessionToken, cookieOptions);
                 res.cookie('refreshToken', result.tokens.refreshToken, cookieOptions);
+                res.cookie('rebel_session_token', result.tokens.sessionToken, cookieOptions);
 
                 res.json({
                     success: true,
