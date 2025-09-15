@@ -293,14 +293,41 @@ class EnterpriseDashboard {
     }
 
     setupPreferencesEventListeners() {
-        // Preferences Save button
-        document.getElementById('savePreferencesBtn')?.addEventListener('click', () => {
-            this.savePreferences();
+        // Preferences Save button - support multiple possible IDs
+        const saveButtons = ['savePreferencesBtn', 'savePreferences', 'saveBtn', 'preferenceSaveBtn'];
+        saveButtons.forEach(id => {
+            const btn = document.getElementById(id);
+            if (btn) {
+                console.log(`🎨 Found save button with ID: ${id}`);
+                btn.addEventListener('click', () => {
+                    console.log(`🎨 Save button clicked: ${id}`);
+                    this.savePreferences();
+                });
+            }
         });
 
-        // Preferences Reset button
-        document.getElementById('resetPreferencesBtn')?.addEventListener('click', () => {
-            this.resetPreferences();
+        // Preferences Reset button - support multiple possible IDs  
+        const resetButtons = ['resetPreferencesBtn', 'resetPreferences', 'resetBtn', 'preferenceResetBtn'];
+        resetButtons.forEach(id => {
+            const btn = document.getElementById(id);
+            if (btn) {
+                console.log(`🎨 Found reset button with ID: ${id}`);
+                btn.addEventListener('click', () => {
+                    console.log(`🎨 Reset button clicked: ${id}`);
+                    this.resetPreferences();
+                });
+            }
+        });
+
+        // Delegated event handling for preferences buttons (fallback)
+        document.addEventListener('click', (e) => {
+            if (e.target.textContent?.includes('Save') && e.target.closest('.preferences-section')) {
+                console.log('🎨 Delegated Save button clicked');
+                this.savePreferences();
+            } else if (e.target.textContent?.includes('Reset') && e.target.closest('.preferences-section')) {
+                console.log('🎨 Delegated Reset button clicked');
+                this.resetPreferences();
+            }
         });
     }
 
@@ -1530,56 +1557,141 @@ class EnterpriseDashboard {
         this.showNotification('💾 Saving preferences...', 'info');
         console.log('🎨 Preferences Save requested');
         
-        // Collect form data
+        // Enhanced form data collection with multiple selectors
+        const getFormValue = (selectors, defaultValue) => {
+            for (const selector of selectors) {
+                const element = document.querySelector(selector);
+                if (element) {
+                    return element.type === 'checkbox' ? element.checked : element.value;
+                }
+            }
+            return defaultValue;
+        };
+        
         const preferences = {
-            theme: document.querySelector('select[name="theme"]')?.value || 'dark',
-            terminalFontSize: document.querySelector('input[name="terminalFontSize"]')?.value || '16px',
-            animationSpeed: document.querySelector('select[name="animationSpeed"]')?.value || 'fast',
-            turkishTranslation: document.querySelector('input[name="turkishTranslation"]')?.checked || false,
-            dijkstraOptimization: document.querySelector('input[name="dijkstraOptimization"]')?.checked || false,
-            aiLearning: document.querySelector('input[name="aiLearning"]')?.checked || false,
-            performanceMetrics: document.querySelector('input[name="performanceMetrics"]')?.checked || false,
-            notifications: document.querySelector('input[name="notifications"]')?.checked || false,
-            soundAlerts: document.querySelector('input[name="soundAlerts"]')?.checked || false
+            theme: getFormValue([
+                'select[name="theme"]', '#theme', '.theme-select'
+            ], 'dark'),
+            terminalFontSize: getFormValue([
+                'input[name="terminalFontSize"]', '#terminalFontSize', '.terminal-font-size'
+            ], '16px'),
+            animationSpeed: getFormValue([
+                'select[name="animationSpeed"]', '#animationSpeed', '.animation-speed'
+            ], 'fast'),
+            turkishTranslation: getFormValue([
+                'input[name="turkishTranslation"]', '#turkishTranslation', '.turkish-translation'
+            ], true),
+            dijkstraOptimization: getFormValue([
+                'input[name="dijkstraOptimization"]', '#dijkstraOptimization', '.dijkstra-optimization'
+            ], true),
+            aiLearning: getFormValue([
+                'input[name="aiLearning"]', '#aiLearning', '.ai-learning'
+            ], true),
+            performanceMetrics: getFormValue([
+                'input[name="performanceMetrics"]', '#performanceMetrics', '.performance-metrics'
+            ], false),
+            notifications: getFormValue([
+                'input[name="notifications"]', '#notifications', '.notifications'
+            ], true),
+            soundAlerts: getFormValue([
+                'input[name="soundAlerts"]', '#soundAlerts', '.sound-alerts'
+            ], false),
+            notificationDuration: getFormValue([
+                'select[name="notificationDuration"]', '#notificationDuration', '.notification-duration'
+            ], '5'),
+            auditLogging: getFormValue([
+                'input[name="auditLogging"]', '#auditLogging', '.audit-logging'
+            ], true),
+            sessionTimeout: getFormValue([
+                'select[name="sessionTimeout"]', '#sessionTimeout', '.session-timeout'
+            ], '30'),
+            autoLock: getFormValue([
+                'input[name="autoLock"]', '#autoLock', '.auto-lock'
+            ], true)
         };
         
         console.log('🎨 Collected Preferences:', preferences);
         
-        // Simulate save operation
+        // Count how many preferences were actually found
+        const foundElements = Object.values(preferences).filter(val => val !== null && val !== undefined).length;
+        console.log(`🎨 Found ${foundElements} preference elements out of ${Object.keys(preferences).length}`);
+        
+        // Save operation with better feedback
         setTimeout(() => {
             localStorage.setItem('rebelAIPreferences', JSON.stringify(preferences));
             this.showNotification('✅ Preferences saved successfully', 'success');
-            this.addActivityItem('Preferences updated', '🎨');
-        }, 1000);
+            this.addActivityItem(`Saved ${foundElements} preferences`, '🎨');
+            
+            // Apply theme immediately if changed
+            if (preferences.theme && preferences.theme !== 'dark') {
+                document.body.setAttribute('data-theme', preferences.theme);
+            }
+        }, 800);
     }
 
     resetPreferences() {
         this.showNotification('🔄 Resetting preferences to defaults...', 'warning');
         console.log('🎨 Preferences Reset requested');
         
-        // Reset form to defaults
+        // Enhanced reset with multiple selectors
         setTimeout(() => {
-            // Set default values
-            const themeSelect = document.querySelector('select[name="theme"]');
-            if (themeSelect) themeSelect.value = 'dark';
+            let resetCount = 0;
             
-            const fontSizeInput = document.querySelector('input[name="terminalFontSize"]');
-            if (fontSizeInput) fontSizeInput.value = '16px';
+            // Reset form elements with fallback selectors
+            const resetElement = (selectors, defaultValue, isCheckbox = false) => {
+                for (const selector of selectors) {
+                    const element = document.querySelector(selector);
+                    if (element) {
+                        if (isCheckbox) {
+                            element.checked = defaultValue;
+                        } else {
+                            element.value = defaultValue;
+                        }
+                        resetCount++;
+                        console.log(`🔄 Reset ${selector} to ${defaultValue}`);
+                        return true;
+                    }
+                }
+                return false;
+            };
             
-            const animationSelect = document.querySelector('select[name="animationSpeed"]');
-            if (animationSelect) animationSelect.value = 'fast';
+            // Reset all preference elements
+            resetElement(['select[name="theme"]', '#theme', '.theme-select'], 'dark');
+            resetElement(['input[name="terminalFontSize"]', '#terminalFontSize', '.terminal-font-size'], '16px');
+            resetElement(['select[name="animationSpeed"]', '#animationSpeed', '.animation-speed'], 'fast');
+            resetElement(['select[name="notificationDuration"]', '#notificationDuration', '.notification-duration'], '5');
+            resetElement(['select[name="sessionTimeout"]', '#sessionTimeout', '.session-timeout'], '30');
             
-            // Reset checkboxes to default
-            const checkboxes = ['turkishTranslation', 'dijkstraOptimization', 'aiLearning', 'performanceMetrics', 'notifications', 'soundAlerts'];
-            checkboxes.forEach(name => {
-                const checkbox = document.querySelector(`input[name="${name}"]`);
-                if (checkbox) checkbox.checked = name === 'turkishTranslation' || name === 'dijkstraOptimization' || name === 'aiLearning';
+            // Reset checkboxes with default values
+            const checkboxDefaults = {
+                turkishTranslation: true,
+                dijkstraOptimization: true, 
+                aiLearning: true,
+                performanceMetrics: false,
+                notifications: true,
+                soundAlerts: false,
+                auditLogging: true,
+                autoLock: true
+            };
+            
+            Object.entries(checkboxDefaults).forEach(([name, defaultValue]) => {
+                resetElement([
+                    `input[name="${name}"]`, 
+                    `#${name}`, 
+                    `.${name.replace(/([A-Z])/g, '-$1').toLowerCase()}`
+                ], defaultValue, true);
             });
             
+            // Clear localStorage
             localStorage.removeItem('rebelAIPreferences');
+            
+            // Reset theme to dark
+            document.body.setAttribute('data-theme', 'dark');
+            
+            console.log(`🔄 Reset ${resetCount} preference elements`);
             this.showNotification('✅ Preferences reset to defaults', 'success');
-            this.addActivityItem('Preferences reset', '🔄');
-        }, 800);
+            this.addActivityItem(`Reset ${resetCount} preferences`, '🔄');
+        }, 600);
     }
 
     // ==========================================
