@@ -34,6 +34,9 @@ class EnterpriseDashboard {
             // Show loading
             this.showLoading('Initializing Enterprise Dashboard...');
             
+            // Initialize auth token from window global
+            this.authToken = window.REBEL_SESSION_TOKEN;
+            
             // Load user data from injected script
             this.userData = window.REBEL_USER_DATA || null;
             
@@ -377,11 +380,15 @@ class EnterpriseDashboard {
             breadcrumb.innerHTML = `<span class="breadcrumb-item active">${moduleNames[moduleId] || moduleId}</span>`;
         }
 
-        // Module-specific initialization
+        // Module-specific initialization and data loading
         if (moduleId === 'terminal') {
             this.focusTerminalInput();
         } else if (moduleId === 'knowledge') {
             this.loadKnowledgeData();
+        } else if (moduleId === 'mfa') {
+            this.refreshMFAStatus();
+        } else if (moduleId === 'profile') {
+            this.loadProfileData();
         }
     }
 
@@ -390,8 +397,10 @@ class EnterpriseDashboard {
             // Load system status  
             const statusResponse = await fetch('/api/status', {
                 headers: {
-                    'X-Auth-Token': window.REBEL_SESSION_TOKEN
-                }
+                    'Authorization': `Bearer ${this.authToken}`,
+                    'Content-Type': 'application/json'
+                },
+                credentials: 'include'
             });
 
             if (statusResponse.ok) {
@@ -402,8 +411,10 @@ class EnterpriseDashboard {
             // Load AI learning stats
             const knowledgeResponse = await fetch('/api/knowledge', {
                 headers: {
-                    'X-Auth-Token': window.REBEL_SESSION_TOKEN
-                }
+                    'Authorization': `Bearer ${this.authToken}`,
+                    'Content-Type': 'application/json'
+                },
+                credentials: 'include'
             });
 
             if (knowledgeResponse.ok) {
@@ -1062,28 +1073,82 @@ class EnterpriseDashboard {
     async refreshMFAStatus() {
         this.showNotification('🔄 Refreshing MFA status...', 'info');
         console.log('🛡️ MFA Status Refresh requested');
-        // Simulate MFA status check
-        setTimeout(() => {
-            this.showNotification('✅ MFA status updated', 'success');
-        }, 1000);
+        
+        try {
+            const response = await fetch('/api/mfa/status', {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${this.authToken}`,
+                    'Content-Type': 'application/json'
+                },
+                credentials: 'include'
+            });
+            
+            if (response.ok) {
+                const mfaData = await response.json();
+                this.updateMFADisplay(mfaData);
+                this.showNotification('✅ MFA status updated', 'success');
+            } else {
+                throw new Error('Failed to refresh MFA status');
+            }
+        } catch (error) {
+            console.error('MFA refresh error:', error);
+            this.showNotification('❌ Failed to refresh MFA status', 'error');
+        }
     }
 
-    showBackupCodes() {
+    async showBackupCodes() {
         this.showNotification('📋 Loading backup codes...', 'info');
         console.log('🛡️ Backup Codes requested');
-        // Simulate backup codes loading
-        setTimeout(() => {
-            this.showNotification('✅ Backup codes loaded', 'success');
-        }, 800);
+        
+        try {
+            const response = await fetch('/api/mfa/backup-codes', {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${this.authToken}`,
+                    'Content-Type': 'application/json'
+                },
+                credentials: 'include'
+            });
+            
+            if (response.ok) {
+                const backupData = await response.json();
+                this.displayBackupCodes(backupData.backupCodes);
+                this.showNotification('✅ Backup codes loaded', 'success');
+            } else {
+                throw new Error('Failed to load backup codes');
+            }
+        } catch (error) {
+            console.error('Backup codes error:', error);
+            this.showNotification('❌ Failed to load backup codes', 'error');
+        }
     }
 
-    configureMFA() {
+    async configureMFA() {
         this.showNotification('⚙️ Starting MFA configuration...', 'info');
         console.log('🛡️ MFA Configuration started');
-        // Simulate MFA setup
-        setTimeout(() => {
-            this.showNotification('🔐 MFA configuration opened', 'success');
-        }, 500);
+        
+        try {
+            const response = await fetch('/api/mfa/setup', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${this.authToken}`,
+                    'Content-Type': 'application/json'
+                },
+                credentials: 'include'
+            });
+            
+            if (response.ok) {
+                const setupData = await response.json();
+                this.displayMFASetup(setupData);
+                this.showNotification('🔐 MFA configuration ready', 'success');
+            } else {
+                throw new Error('Failed to setup MFA');
+            }
+        } catch (error) {
+            console.error('MFA configure error:', error);
+            this.showNotification('❌ Failed to configure MFA', 'error');
+        }
     }
 
     downloadBackupCodes() {
@@ -1166,7 +1231,124 @@ class EnterpriseDashboard {
         }, 1500);
     }
 
+    updateMFADisplay(mfaData) {
+        // Update MFA status in UI
+        const mfaStatus = document.getElementById('mfaStatus');
+        if (mfaStatus) {
+            mfaStatus.textContent = mfaData.mfaEnabled ? 'Enabled' : 'Disabled';
+        }
+        
+        const backupCodesCount = document.getElementById('backupCodesCount');
+        if (backupCodesCount) {
+            backupCodesCount.textContent = `${mfaData.backupCodesRemaining || 0} codes remaining`;
+        }
+    }
+
+    displayMFASetup(setupData) {
+        // Create MFA setup modal/content
+        const mfaContent = document.getElementById('mfaSetupContent');
+        if (mfaContent) {
+            mfaContent.innerHTML = `
+                <div class="mfa-setup">
+                    <h3>🔐 Setup Two-Factor Authentication</h3>
+                    <div class="qr-section">
+                        <p>Scan this QR code with your authenticator app:</p>
+                        <img src="${setupData.qrCode}" alt="QR Code" style="width: 200px; height: 200px; border: 2px solid var(--primary-color); border-radius: 8px; margin: 1rem 0;">
+                    </div>
+                    <div class="manual-entry">
+                        <p>Or enter this key manually:</p>
+                        <code style="background: var(--bg-dark); padding: 0.5rem; display: block; word-break: break-all;">${setupData.secret}</code>
+                    </div>
+                    <div class="backup-codes-section">
+                        <h4>🔑 Backup Codes</h4>
+                        <p>Save these backup codes in a secure location:</p>
+                        <div class="backup-codes">
+                            ${setupData.backupCodes.map((code, index) => 
+                                `<div class="backup-code">${index + 1}. ${code.code}</div>`
+                            ).join('')}
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+    }
+
+    displayBackupCodes(backupCodes) {
+        // Display backup codes in modal or dedicated section
+        const codesSection = document.getElementById('backupCodesDisplay');
+        if (codesSection) {
+            codesSection.innerHTML = `
+                <div class="backup-codes-display">
+                    <h3>🔑 Your Backup Codes</h3>
+                    <div class="codes-list">
+                        ${backupCodes.map((code, index) => 
+                            `<div class="backup-code ${code.used ? 'used' : 'available'}">
+                                ${index + 1}. ${code.code} ${code.used ? '(Used)' : ''}
+                            </div>`
+                        ).join('')}
+                    </div>
+                    <div class="codes-actions">
+                        <button onclick="dashboard.downloadBackupCodes()" class="btn btn-primary">💾 Download</button>
+                        <button onclick="dashboard.printBackupCodes()" class="btn btn-secondary">🖨️ Print</button>
+                        <button onclick="dashboard.regenerateBackupCodes()" class="btn btn-warning">🔄 Regenerate</button>
+                    </div>
+                </div>
+            `;
+        }
+    }
+
     // 👤 Profile Functions
+    async loadProfileData() {
+        try {
+            const response = await fetch('/api/profile', {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${this.authToken}`,
+                    'Content-Type': 'application/json'
+                },
+                credentials: 'include'
+            });
+            
+            if (response.ok) {
+                const profileData = await response.json();
+                this.updateProfileDisplay(profileData);
+                return profileData;
+            } else {
+                throw new Error('Failed to fetch profile data');
+            }
+        } catch (error) {
+            console.error('Profile fetch error:', error);
+            this.showNotification('❌ Failed to load profile data', 'error');
+        }
+    }
+
+    updateProfileDisplay(profileData) {
+        // Update profile fields in the UI
+        const usernameField = document.getElementById('profileUsername');
+        if (usernameField) usernameField.value = profileData.username;
+        
+        const emailField = document.getElementById('profileEmail');
+        if (emailField) emailField.value = profileData.email;
+        
+        const roleField = document.getElementById('profileRole');
+        if (roleField) roleField.textContent = profileData.role;
+        
+        const lastLoginField = document.getElementById('profileLastLogin');
+        if (lastLoginField) lastLoginField.textContent = new Date(profileData.lastLogin).toLocaleString();
+        
+        const mfaStatusField = document.getElementById('profileMfaStatus');
+        if (mfaStatusField) mfaStatusField.textContent = profileData.mfaEnabled ? 'Enabled' : 'Disabled';
+        
+        const backupCodesField = document.getElementById('profileBackupCodes');
+        if (backupCodesField) backupCodesField.textContent = `${profileData.backupCodesRemaining} remaining`;
+        
+        const sessionsField = document.getElementById('profileActiveSessions');
+        if (sessionsField) sessionsField.textContent = profileData.activeSessions;
+        
+        const commandsField = document.getElementById('profileTotalCommands');
+        if (commandsField) commandsField.textContent = profileData.totalCommands;
+    }
+
     viewActiveSessions() {
         this.showNotification('👥 Loading active sessions...', 'info');
         console.log('👤 Active Sessions View requested');

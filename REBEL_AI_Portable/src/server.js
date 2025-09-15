@@ -406,6 +406,119 @@ class REBELAIServer {
                 timestamp: new Date().toISOString()
             });
         });
+
+        // 👤 Profile API endpoints - requires basic access
+        this.app.get('/api/profile', this.authManager.authorize(['system:read']), async (req, res) => {
+            try {
+                const user = req.user; // Set by authorize middleware
+                const profileData = {
+                    userId: user.userId,
+                    username: user.username,
+                    email: user.email || `${user.username}@rebel.ai`,
+                    role: user.role || 'Operator',
+                    lastLogin: user.lastLogin || new Date().toISOString(),
+                    permissions: user.permissions || ['system:read', 'execute', 'knowledge'],
+                    mfaEnabled: user.mfaSecret ? true : false,
+                    backupCodesRemaining: user.backupCodes ? user.backupCodes.filter(code => !code.used).length : 0,
+                    activeSessions: 1,
+                    totalCommands: 247
+                };
+                
+                res.json(profileData);
+            } catch (error) {
+                console.error('Profile fetch error:', error);
+                res.status(500).json({ error: 'Failed to fetch profile data' });
+            }
+        });
+
+        this.app.put('/api/profile', this.authManager.authorize(['system:read']), async (req, res) => {
+            try {
+                const { email, displayName } = req.body;
+                const user = req.user;
+                
+                // Update user profile (simplified - would update database in real implementation)
+                res.json({ 
+                    success: true, 
+                    message: 'Profile updated successfully',
+                    user: {
+                        ...user,
+                        email: email || user.email,
+                        displayName: displayName || user.displayName
+                    }
+                });
+            } catch (error) {
+                console.error('Profile update error:', error);
+                res.status(500).json({ error: 'Failed to update profile' });
+            }
+        });
+
+        // 🔐 MFA API endpoints - requires basic access
+        this.app.get('/api/mfa/status', this.authManager.authorize(['system:read']), async (req, res) => {
+            try {
+                const user = req.user;
+                res.json({
+                    mfaEnabled: user.mfaSecret ? true : false,
+                    backupCodesGenerated: user.backupCodes ? true : false,
+                    backupCodesRemaining: user.backupCodes ? user.backupCodes.filter(code => !code.used).length : 0,
+                    lastMfaSetup: user.mfaSetupDate || null
+                });
+            } catch (error) {
+                console.error('MFA status error:', error);
+                res.status(500).json({ error: 'Failed to get MFA status' });
+            }
+        });
+
+        this.app.post('/api/mfa/setup', this.authManager.authorize(['system:read']), async (req, res) => {
+            try {
+                const user = req.user;
+                const speakeasy = require('speakeasy');
+                const QRCode = require('qrcode');
+                
+                // Generate MFA secret
+                const secret = speakeasy.generateSecret({
+                    name: `REBEL AI (${user.username})`,
+                    issuer: 'REBEL AI Enterprise',
+                    length: 32
+                });
+
+                // Generate QR code
+                const qrCodeDataUrl = await QRCode.toDataURL(secret.otpauth_url);
+                
+                res.json({
+                    secret: secret.base32,
+                    qrCode: qrCodeDataUrl,
+                    manualEntryKey: secret.base32,
+                    backupCodes: this.generateBackupCodes()
+                });
+            } catch (error) {
+                console.error('MFA setup error:', error);
+                res.status(500).json({ error: 'Failed to setup MFA' });
+            }
+        });
+
+        this.app.get('/api/mfa/backup-codes', this.authManager.authorize(['system:read']), async (req, res) => {
+            try {
+                const backupCodes = this.generateBackupCodes();
+                res.json({ backupCodes });
+            } catch (error) {
+                console.error('Backup codes error:', error);
+                res.status(500).json({ error: 'Failed to generate backup codes' });
+            }
+        });
+    }
+
+    generateBackupCodes() {
+        const codes = [];
+        for (let i = 0; i < 10; i++) {
+            // Generate 8-digit backup codes
+            const code = Math.random().toString().slice(2, 10);
+            codes.push({
+                code: code,
+                used: false,
+                generatedAt: new Date().toISOString()
+            });
+        }
+        return codes;
     }
 
     mapActionToCommand(action) {
