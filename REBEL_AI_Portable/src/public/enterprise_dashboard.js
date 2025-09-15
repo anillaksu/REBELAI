@@ -1602,15 +1602,21 @@ class EnterpriseDashboard {
         const commandsField = document.getElementById('profileTotalCommands');
         if (commandsField) commandsField.textContent = profileData.totalCommands;
         
-        // Update activity stats in the activity section
-        const commandsExecutedField = document.querySelector('.stat-value');
-        if (commandsExecutedField) commandsExecutedField.textContent = profileData.totalCommands || '--';
+        // Update activity stats in the activity section - using specific IDs
+        const commandsExecutedField = document.getElementById('userCommandCount');
+        if (commandsExecutedField) commandsExecutedField.textContent = profileData.totalCommands || 0;
         
-        const loginSessionsField = document.querySelectorAll('.stat-value')[1];
-        if (loginSessionsField) loginSessionsField.textContent = profileData.activeSessions || '--';
+        const loginSessionsField = document.getElementById('userLoginCount');
+        if (loginSessionsField) loginSessionsField.textContent = profileData.activeSessions || 0;
         
-        const totalTimeField = document.querySelectorAll('.stat-value')[2];
-        if (totalTimeField) totalTimeField.textContent = '24h 15m' || '--';
+        // Calculate total time from session data (for now use placeholder)
+        const totalTimeField = document.getElementById('userTotalTime');
+        if (totalTimeField) {
+            // TODO: Calculate actual total time from session data
+            const hours = Math.floor((profileData.totalCommands || 0) / 10); // Rough estimate
+            const minutes = ((profileData.totalCommands || 0) % 10) * 6;
+            totalTimeField.textContent = `${hours}h ${minutes}m`;
+        }
         
         console.log('✅ Profile display updated successfully');
     }
