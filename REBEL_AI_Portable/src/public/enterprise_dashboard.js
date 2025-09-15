@@ -2069,7 +2069,14 @@ class EnterpriseDashboard {
         
         // Scroll to terminal settings section after a brief delay
         setTimeout(() => {
-            const terminalSection = document.querySelector('.preferences-section h3[class="section-title"]:contains("Terminal Settings")');
+            // Find Terminal Settings section by text content (contains() is not valid in CSS selectors)
+            const sectionTitles = document.querySelectorAll('.preferences-section h3.section-title');
+            let terminalSection = null;
+            sectionTitles.forEach(title => {
+                if (title.textContent.includes('Terminal Settings')) {
+                    terminalSection = title;
+                }
+            });
             if (terminalSection) {
                 terminalSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
             }
