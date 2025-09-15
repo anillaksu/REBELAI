@@ -194,9 +194,21 @@ class REBELAIServer {
             });
         });
 
-        // Main root route - redirect to login or dashboard based on auth
+        // Main root route - simplified health check for deployment, redirect for browsers
         this.app.get('/', (req, res) => {
-            // 🔒 SECURITY: Safe cookie checking with fallback
+            // For deployment health checks - detect based on Accept header
+            const accept = req.headers['accept'] || '';
+            const isBrowser = accept.includes('text/html');
+            
+            if (!isBrowser) {
+                // Return simple health status for deployment/monitoring tools
+                return res.status(200).json({ 
+                    status: 'healthy', 
+                    server: 'REBEL AI'
+                });
+            }
+            
+            // 🔒 SECURITY: Safe cookie checking with fallback for browser requests
             const sessionToken = req.cookies ? req.cookies['rebel_session_token'] : null;
             const authHeader = req.headers.authorization;
             
