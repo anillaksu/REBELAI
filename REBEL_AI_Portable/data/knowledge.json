@@ -329,6 +329,22 @@
         ],
         "last_updated": "2025-09-15T08:19:30.782Z",
         "success_rate": 0
+      },
+      "hi": {
+        "total_executions": 1,
+        "successful_executions": 0,
+        "failure_patterns": [
+          {
+            "pattern": "command_not_found",
+            "description": "Command does not exist on this platform",
+            "suggested_action": "find_alternative",
+            "count": 1,
+            "first_seen": "2025-09-15T10:21:21.134Z",
+            "last_seen": "2025-09-15T10:21:21.134Z"
+          }
+        ],
+        "last_updated": "2025-09-15T10:21:21.134Z",
+        "success_rate": 0
       }
     }
   },
@@ -578,6 +594,14 @@
         ],
         "confidence": 0.19999999999999998,
         "last_tested": "2025-09-15T08:19:30.782Z"
+      },
+      "hi": {
+        "works": false,
+        "variations": [
+          "hi"
+        ],
+        "confidence": 0.19999999999999998,
+        "last_tested": "2025-09-15T10:21:21.134Z"
       }
     },
     "darwin": {
@@ -757,11 +781,36 @@
           "usage_count": 1,
           "success_rate": 0,
           "avg_execution_time": 13
+        },
+        "hi": {
+          "usage_count": 1,
+          "success_rate": 0,
+          "avg_execution_time": 15
         }
       },
       "performance_metrics": {},
       "capabilities": {},
-      "last_seen": "2025-09-15T08:42:56.946Z"
+      "last_seen": "2025-09-15T10:21:21.134Z"
+    }
+  },
+  "conversationLearning": {
+    "totalConversations": 3,
+    "uniqueIntents": 1,
+    "dijkstraNodes": 2,
+    "topIntents": [
+      {
+        "intent": "command_execution",
+        "count": 3
+      }
+    ],
+    "learningEfficiency": 0.3333333333333333,
+    "dijkstraOptimizationMetrics": {
+      "totalNodes": 2,
+      "totalConnections": 2,
+      "averageWeight": "2.925",
+      "pathUsage": 0,
+      "averageSuccessRate": "0.000",
+      "optimizationEfficiency": "1.00"
     }
   }
 }
