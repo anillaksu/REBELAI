@@ -1285,8 +1285,11 @@ class EnterpriseDashboard {
     async refreshMFAStatus() {
         this.showNotification('🔄 Refreshing MFA status...', 'info');
         console.log('🛡️ MFA Status Refresh requested');
+        console.log('🔑 Auth Token:', this.authToken ? 'Present' : 'MISSING');
+        console.log('🌍 Window Token:', window.REBEL_SESSION_TOKEN ? 'Present' : 'MISSING');
         
         try {
+            console.log('📡 Making API call to /api/mfa/status');
             const response = await fetch('/api/mfa/status', {
                 method: 'GET',
                 headers: {
@@ -1295,6 +1298,8 @@ class EnterpriseDashboard {
                 },
                 credentials: 'include'
             });
+            
+            console.log('📡 API Response status:', response.status);
             
             if (response.ok) {
                 const mfaData = await response.json();

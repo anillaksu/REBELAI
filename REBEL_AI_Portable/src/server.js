@@ -114,7 +114,17 @@ class REBELAIServer {
 
     setupStaticFiles() {
         const publicPath = path.join(__dirname, 'public');
-        this.app.use(express.static(publicPath));
+        
+        // Disable caching for development - force browser to reload files
+        this.app.use(express.static(publicPath, {
+            maxAge: 0,
+            etag: false,
+            setHeaders: (res, path) => {
+                res.set('Cache-Control', 'no-cache, no-store, must-revalidate');
+                res.set('Pragma', 'no-cache');
+                res.set('Expires', '0');
+            }
+        }));
     }
 
     // 📖 Helper method to read main HTML template
