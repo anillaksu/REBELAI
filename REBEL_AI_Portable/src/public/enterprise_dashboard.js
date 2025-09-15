@@ -468,6 +468,7 @@ class EnterpriseDashboard {
         } else if (moduleId === 'knowledge') {
             this.loadKnowledgeData();
         } else if (moduleId === 'mfa') {
+            console.log('🛡️ MFA Settings module activated - calling refreshMFAStatus()');
             this.refreshMFAStatus();
         } else if (moduleId === 'profile') {
             this.loadProfileData();
@@ -1443,16 +1444,42 @@ class EnterpriseDashboard {
     }
 
     updateMFADisplay(mfaData) {
-        // Update MFA status in UI
-        const mfaStatus = document.getElementById('mfaStatus');
-        if (mfaStatus) {
-            mfaStatus.textContent = mfaData.mfaEnabled ? 'Enabled' : 'Disabled';
-        }
+        console.log('🔐 Updating MFA display with:', mfaData);
         
-        const backupCodesCount = document.getElementById('backupCodesCount');
-        if (backupCodesCount) {
-            backupCodesCount.textContent = `${mfaData.backupCodesRemaining || 0} codes remaining`;
+        // Update Authentication Status text (HTML ID: mfaStatusText)
+        const mfaStatusText = document.getElementById('mfaStatusText');
+        if (mfaStatusText) {
+            mfaStatusText.textContent = mfaData.mfaEnabled ? 'Enabled' : 'Disabled';
+            mfaStatusText.style.color = mfaData.mfaEnabled ? 'var(--cyber-green)' : 'var(--text-muted)';
         }
+
+        // Update MFA Status Indicator  
+        const mfaStatusIndicator = document.getElementById('mfaStatusIndicator');
+        if (mfaStatusIndicator) {
+            mfaStatusIndicator.textContent = mfaData.mfaEnabled ? '✅' : '❌';
+            mfaStatusIndicator.style.color = mfaData.mfaEnabled ? 'var(--cyber-green)' : 'var(--text-error)';
+        }
+
+        // Update backup codes info (find loading-codes element)
+        const loadingCodes = document.querySelector('.loading-codes');
+        if (loadingCodes) {
+            loadingCodes.textContent = `${mfaData.backupCodesRemaining || 0} codes remaining`;
+            loadingCodes.style.color = 'var(--text-primary)';
+        }
+
+        // Update Configure button text based on MFA status
+        const configureMFABtn = document.getElementById('configureMFABtn');
+        if (configureMFABtn) {
+            if (mfaData.mfaEnabled) {
+                configureMFABtn.textContent = '🔄 Reconfigure';
+                configureMFABtn.className = 'mfa-toggle-btn secondary';
+            } else {
+                configureMFABtn.textContent = 'Configure';
+                configureMFABtn.className = 'mfa-toggle-btn primary';
+            }
+        }
+
+        console.log('✅ MFA display updated successfully');
     }
 
     displayMFASetup(setupData) {
