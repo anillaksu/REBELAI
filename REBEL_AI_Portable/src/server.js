@@ -55,8 +55,8 @@ class REBELAIServer {
     }
 
     setupMiddleware() {
-        // Enable trust proxy for rate limiting
-        this.app.set('trust proxy', true);
+        // Enable trust proxy for rate limiting (specific to Replit proxy)
+        this.app.set('trust proxy', 1);
         
         // Restrict CORS to localhost only
         this.app.use(cors({

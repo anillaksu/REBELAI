@@ -99,7 +99,7 @@ class AuthManager {
         try {
             // Rate limiting check
             const rateLimitKey = `${ipAddress}-${username}`;
-            if (this.isRateLimited(rateLimitKey, this.loginAttempts)) {
+            if (this.isRateLimited && this.isRateLimited(rateLimitKey, this.loginAttempts)) {
                 throw new Error('Too many login attempts. Please try again later.');
             }
 
@@ -152,7 +152,9 @@ class AuthManager {
             });
 
             // Clear rate limiting on successful login
-            this.loginAttempts.delete(rateLimitKey);
+            if (this.loginAttempts && rateLimitKey) {
+                this.loginAttempts.delete(rateLimitKey);
+            }
 
             // Log successful login
             await this.authDb.logAuditEvent({
@@ -197,7 +199,9 @@ class AuthManager {
             });
 
             // Track rate limiting
-            this.trackAttempt(rateLimitKey, this.loginAttempts);
+            if (this.trackAttempt && rateLimitKey) {
+                this.trackAttempt(rateLimitKey, this.loginAttempts);
+            }
             
             throw error;
         }
@@ -208,7 +212,9 @@ class AuthManager {
         return async (req, res, next) => {
             try {
                 const authHeader = req.headers.authorization;
-                const sessionToken = req.headers['x-session-token'] || req.cookies.sessionToken;
+                const sessionToken = req.headers['x-session-token'] || 
+                                    (req.cookies && req.cookies.sessionToken) || 
+                                    (req.cookies && req.cookies.rebel_session_token);
 
                 let user = null;
 
