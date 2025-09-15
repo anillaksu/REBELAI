@@ -4255,6 +4255,754 @@ If you lose access to your authentication device, you can use these codes to reg
 
         // Add CSS for terminal enhancements
         this.addTerminalEnhancementStyles();
+
+        // Initialize mobile enhancements
+        this.initializeMobileEnhancements();
+    }
+
+    // ==========================================
+    // 📱 MOBILE ENHANCEMENTS
+    // ==========================================
+
+    initializeMobileEnhancements() {
+        // Check if mobile device
+        this.isMobile = window.innerWidth <= 768 || /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+        
+        // Initialize debounce timers
+        this.resizeDebounceTimer = null;
+        this.orientationDebounceTimer = null;
+        
+        if (this.isMobile) {
+            this.setupMobileNavigation();
+            this.setupTouchGestures();
+            this.setupMobileTerminal();
+            this.setupPullToRefresh();
+            this.createMobileTabBar();
+            this.addMobileEventListeners();
+            
+            console.log('📱 Mobile enhancements initialized');
+        }
+
+        // PERFORMANCE FIX: Debounced orientation changes (300ms)
+        window.addEventListener('orientationchange', () => {
+            clearTimeout(this.orientationDebounceTimer);
+            this.orientationDebounceTimer = setTimeout(() => {
+                this.handleOrientationChange();
+            }, 300);
+        }, { passive: true });
+
+        // PERFORMANCE FIX: Debounced resize events (300ms) 
+        window.addEventListener('resize', () => {
+            clearTimeout(this.resizeDebounceTimer);
+            this.resizeDebounceTimer = setTimeout(() => {
+                this.handleResponsiveChange();
+            }, 300);
+        }, { passive: true });
+    }
+
+    setupMobileNavigation() {
+        // LIFECYCLE FIX: Check if mobile menu button already exists to avoid duplicates
+        const existingBtn = document.getElementById('mobileMenuBtn');
+        if (!existingBtn) {
+            const mobileMenuBtn = document.createElement('button');
+            mobileMenuBtn.id = 'mobileMenuBtn';
+            mobileMenuBtn.className = 'mobile-menu-btn';
+            mobileMenuBtn.innerHTML = '☰';
+            
+            // ACCESSIBILITY FIX: Add proper aria attributes
+            mobileMenuBtn.setAttribute('aria-label', 'Open navigation menu');
+            mobileMenuBtn.setAttribute('aria-expanded', 'false');
+            mobileMenuBtn.setAttribute('role', 'button');
+            
+            mobileMenuBtn.style.cssText = `
+                display: none;
+                background: var(--bg-glass);
+                border: 1px solid var(--border-primary);
+                color: var(--text-primary);
+                padding: 8px 12px;
+                border-radius: 8px;
+                font-size: 18px;
+                cursor: pointer;
+                transition: all var(--transition-fast);
+            `;
+
+            // Add to header
+            const headerLeft = document.querySelector('.header-left');
+            if (headerLeft) {
+                headerLeft.insertBefore(mobileMenuBtn, headerLeft.firstChild);
+            }
+
+            // Mobile menu toggle handler with accessibility
+            mobileMenuBtn.addEventListener('click', () => {
+                this.toggleMobileMenu();
+            });
+            
+            // ACCESSIBILITY FIX: Keyboard support
+            mobileMenuBtn.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    this.toggleMobileMenu();
+                }
+            });
+        }
+
+        // LIFECYCLE FIX: Check if overlay exists to avoid duplicates
+        const existingOverlay = document.getElementById('sidebarOverlay');
+        if (!existingOverlay) {
+            const overlay = document.createElement('div');
+            overlay.id = 'sidebarOverlay';
+            overlay.className = 'sidebar-overlay';
+            
+            // ACCESSIBILITY FIX: Add proper aria attributes and role
+            overlay.setAttribute('role', 'button');
+            overlay.setAttribute('aria-label', 'Close navigation menu');
+            overlay.setAttribute('tabindex', '0');
+            
+            overlay.addEventListener('click', () => {
+                this.closeMobileMenu();
+            });
+            
+            // ACCESSIBILITY FIX: Keyboard support for overlay
+            overlay.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ' || e.key === 'Escape') {
+                    e.preventDefault();
+                    this.closeMobileMenu();
+                }
+            });
+            
+            document.body.appendChild(overlay);
+        }
+
+        // Show mobile menu button on mobile
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        if (mobileMenuBtn && this.isMobile) {
+            mobileMenuBtn.style.display = 'block';
+        }
+    }
+
+    toggleMobileMenu() {
+        const sidebar = document.querySelector('.navigation-sidebar');
+        const overlay = document.getElementById('sidebarOverlay');
+        const menuBtn = document.getElementById('mobileMenuBtn');
+        
+        if (sidebar && overlay) {
+            const isOpen = sidebar.classList.contains('open');
+            
+            if (isOpen) {
+                this.closeMobileMenu();
+            } else {
+                this.openMobileMenu();
+            }
+            
+            // ACCESSIBILITY FIX: Update aria-expanded state
+            if (menuBtn) {
+                menuBtn.setAttribute('aria-expanded', !isOpen);
+            }
+        }
+    }
+
+    openMobileMenu() {
+        const sidebar = document.querySelector('.navigation-sidebar');
+        const overlay = document.getElementById('sidebarOverlay');
+        const menuBtn = document.getElementById('mobileMenuBtn');
+        
+        if (sidebar && overlay) {
+            sidebar.classList.add('open');
+            overlay.classList.add('active');
+            document.body.style.overflow = 'hidden';
+            
+            // ACCESSIBILITY FIX: Focus management
+            if (menuBtn) {
+                menuBtn.setAttribute('aria-expanded', 'true');
+            }
+            
+            // Focus first navigation item for keyboard users
+            const firstNavItem = sidebar.querySelector('.nav-item');
+            if (firstNavItem) {
+                firstNavItem.focus();
+            }
+            
+            // ACCESSIBILITY FIX: Trap focus in sidebar
+            this.trapFocusInSidebar(true);
+        }
+    }
+
+    closeMobileMenu() {
+        const sidebar = document.querySelector('.navigation-sidebar');
+        const overlay = document.getElementById('sidebarOverlay');
+        const menuBtn = document.getElementById('mobileMenuBtn');
+        
+        if (sidebar && overlay) {
+            sidebar.classList.remove('open');
+            overlay.classList.remove('active');
+            document.body.style.overflow = '';
+            
+            // ACCESSIBILITY FIX: Update aria-expanded and return focus
+            if (menuBtn) {
+                menuBtn.setAttribute('aria-expanded', 'false');
+                menuBtn.focus(); // Return focus to menu button
+            }
+            
+            // Release focus trap
+            this.trapFocusInSidebar(false);
+        }
+    }
+
+    setupTouchGestures() {
+        let startX, startY, currentX, currentY;
+        let isSwipeGesture = false;
+
+        // PERFORMANCE FIX: All touch listeners are passive for optimal scrolling
+        document.addEventListener('touchstart', (e) => {
+            startX = e.touches[0].clientX;
+            startY = e.touches[0].clientY;
+            isSwipeGesture = true;
+        }, { passive: true });
+
+        document.addEventListener('touchmove', (e) => {
+            if (!isSwipeGesture) return;
+            
+            currentX = e.touches[0].clientX;
+            currentY = e.touches[0].clientY;
+        }, { passive: true });
+
+        document.addEventListener('touchend', (e) => {
+            if (!isSwipeGesture) return;
+            
+            const diffX = currentX - startX;
+            const diffY = currentY - startY;
+            const absDiffX = Math.abs(diffX);
+            const absDiffY = Math.abs(diffY);
+
+            // Horizontal swipe (sidebar)
+            if (absDiffX > absDiffY && absDiffX > 50) {
+                if (diffX > 0 && startX < 50) {
+                    // Swipe right from left edge - open menu
+                    this.openMobileMenu();
+                } else if (diffX < 0 && startX > window.innerWidth - 50) {
+                    // Swipe left from right edge
+                    this.handleSwipeLeft();
+                }
+            }
+
+            // Vertical swipe (pull to refresh)
+            if (absDiffY > absDiffX && absDiffY > 100 && diffY > 0 && startY < 100) {
+                this.handlePullToRefresh();
+            }
+
+            isSwipeGesture = false;
+        }, { passive: true });
+    }
+
+    setupMobileTerminal() {
+        const terminalInput = document.getElementById('commandInput');
+        if (!terminalInput) return;
+
+        // Mobile terminal enhancements
+        terminalInput.addEventListener('focus', () => {
+            // Scroll terminal into view on mobile
+            if (this.isMobile) {
+                setTimeout(() => {
+                    terminalInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }, 300);
+            }
+        });
+
+        // Handle virtual keyboard
+        if (this.isMobile) {
+            let initialHeight = window.innerHeight;
+            
+            window.addEventListener('resize', () => {
+                const currentHeight = window.innerHeight;
+                const isKeyboardOpen = currentHeight < initialHeight * 0.75;
+                
+                if (isKeyboardOpen) {
+                    // Keyboard is open - adjust UI
+                    document.body.classList.add('keyboard-open');
+                    this.adjustForVirtualKeyboard(true);
+                } else {
+                    // Keyboard is closed
+                    document.body.classList.remove('keyboard-open');
+                    this.adjustForVirtualKeyboard(false);
+                }
+            });
+        }
+
+        // Mobile-specific terminal shortcuts
+        this.addMobileTerminalShortcuts();
+    }
+
+    adjustForVirtualKeyboard(isOpen) {
+        const terminalContainer = document.querySelector('.terminal-input-container');
+        const tabBar = document.querySelector('.mobile-tab-bar');
+        
+        if (terminalContainer) {
+            if (isOpen) {
+                terminalContainer.style.position = 'fixed';
+                terminalContainer.style.bottom = '10px';
+                terminalContainer.style.left = '10px';
+                terminalContainer.style.right = '10px';
+                terminalContainer.style.zIndex = '10000';
+            } else {
+                terminalContainer.style.position = '';
+                terminalContainer.style.bottom = '';
+                terminalContainer.style.left = '';
+                terminalContainer.style.right = '';
+                terminalContainer.style.zIndex = '';
+            }
+        }
+
+        if (tabBar) {
+            tabBar.style.display = isOpen ? 'none' : 'flex';
+        }
+    }
+
+    addMobileTerminalShortcuts() {
+        // Add mobile-friendly quick command buttons
+        const terminalContainer = document.querySelector('.terminal-input-container');
+        if (!terminalContainer || !this.isMobile) return;
+
+        if (!document.querySelector('.mobile-terminal-shortcuts')) {
+            const shortcuts = document.createElement('div');
+            shortcuts.className = 'mobile-terminal-shortcuts';
+            shortcuts.style.cssText = `
+                display: flex;
+                gap: 8px;
+                margin-top: 12px;
+                overflow-x: auto;
+                padding: 4px 0;
+                -webkit-overflow-scrolling: touch;
+            `;
+
+            const commonCommands = ['ls', 'pwd', 'whoami', 'clear', 'history', 'df -h', 'ps aux'];
+            
+            commonCommands.forEach(cmd => {
+                const btn = document.createElement('button');
+                btn.className = 'mobile-shortcut-btn';
+                btn.textContent = cmd;
+                btn.style.cssText = `
+                    background: var(--bg-glass);
+                    border: 1px solid var(--border-secondary);
+                    color: var(--text-primary);
+                    padding: 8px 12px;
+                    border-radius: 16px;
+                    font-size: 12px;
+                    white-space: nowrap;
+                    cursor: pointer;
+                    transition: all var(--transition-fast);
+                `;
+                
+                btn.addEventListener('click', () => {
+                    const commandInput = document.getElementById('commandInput');
+                    if (commandInput) {
+                        commandInput.value = cmd;
+                        commandInput.focus();
+                    }
+                });
+                
+                shortcuts.appendChild(btn);
+            });
+
+            terminalContainer.appendChild(shortcuts);
+        }
+    }
+
+    setupPullToRefresh() {
+        // LIFECYCLE FIX: Check if pull-to-refresh already exists to avoid duplicates
+        const existingIndicator = document.querySelector('.pull-to-refresh');
+        if (existingIndicator) return;
+        
+        let startY = 0;
+        let currentY = 0;
+        let isPullToRefresh = false;
+
+        const pullIndicator = document.createElement('div');
+        pullIndicator.className = 'pull-to-refresh';
+        pullIndicator.textContent = '🔄 Pull to refresh';
+        
+        // ACCESSIBILITY FIX: Add proper aria attributes
+        pullIndicator.setAttribute('role', 'status');
+        pullIndicator.setAttribute('aria-label', 'Pull to refresh indicator');
+        pullIndicator.setAttribute('aria-live', 'polite');
+        
+        document.body.appendChild(pullIndicator);
+
+        // PERFORMANCE FIX: All touch listeners are passive
+        document.addEventListener('touchstart', (e) => {
+            startY = e.touches[0].clientY;
+        }, { passive: true });
+
+        document.addEventListener('touchmove', (e) => {
+            if (window.scrollY > 0) return;
+
+            currentY = e.touches[0].clientY;
+            const diffY = currentY - startY;
+
+            if (diffY > 0 && diffY < 150) {
+                isPullToRefresh = true;
+                const progress = Math.min(diffY / 150, 1);
+                pullIndicator.style.transform = `translateX(-50%) translateY(${-100 + progress * 116}px)`;
+                
+                if (progress > 0.7) {
+                    pullIndicator.classList.add('active');
+                    pullIndicator.textContent = '🔄 Release to refresh';
+                } else {
+                    pullIndicator.classList.remove('active');
+                    pullIndicator.textContent = '🔄 Pull to refresh';
+                }
+            }
+        }, { passive: true });
+
+        document.addEventListener('touchend', (e) => {
+            if (isPullToRefresh && pullIndicator.classList.contains('active')) {
+                this.handlePullToRefresh();
+            }
+            
+            pullIndicator.classList.remove('active');
+            pullIndicator.style.transform = 'translateX(-50%) translateY(-100%)';
+            isPullToRefresh = false;
+        }, { passive: true });
+    }
+
+    handlePullToRefresh() {
+        this.showNotification('🔄 Refreshing dashboard...', 'info');
+        this.refreshDashboard();
+    }
+
+    createMobileTabBar() {
+        // LIFECYCLE FIX: Check if mobile tab bar already exists to avoid duplicates
+        if (!this.isMobile || document.querySelector('.mobile-tab-bar')) return;
+
+        const tabBar = document.createElement('div');
+        tabBar.className = 'mobile-tab-bar';
+        
+        // ACCESSIBILITY FIX: Add proper role and label for tab bar
+        tabBar.setAttribute('role', 'tablist');
+        tabBar.setAttribute('aria-label', 'Navigation tabs');
+
+        // INTEGRATION FIX: Expanded tabs to cover all desktop modules
+        const tabs = [
+            { id: 'dashboard', icon: '🏠', label: 'Home' },
+            { id: 'terminal', icon: '💻', label: 'Terminal' },
+            { id: 'systemMonitor', icon: '📊', label: 'System' },
+            { id: 'networkMonitor', icon: '🌐', label: 'Network' },
+            { id: 'auditLogs', icon: '📝', label: 'Logs' },
+            { id: 'mfaSettings', icon: '🔐', label: 'Security' },
+            { id: 'profile', icon: '👤', label: 'Profile' },
+            { id: 'preferences', icon: '⚙️', label: 'Settings' }
+        ];
+
+        tabs.forEach((tab, index) => {
+            const tabItem = document.createElement('button');
+            tabItem.className = 'mobile-tab-item';
+            tabItem.dataset.module = tab.id;
+            
+            // ACCESSIBILITY FIX: Proper tab attributes and keyboard support
+            tabItem.setAttribute('role', 'tab');
+            tabItem.setAttribute('aria-controls', `${tab.id}Module`);
+            tabItem.setAttribute('aria-selected', 'false');
+            tabItem.setAttribute('tabindex', index === 0 ? '0' : '-1');
+            tabItem.setAttribute('aria-label', `${tab.label} tab`);
+            
+            tabItem.innerHTML = `
+                <div class="mobile-tab-icon" aria-hidden="true">${tab.icon}</div>
+                <div class="mobile-tab-label">${tab.label}</div>
+            `;
+
+            // Click handler
+            tabItem.addEventListener('click', () => {
+                this.handleMobileTabClick(tab.id);
+            });
+            
+            // ACCESSIBILITY FIX: Keyboard navigation support
+            tabItem.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    this.handleMobileTabClick(tab.id);
+                } else if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
+                    e.preventDefault();
+                    this.navigateTabsWithKeyboard(e.key === 'ArrowRight' ? 1 : -1, tabItem);
+                }
+            });
+
+            tabBar.appendChild(tabItem);
+        });
+
+        document.body.appendChild(tabBar);
+
+        // Set initial active tab
+        this.updateMobileTabBar(this.currentModule || 'dashboard');
+    }
+
+    handleMobileTabClick(moduleId) {
+        this.switchModule(moduleId);
+        this.updateMobileTabBar(moduleId);
+        this.closeMobileMenu();
+        
+        // Show swipe hint for new users
+        this.showSwipeHint();
+    }
+
+    updateMobileTabBar(activeModule) {
+        const tabItems = document.querySelectorAll('.mobile-tab-item');
+        tabItems.forEach((item, index) => {
+            const isActive = item.dataset.module === activeModule;
+            item.classList.toggle('active', isActive);
+            
+            // ACCESSIBILITY FIX: Update aria-selected and tabindex
+            item.setAttribute('aria-selected', isActive ? 'true' : 'false');
+            item.setAttribute('tabindex', isActive ? '0' : '-1');
+        });
+    }
+
+    showSwipeHint() {
+        if (localStorage.getItem('swipeHintShown')) return;
+
+        const hint = document.createElement('div');
+        hint.className = 'swipe-indicator';
+        hint.textContent = '👈 Swipe left or right to navigate';
+        document.body.appendChild(hint);
+
+        setTimeout(() => {
+            hint.remove();
+        }, 3000);
+
+        localStorage.setItem('swipeHintShown', 'true');
+    }
+
+    addMobileEventListeners() {
+        // Handle mobile-specific events
+        document.addEventListener('visibilitychange', () => {
+            if (!document.hidden && this.isMobile) {
+                // App became visible - refresh data
+                this.refreshCurrentModule();
+            }
+        });
+
+        // Handle device orientation change
+        window.addEventListener('orientationchange', () => {
+            setTimeout(() => {
+                this.handleOrientationChange();
+            }, 500);
+        });
+
+        // Handle mobile keyboard events
+        if (this.isMobile) {
+            document.addEventListener('focusin', (e) => {
+                if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
+                    this.handleMobileInputFocus(e.target);
+                }
+            });
+
+            document.addEventListener('focusout', (e) => {
+                if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
+                    this.handleMobileInputBlur(e.target);
+                }
+            });
+        }
+    }
+
+    handleOrientationChange() {
+        // Close mobile menu on orientation change
+        this.closeMobileMenu();
+        
+        // Refresh layout
+        this.refreshCurrentModule();
+        
+        // Adjust virtual keyboard handling
+        if (this.isMobile) {
+            setTimeout(() => {
+                this.adjustForVirtualKeyboard(false);
+            }, 100);
+        }
+    }
+
+    handleResponsiveChange() {
+        const wasMobile = this.isMobile;
+        this.isMobile = window.innerWidth <= 768;
+
+        if (wasMobile !== this.isMobile) {
+            // LIFECYCLE FIX: Properly cleanup before switching modes
+            if (wasMobile && !this.isMobile) {
+                // Switching from mobile to desktop
+                console.log('📱 Switching from mobile to desktop mode');
+                this.cleanupMobileEnhancements();
+                this.closeMobileMenu(); // Ensure mobile menu is closed
+            } else if (!wasMobile && this.isMobile) {
+                // Switching from desktop to mobile
+                console.log('🖥️ Switching from desktop to mobile mode');
+                this.initializeMobileEnhancements();
+            }
+        }
+        
+        // Update mobile menu button visibility regardless
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        if (mobileMenuBtn) {
+            mobileMenuBtn.style.display = this.isMobile ? 'block' : 'none';
+        }
+    }
+
+    handleMobileInputFocus(input) {
+        // Scroll input into view
+        setTimeout(() => {
+            input.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }, 300);
+    }
+
+    handleMobileInputBlur(input) {
+        // Reset scroll position
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    handleSwipeLeft() {
+        // Navigate to next module
+        const currentModule = this.currentModule;
+        const modules = ['terminal', 'systemMonitor', 'networkMonitor', 'auditLogs', 'mfaSettings'];
+        const currentIndex = modules.indexOf(currentModule);
+        const nextIndex = (currentIndex + 1) % modules.length;
+        
+        this.switchModule(modules[nextIndex]);
+        this.updateMobileTabBar(modules[nextIndex]);
+    }
+
+    refreshCurrentModule() {
+        // Refresh current module data
+        switch (this.currentModule) {
+            case 'systemMonitor':
+                this.refreshSystemMonitor();
+                break;
+            case 'networkMonitor':
+                this.refreshNetworkMonitor();
+                break;
+            case 'auditLogs':
+                this.refreshAuditLogs();
+                break;
+            default:
+                this.refreshDashboard();
+        }
+    }
+
+    cleanupMobileEnhancements() {
+        console.log('🧹 Cleaning up mobile enhancements');
+        
+        // LIFECYCLE FIX: Comprehensive cleanup of mobile-specific elements
+        const elementsToRemove = [
+            '.mobile-tab-bar',
+            '.pull-to-refresh', 
+            '.sidebar-overlay',
+            '.mobile-terminal-shortcuts',
+            '.swipe-indicator',
+            '.mobile-menu-btn'
+        ];
+
+        elementsToRemove.forEach(selector => {
+            const elements = document.querySelectorAll(selector);
+            elements.forEach(element => {
+                if (element) {
+                    element.remove();
+                    console.log(`🧹 Removed ${selector}`);
+                }
+            });
+        });
+
+        // Reset all body styles and classes
+        document.body.style.overflow = '';
+        document.body.classList.remove('keyboard-open');
+        
+        // Ensure navigation sidebar is reset for desktop
+        const sidebar = document.querySelector('.navigation-sidebar');
+        if (sidebar) {
+            sidebar.classList.remove('open');
+            sidebar.style.position = '';
+            sidebar.style.left = '';
+            sidebar.style.width = '';
+            sidebar.style.height = '';
+        }
+
+        // Clear any lingering focus traps
+        this.trapFocusInSidebar(false);
+        
+        // Clear debounce timers
+        if (this.resizeDebounceTimer) {
+            clearTimeout(this.resizeDebounceTimer);
+            this.resizeDebounceTimer = null;
+        }
+        if (this.orientationDebounceTimer) {
+            clearTimeout(this.orientationDebounceTimer);
+            this.orientationDebounceTimer = null;
+        }
+        
+        console.log('✅ Mobile cleanup completed');
+    }
+    
+    // ACCESSIBILITY FIX: Focus trap for mobile sidebar
+    trapFocusInSidebar(enable) {
+        const sidebar = document.querySelector('.navigation-sidebar');
+        if (!sidebar) return;
+        
+        if (enable) {
+            // Get all focusable elements in sidebar
+            const focusableElements = sidebar.querySelectorAll(
+                'a[href], button, [tabindex]:not([tabindex="-1"]), input, select, textarea'
+            );
+            
+            if (focusableElements.length === 0) return;
+            
+            const firstElement = focusableElements[0];
+            const lastElement = focusableElements[focusableElements.length - 1];
+            
+            // Store the trap handler to remove it later
+            this.focusTrapHandler = (e) => {
+                if (e.key !== 'Tab') return;
+                
+                if (e.shiftKey) {
+                    // Shift + Tab - going backwards
+                    if (document.activeElement === firstElement) {
+                        e.preventDefault();
+                        lastElement.focus();
+                    }
+                } else {
+                    // Tab - going forwards  
+                    if (document.activeElement === lastElement) {
+                        e.preventDefault();
+                        firstElement.focus();
+                    }
+                }
+            };
+            
+            document.addEventListener('keydown', this.focusTrapHandler);
+        } else {
+            // Remove focus trap
+            if (this.focusTrapHandler) {
+                document.removeEventListener('keydown', this.focusTrapHandler);
+                this.focusTrapHandler = null;
+            }
+        }
+    }
+    
+    // ACCESSIBILITY FIX: Keyboard navigation for mobile tab bar
+    navigateTabsWithKeyboard(direction, currentTab) {
+        const tabItems = Array.from(document.querySelectorAll('.mobile-tab-item'));
+        const currentIndex = tabItems.indexOf(currentTab);
+        
+        if (currentIndex === -1) return;
+        
+        let nextIndex = currentIndex + direction;
+        
+        // Wrap around
+        if (nextIndex < 0) {
+            nextIndex = tabItems.length - 1;
+        } else if (nextIndex >= tabItems.length) {
+            nextIndex = 0;
+        }
+        
+        const nextTab = tabItems[nextIndex];
+        if (nextTab) {
+            // Update focus and selection
+            currentTab.setAttribute('tabindex', '-1');
+            nextTab.setAttribute('tabindex', '0');
+            nextTab.focus();
+        }
     }
 
     addTerminalEnhancementStyles() {

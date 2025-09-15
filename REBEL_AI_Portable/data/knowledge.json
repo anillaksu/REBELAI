@@ -426,19 +426,19 @@
         "success_rate": 0
       },
       "history": {
-        "total_executions": 1,
+        "total_executions": 2,
         "successful_executions": 0,
         "failure_patterns": [
           {
             "pattern": "unknown_error",
             "description": "Unrecognized error pattern",
             "suggested_action": "manual_review",
-            "count": 1,
+            "count": 2,
             "first_seen": "2025-09-15T11:21:11.383Z",
-            "last_seen": "2025-09-15T11:21:11.383Z"
+            "last_seen": "2025-09-15T19:20:26.688Z"
           }
         ],
-        "last_updated": "2025-09-15T11:21:11.383Z",
+        "last_updated": "2025-09-15T19:20:26.688Z",
         "success_rate": 0
       },
       "groups": {
@@ -831,8 +831,8 @@
         "variations": [
           "history | tail -10"
         ],
-        "confidence": 0.19999999999999998,
-        "last_tested": "2025-09-15T11:21:11.383Z"
+        "confidence": 0.09999999999999998,
+        "last_tested": "2025-09-15T19:20:26.689Z"
       },
       "groups": {
         "works": true,
@@ -1180,29 +1180,34 @@
           "usage_count": 1,
           "success_rate": 0,
           "avg_execution_time": 7508.75
+        },
+        "history": {
+          "usage_count": 1,
+          "success_rate": 0,
+          "avg_execution_time": 7517.25
         }
       },
       "performance_metrics": {},
       "capabilities": {},
-      "last_seen": "2025-09-15T19:09:51.330Z"
+      "last_seen": "2025-09-15T19:20:26.689Z"
     }
   },
   "conversationLearning": {
-    "totalConversations": 32,
+    "totalConversations": 33,
     "uniqueIntents": 1,
     "dijkstraNodes": 2,
     "topIntents": [
       {
         "intent": "command_execution",
-        "count": 32
+        "count": 33
       }
     ],
-    "learningEfficiency": 0.03125,
+    "learningEfficiency": 0.030303030303030304,
     "dijkstraOptimizationMetrics": {
       "totalNodes": 2,
       "totalConnections": 2,
       "averageWeight": "2.925",
-      "pathUsage": 29,
+      "pathUsage": 30,
       "averageSuccessRate": "0.500",
       "optimizationEfficiency": "1.00"
     }
@@ -1211,8 +1216,8 @@
     "total_devices": 3,
     "current_device": "585cf566",
     "platforms_learned": 1,
-    "total_commands_learned": 36,
-    "avg_success_rate": 33,
+    "total_commands_learned": 37,
+    "avg_success_rate": 32,
     "fallback_routes": 2
   }
 }

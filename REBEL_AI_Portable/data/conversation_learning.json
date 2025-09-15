@@ -263,18 +263,18 @@
       "intent": "command_execution",
       "emotionalContext": "neutral",
       "learningValue": "improve_command_understanding"
+    },
+    {
+      "timestamp": "2025-09-15T19:20:45.592Z",
+      "userInput": "history | tail -10",
+      "systemResponse": "{\"commandExecuted\":true,\"wasSuccessful\":false,\"hasTranslation\":true,\"commandCount\":2,\"timestamp\":\"2025-09-15T19:20:26.691Z\",\"processingType\":\"terminal_command\"}",
+      "intent": "command_execution",
+      "emotionalContext": "neutral",
+      "learningValue": "improve_command_understanding"
     }
   ],
   "intentPatterns": {
     "command_execution": [
-      {
-        "intent": "command_execution",
-        "context": "neutral",
-        "skill": "intermediate",
-        "quality": 0.5,
-        "timestamp": "2025-09-15T13:07:11.027Z",
-        "learningValue": "system_interaction"
-      },
       {
         "intent": "command_execution",
         "context": "neutral",
@@ -346,6 +346,14 @@
         "quality": 0.5,
         "timestamp": "2025-09-15T19:10:10.395Z",
         "learningValue": "system_interaction"
+      },
+      {
+        "intent": "command_execution",
+        "context": "neutral",
+        "skill": "intermediate",
+        "quality": 0.5,
+        "timestamp": "2025-09-15T19:20:45.592Z",
+        "learningValue": "system_interaction"
       }
     ]
   },
@@ -357,7 +365,7 @@
         "system_interaction"
       ],
       "learningOpportunity": "improve_command_understanding",
-      "timestamp": 1757963410395
+      "timestamp": 1757964045592
     },
     "system_interaction": {
       "intent": "system_interaction",
@@ -371,11 +379,11 @@
   },
   "pathPerformance": {
     "command_execution": {
-      "uses": 30,
-      "averageLength": 1.9999999981373549,
+      "uses": 31,
+      "averageLength": 1.9999999990686774,
       "successRate": 0.5,
-      "lastUsed": 1757963410395
+      "lastUsed": 1757964045592
     }
   },
-  "lastUpdated": "2025-09-15T19:10:10.395Z"
+  "lastUpdated": "2025-09-15T19:20:45.592Z"
 }
