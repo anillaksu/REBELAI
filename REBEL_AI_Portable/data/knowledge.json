@@ -18,10 +18,10 @@
         "success_rate": 88.88888888888889
       },
       "whoami": {
-        "total_executions": 2,
-        "successful_executions": 2,
+        "total_executions": 3,
+        "successful_executions": 3,
         "failure_patterns": [],
-        "last_updated": "2025-09-15T02:55:49.894Z",
+        "last_updated": "2025-09-15T19:08:56.432Z",
         "success_rate": 100
       },
       "date": {
@@ -501,6 +501,30 @@
         "failure_patterns": [],
         "last_updated": "2025-09-15T18:51:47.365Z",
         "success_rate": 100
+      },
+      "netstat": {
+        "total_executions": 1,
+        "successful_executions": 0,
+        "failure_patterns": [
+          {
+            "pattern": "command_not_found",
+            "description": "Command does not exist on this platform",
+            "suggested_action": "find_alternative",
+            "count": 1,
+            "first_seen": "2025-09-15T19:09:51.330Z",
+            "last_seen": "2025-09-15T19:09:51.330Z"
+          },
+          {
+            "pattern": "unknown_error",
+            "description": "Unrecognized error pattern",
+            "suggested_action": "manual_review",
+            "count": 1,
+            "first_seen": "2025-09-15T19:09:51.330Z",
+            "last_seen": "2025-09-15T19:09:51.330Z"
+          }
+        ],
+        "last_updated": "2025-09-15T19:09:51.330Z",
+        "success_rate": 0
       }
     }
   },
@@ -564,8 +588,8 @@
         "variations": [
           "whoami"
         ],
-        "confidence": 0.8999999999999999,
-        "last_tested": "2025-09-15T02:55:49.894Z"
+        "confidence": 0.9999999999999999,
+        "last_tested": "2025-09-15T19:08:56.432Z"
       },
       "date": {
         "works": true,
@@ -849,6 +873,14 @@
         ],
         "confidence": 0.7999999999999999,
         "last_tested": "2025-09-15T18:51:47.366Z"
+      },
+      "netstat": {
+        "works": false,
+        "variations": [
+          "netstat -tuln | head -10"
+        ],
+        "confidence": 0.19999999999999998,
+        "last_tested": "2025-09-15T19:09:51.330Z"
       }
     },
     "darwin": {
@@ -1138,29 +1170,39 @@
           "usage_count": 1,
           "success_rate": 0,
           "avg_execution_time": 5013
+        },
+        "whoami": {
+          "usage_count": 1,
+          "success_rate": 100,
+          "avg_execution_time": 15.5
+        },
+        "netstat": {
+          "usage_count": 1,
+          "success_rate": 0,
+          "avg_execution_time": 7508.75
         }
       },
       "performance_metrics": {},
       "capabilities": {},
-      "last_seen": "2025-09-15T19:06:30.490Z"
+      "last_seen": "2025-09-15T19:09:51.330Z"
     }
   },
   "conversationLearning": {
-    "totalConversations": 30,
+    "totalConversations": 32,
     "uniqueIntents": 1,
     "dijkstraNodes": 2,
     "topIntents": [
       {
         "intent": "command_execution",
-        "count": 30
+        "count": 32
       }
     ],
-    "learningEfficiency": 0.03333333333333333,
+    "learningEfficiency": 0.03125,
     "dijkstraOptimizationMetrics": {
       "totalNodes": 2,
       "totalConnections": 2,
       "averageWeight": "2.925",
-      "pathUsage": 27,
+      "pathUsage": 29,
       "averageSuccessRate": "0.500",
       "optimizationEfficiency": "1.00"
     }
