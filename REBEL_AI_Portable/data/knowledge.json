@@ -189,10 +189,10 @@
         "success_rate": 0
       },
       "echo": {
-        "total_executions": 4,
-        "successful_executions": 4,
+        "total_executions": 5,
+        "successful_executions": 5,
         "failure_patterns": [],
-        "last_updated": "2025-09-15T07:14:18.944Z",
+        "last_updated": "2025-09-15T07:22:42.235Z",
         "success_rate": 100
       },
       "ne": {
@@ -232,6 +232,22 @@
           }
         ],
         "last_updated": "2025-09-15T07:09:57.025Z",
+        "success_rate": 0
+      },
+      "Bana": {
+        "total_executions": 1,
+        "successful_executions": 0,
+        "failure_patterns": [
+          {
+            "pattern": "command_not_found",
+            "description": "Command does not exist on this platform",
+            "suggested_action": "find_alternative",
+            "count": 1,
+            "first_seen": "2025-09-15T07:22:27.030Z",
+            "last_seen": "2025-09-15T07:22:27.030Z"
+          }
+        ],
+        "last_updated": "2025-09-15T07:22:27.030Z",
         "success_rate": 0
       }
     }
@@ -399,10 +415,11 @@
         "variations": [
           "echo \"🚀 Merhaba! REBEL AI Terminal'e hoş geldin. Komutlarını Türkçe yazabilirsin.\"",
           "echo \"📷 Kamera sistemden erişilebilir değil. Sistem komutlarını deneyin.\"",
-          "echo \"📋 Türkçe Komutlar: saat, ben kimim, dosyalar, konum, sistem, işlemler, disk, ağ\""
+          "echo \"📋 Türkçe Komutlar: saat, ben kimim, dosyalar, konum, sistem, işlemler, disk, ağ\"",
+          "echo \"💼 Ben REBEL AI Terminal asistanıyım! Türkçe komutlarınızı sistem komutlarına çeviriyorum. Örnek: 'saat', 'dosyalar', 'sistem' yazabilirsiniz.\""
         ],
         "confidence": 1,
-        "last_tested": "2025-09-15T07:14:18.944Z"
+        "last_tested": "2025-09-15T07:22:42.235Z"
       },
       "ne": {
         "works": false,
@@ -427,6 +444,14 @@
         ],
         "confidence": 0.19999999999999998,
         "last_tested": "2025-09-15T07:09:57.025Z"
+      },
+      "Bana": {
+        "works": false,
+        "variations": [
+          "Bana yardım et"
+        ],
+        "confidence": 0.19999999999999998,
+        "last_tested": "2025-09-15T07:22:27.030Z"
       }
     },
     "darwin": {
@@ -558,9 +583,9 @@
       "first_seen": "2025-09-15T07:09:24.054Z",
       "command_preferences": {
         "echo": {
-          "usage_count": 3,
+          "usage_count": 4,
           "success_rate": 100,
-          "avg_execution_time": 39.625
+          "avg_execution_time": 28.8125
         },
         "date": {
           "usage_count": 1,
@@ -571,11 +596,16 @@
           "usage_count": 1,
           "success_rate": 0,
           "avg_execution_time": 18.5
+        },
+        "Bana": {
+          "usage_count": 1,
+          "success_rate": 0,
+          "avg_execution_time": 12
         }
       },
       "performance_metrics": {},
       "capabilities": {},
-      "last_seen": "2025-09-15T07:14:18.944Z"
+      "last_seen": "2025-09-15T07:22:42.235Z"
     }
   }
 }
