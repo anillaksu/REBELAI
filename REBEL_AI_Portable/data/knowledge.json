@@ -189,10 +189,10 @@
         "success_rate": 0
       },
       "echo": {
-        "total_executions": 9,
-        "successful_executions": 9,
+        "total_executions": 10,
+        "successful_executions": 10,
         "failure_patterns": [],
-        "last_updated": "2025-09-15T07:55:23.969Z",
+        "last_updated": "2025-09-15T07:59:34.971Z",
         "success_rate": 100
       },
       "ne": {
@@ -468,7 +468,7 @@
           "echo \"⚡ Türkçe komutları anlayıp sistem komutlarına çevirebilirim: saat, dosyalar, sistem bilgisi, kullanıcı bilgisi ve daha fazlası!\""
         ],
         "confidence": 1,
-        "last_tested": "2025-09-15T07:55:23.969Z"
+        "last_tested": "2025-09-15T07:59:34.971Z"
       },
       "ne": {
         "works": false,
@@ -658,9 +658,9 @@
       "first_seen": "2025-09-15T07:09:24.054Z",
       "command_preferences": {
         "echo": {
-          "usage_count": 8,
+          "usage_count": 9,
           "success_rate": 100,
-          "avg_execution_time": 22.05078125
+          "avg_execution_time": 34.525390625
         },
         "date": {
           "usage_count": 1,
@@ -700,7 +700,7 @@
       },
       "performance_metrics": {},
       "capabilities": {},
-      "last_seen": "2025-09-15T07:55:41.962Z"
+      "last_seen": "2025-09-15T07:59:34.971Z"
     }
   }
 }

@@ -34,6 +34,10 @@ class REBELAIServer {
         this.knowledgeManager = new KnowledgeManager();
         this.turkishTranslator = new TurkishTranslator();
         
+        // Conversation Learning Engine - niyet analizi odaklı öğrenme
+        this.conversationLearning = null;
+        this.loadConversationLearning();
+        
         this.setupMiddleware();
         this.setupRoutes();
         this.setupStaticFiles();
@@ -186,6 +190,27 @@ class REBELAIServer {
                 // Learn from execution
                 await this.knowledgeManager.learnFromExecution(finalCommand, results);
 
+                // 🧠 Conversation Learning - niyet analizi ve öğrenme  
+                if (this.conversationLearning) {
+                    try {
+                        // Güvenli user input (command, action veya finalCommand'dan birini kullan)
+                        const userInput = command || action || finalCommand || 'system_action';
+                        const systemResponse = JSON.stringify(results);
+                        
+                        const learningResult = await this.conversationLearning.learnFromConversation(
+                            userInput, 
+                            systemResponse, 
+                            { translation, optimizedCommands, timestamp: new Date().toISOString() }
+                        );
+                        
+                        if (learningResult.intentLearned) {
+                            console.log(`🎯 Intent Learning: ${learningResult.intentLearned} (quality: ${learningResult.qualityScore})`);
+                        }
+                    } catch (learningError) {
+                        console.log(`⚠️ Conversation learning error: ${learningError.message}`);
+                    }
+                }
+
                 res.json({
                     success: allSuccess,
                     results: results.map(result => ({
@@ -329,6 +354,19 @@ class REBELAIServer {
         }
         
         return action;
+    }
+
+    // Conversation Learning Engine'i yükle
+    async loadConversationLearning() {
+        try {
+            if (process.env.OPENAI_API_KEY) {
+                const ConversationLearningEngine = require('./conversation_learning_engine');
+                this.conversationLearning = new ConversationLearningEngine();
+                console.log('🎯 Conversation Learning Engine loaded');
+            }
+        } catch (error) {
+            console.log('⚠️ Conversation Learning not available:', error.message);
+        }
     }
 
     start() {
