@@ -94,7 +94,7 @@ Odak noktası: Hata analizi değil, kullanıcının gerçek niyetini anlamak.
             messages: [
                 {
                     role: "system",
-                    content: "Sen kullanıcı niyetlerini derinlemesine analiz eden bir uzmansın. Hataya değil, amaca odaklan."
+                    content: "Sen kullanıcı niyetlerini derinlemesine analiz eden bir uzmansın. Hataya değil, amaca odaklan. SADECE geçerli JSON döndür."
                 },
                 {
                     role: "user",
@@ -102,10 +102,34 @@ Odak noktası: Hata analizi değil, kullanıcının gerçek niyetini anlamak.
                 }
             ],
             response_format: { type: "json_object" },
-            max_completion_tokens: 600
+            max_tokens: 600,
+            temperature: 0
         });
 
-        return JSON.parse(response.choices[0].message.content);
+        // Güvenli JSON parsing
+        try {
+            const content = response.choices[0]?.message?.content;
+            if (!content || content.trim() === '') {
+                throw new Error('Empty response from OpenAI');
+            }
+            return JSON.parse(content);
+        } catch (jsonError) {
+            console.log(`🚨 JSON Parse Error: ${jsonError.message}, content: ${response.choices[0]?.message?.content?.substring(0, 100)}...`);
+            // Fallback intent analysis
+            return {
+                primaryIntent: "command_execution",
+                secondaryIntents: ["system_interaction"],
+                emotionalContext: "neutral",
+                skillLevel: "intermediate", 
+                domainKnowledge: "general_user",
+                conversationStyle: "direct",
+                learningOpportunity: "improve_command_understanding",
+                intentEvolution: "continue_learning",
+                optimizationPotential: 0.5,
+                knowledgeGaps: ["context_missing"],
+                successfulPatterns: ["command_pattern"]
+            };
+        }
     }
 
     // Cevap kalitesini değerlendir
@@ -143,7 +167,7 @@ Değerlendirme kriterleri:
             messages: [
                 {
                     role: "system",
-                    content: "Sen cevap kalitesini objektif değerlendiren bir uzmansın."
+                    content: "Sen cevap kalitesini objektif değerlendiren bir uzmansın. SADECE geçerli JSON döndür."
                 },
                 {
                     role: "user",
@@ -151,10 +175,34 @@ Değerlendirme kriterleri:
                 }
             ],
             response_format: { type: "json_object" },
-            max_completion_tokens: 500
+            max_tokens: 500,
+            temperature: 0
         });
 
-        return JSON.parse(response.choices[0].message.content);
+        // Güvenli JSON parsing
+        try {
+            const content = response.choices[0]?.message?.content;
+            if (!content || content.trim() === '') {
+                throw new Error('Empty quality response from OpenAI');
+            }
+            return JSON.parse(content);
+        } catch (jsonError) {
+            console.log(`🚨 Quality JSON Parse Error: ${jsonError.message}`);
+            // Fallback quality assessment
+            return {
+                score: 0.5,
+                strengths: ["response_provided"],
+                improvements: ["improve_analysis"],
+                userSatisfactionLevel: "medium",
+                responseCompleteness: 0.5,
+                relevanceScore: 0.5,
+                clarityScore: 0.5,
+                actionableScore: 0.5,
+                learningValue: "system_interaction",
+                missedOpportunities: ["better_analysis"],
+                nextBestAction: "continue_learning"
+            };
+        }
     }
 
     // Niyet kalıplarını sakla

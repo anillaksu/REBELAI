@@ -297,6 +297,22 @@
         ],
         "last_updated": "2025-09-15T07:49:21.676Z",
         "success_rate": 0
+      },
+      "Web": {
+        "total_executions": 1,
+        "successful_executions": 0,
+        "failure_patterns": [
+          {
+            "pattern": "command_not_found",
+            "description": "Command does not exist on this platform",
+            "suggested_action": "find_alternative",
+            "count": 1,
+            "first_seen": "2025-09-15T08:14:29.122Z",
+            "last_seen": "2025-09-15T08:14:29.122Z"
+          }
+        ],
+        "last_updated": "2025-09-15T08:14:29.122Z",
+        "success_rate": 0
       }
     }
   },
@@ -527,6 +543,14 @@
         ],
         "confidence": 0.19999999999999998,
         "last_tested": "2025-09-15T07:49:21.676Z"
+      },
+      "Web": {
+        "works": false,
+        "variations": [
+          "Web sitesi yap"
+        ],
+        "confidence": 0.19999999999999998,
+        "last_tested": "2025-09-15T08:14:29.122Z"
       }
     },
     "darwin": {
@@ -696,11 +720,16 @@
           "usage_count": 1,
           "success_rate": 0,
           "avg_execution_time": 13.5
+        },
+        "Web": {
+          "usage_count": 1,
+          "success_rate": 0,
+          "avg_execution_time": 27
         }
       },
       "performance_metrics": {},
       "capabilities": {},
-      "last_seen": "2025-09-15T07:59:34.971Z"
+      "last_seen": "2025-09-15T08:14:29.122Z"
     }
   }
 }
