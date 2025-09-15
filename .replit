@@ -35,7 +35,3 @@ outputType = "webview"
 localPort = 5000
 externalPort = 80
 exposeLocalhost = true
-
-[[ports]]
-localPort = 46423
-externalPort = 3000

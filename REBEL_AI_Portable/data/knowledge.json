@@ -1,29 +1,108 @@
 {
-  "command_success_rates": {},
+  "command_success_rates": {
+    "linux": {
+      "ls": {
+        "total_executions": 1,
+        "successful_executions": 1,
+        "failure_patterns": [],
+        "last_updated": "2025-09-14T23:11:44.055Z",
+        "success_rate": 100
+      }
+    }
+  },
   "platform_specific_commands": {
     "windows": {
-      "list_files": ["dir", "ls"],
-      "current_user": ["whoami", "echo %USERNAME%"],
-      "current_directory": ["cd", "echo %CD%"],
-      "disk_usage": ["dir", "wmic logicaldisk get size,freespace,caption"],
-      "processes": ["tasklist", "wmic process list brief"]
+      "list_files": [
+        "dir",
+        "ls"
+      ],
+      "current_user": [
+        "whoami",
+        "echo %USERNAME%"
+      ],
+      "current_directory": [
+        "cd",
+        "echo %CD%"
+      ],
+      "disk_usage": [
+        "dir",
+        "wmic logicaldisk get size,freespace,caption"
+      ],
+      "processes": [
+        "tasklist",
+        "wmic process list brief"
+      ]
     },
     "linux": {
-      "list_files": ["ls -la", "ls", "dir"],
-      "current_user": ["whoami", "id"],
-      "current_directory": ["pwd", "echo $PWD"],
-      "disk_usage": ["df -h", "lsblk"],
-      "processes": ["ps aux", "top"]
+      "list_files": [
+        "ls -la",
+        "ls",
+        "dir"
+      ],
+      "current_user": [
+        "whoami",
+        "id"
+      ],
+      "current_directory": [
+        "pwd",
+        "echo $PWD"
+      ],
+      "disk_usage": [
+        "df -h",
+        "lsblk"
+      ],
+      "processes": [
+        "ps aux",
+        "top"
+      ],
+      "ls": {
+        "works": true,
+        "variations": [
+          "ls -la"
+        ],
+        "confidence": 0.7999999999999999,
+        "last_tested": "2025-09-14T23:11:44.055Z"
+      }
     },
     "darwin": {
-      "list_files": ["ls -la", "ls"],
-      "current_user": ["whoami", "id"],
-      "current_directory": ["pwd"],
-      "disk_usage": ["df -h"],
-      "processes": ["ps aux", "top"]
+      "list_files": [
+        "ls -la",
+        "ls"
+      ],
+      "current_user": [
+        "whoami",
+        "id"
+      ],
+      "current_directory": [
+        "pwd"
+      ],
+      "disk_usage": [
+        "df -h"
+      ],
+      "processes": [
+        "ps aux",
+        "top"
+      ]
     }
   },
   "fallback_routes": {},
   "learned_optimizations": {},
-  "device_profiles": {}
+  "device_profiles": {
+    "5ece5f04": {
+      "platform": "linux",
+      "architecture": "x64",
+      "hostname": "5e7b35c3ff73",
+      "first_seen": "2025-09-14T23:11:44.055Z",
+      "command_preferences": {
+        "ls": {
+          "usage_count": 1,
+          "success_rate": 100,
+          "avg_execution_time": 15.5
+        }
+      },
+      "performance_metrics": {},
+      "capabilities": {},
+      "last_seen": "2025-09-14T23:11:44.055Z"
+    }
+  }
 }
